@@ -2,7 +2,7 @@
 
 Start when the user reports a new T3 version or requests a T3 compatibility check. For requests without an app name, follow [app selection](app-update-workflow.md).
 
-1. Read `AGENTS.md`, the [T3 guide](t3.md), [release instructions](updates.md), previous report and configuration. Preserve existing changes and work on a `codex/` branch. Record actual bundle/ASAR path, identity, version/build, Agent RTL, macOS and architecture; CLI or Codex versions are not the target.
+1. Read `AGENTS.md`, [release instructions](updates.md), previous report and configuration. Preserve existing changes and work on a `codex/` branch. Record actual bundle/ASAR path, identity, version/build, Agent RTL, macOS and architecture; CLI or Codex versions are not the target.
 2. Match the official T3 version and download against the machine. Distinguish patch removal, structural changes, compatibility restrictions and download failures. The Codex feed is not a T3 feed. Do not claim compatibility for unchecked versions; record access limitations.
 3. Compare main/preload, Electron APIs, scheme and nested chat routes, HTML/CSP, assets, DOM/composer and response IDs, CSS, native modules, integrity, signing and Team ID features. Preserve original logic and rollback. Retain T3's vendor-disabled integrity state without weakening Codex's active-integrity requirement.
 4. Fix shared code and limited resolver/context/target differences; check Codex regressions. Keep T3 storage, fonts, runtime, backups, jobs, feeds and removal independent. `supportedT3Versions` must accept only checked versions. Regenerate the userscript after shared payload changes.

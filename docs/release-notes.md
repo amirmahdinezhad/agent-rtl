@@ -10,4 +10,4 @@ The user installed and launched the Codex candidate and gave general acceptance.
 
 Automated checks cover the target app version, GUI, fonts, response direction, installation/removal, and update events. The release provenance records the results and exact source commit.
 
-[Codex compatibility report](https://github.com/amirmahdinezhad/agent-rtl/blob/v1.0.1/docs/compatibility/26.1023.51421.md) · [Codex installation](https://github.com/amirmahdinezhad/agent-rtl/blob/v1.0.1/docs/codex.md) · [T3 installation](https://github.com/amirmahdinezhad/agent-rtl/blob/v1.0.1/docs/t3.md)
+[Codex compatibility report](https://github.com/amirmahdinezhad/agent-rtl/blob/v1.0.1/docs/compatibility/26.1023.51421.md)
