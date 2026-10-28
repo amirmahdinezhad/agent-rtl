@@ -42,14 +42,14 @@ The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. 
 
 | App | Tested app version | Installer |
 | :--- | :---: | :--- |
-| Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) |
-| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) |
+| Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip) |
+| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-T3-1.0.2-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
 2. Open the Setup app for Codex or T3 Code, and choose **Install / Update Rasta**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
-The linked 1.0.1 archives were published under the previous name, **Agent RTL**. Their installers are named **Agent RTL Setup.app** and **Agent RTL T3 Setup.app**. New builds use **Rasta Setup.app** and **Rasta T3 Setup.app**.
+Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. Both downloads are Rasta 1.0.2 prerelease packages.
 
 ### Update or remove
 
@@ -77,8 +77,8 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 **پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
 
-- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip)
-- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip)
+- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-T3-1.0.2-darwin-arm64.zip)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update Rasta** را انتخاب کنید.
