@@ -7,7 +7,7 @@
 <p align="center">Read Persian, Arabic and mixed right-to-left (RTL) text in Codex and T3 Code on macOS.</p>
 
 <p align="center">
-  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest"><img src="https://img.shields.io/github/v/release/amirmahdinezhad/agent-rtl?label=release&amp;color=ad8cf3" alt="Latest release"></a>
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-ad8cf3" alt="Rasta 1.0.2 prerelease"></a>
   <a href="https://github.com/amirmahdinezhad/agent-rtl/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/amirmahdinezhad/agent-rtl/ci.yml?branch=main&amp;label=tests" alt="Installer tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/amirmahdinezhad/agent-rtl?color=79adeb" alt="MIT license"></a>
 </p>
@@ -15,7 +15,7 @@
 <p align="center">
   <a href="#english-documentation">English</a> ·
   <a href="#persian-documentation">Persian</a> ·
-  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest">Download</a>
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/tag/v1.0.2">Download</a>
 </p>
 
 ---
