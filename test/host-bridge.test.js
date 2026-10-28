@@ -39,7 +39,7 @@ it('rejects iframe and unknown IPC actions before spawning a worker', async () =
     const mainFrame = { url: 'app://-/index.html' }, sender = { mainFrame };
     await assert.rejects(handler({ sender, senderFrame: { url: mainFrame.url } }, 'prepare'), /Untrusted/);
     await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'execute shell'), /Untrusted/);
-    await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'appearance', { theme: 'dark', accent: 'url(evil)' }), /Invalid RTL appearance/);
+    await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'appearance', { theme: 'dark', accent: 'url(evil)' }), /Invalid Rasta appearance/);
     await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'font-select', { id: '../bad' }), /Invalid font/);
     await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'font-import', { name: 'bad.txt', data: 'abc' }), /TTF or OTF/);
     await assert.rejects(handler({ sender, senderFrame: { url: mainFrame.url } }, 'font-import', { name: 'font.ttf', data: 'abc' }), /Untrusted/);

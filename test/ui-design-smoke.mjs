@@ -45,6 +45,9 @@ try {
   await context.addInitScript(()=>localStorage.setItem('agent-rtl-config',JSON.stringify({locale:'fa',layoutDir:true})));
   const page=await context.newPage(); page.on('pageerror',error=>errors.push(error.message)); await page.goto(`http://127.0.0.1:${server.address().port}`);
   const trigger=page.locator('.artl-widget-trigger'), panel=page.locator('.artl-widget-panel');
+  assert.equal(await panel.locator('.artl-brand-title').textContent(),'Rasta');
+  assert.equal(await trigger.getAttribute('aria-label'),'Rasta settings');
+  assert.deepEqual(await trigger.locator('svg').evaluate(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})),{width:28,height:28});
   await trigger.focus(); await page.keyboard.press('Enter');
   const toggle=page.getByRole('switch',{name:'Enable RTL',exact:true});
   assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
@@ -115,7 +118,7 @@ try {
   for(let i=1;i<options.length;i++) assert.ok(options[i].top-options[i-1].bottom>=4,'dropdown options have a visible gap');
   await panel.screenshot({path:path.join(output,`${file}-menu.png`)}); await page.keyboard.press('Escape');
   const bounds=await panel.boundingBox(); assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width&&bounds.y>=0&&bounds.y+bounds.height<=height);
-  for(const name of ['Check for updates','Remove RTL']) {
+  for(const name of ['Check for updates','Remove Rasta']) {
    const button=page.getByRole('button',{name,exact:true}); assert.equal(await button.locator('svg').count(),1); assert.equal(await button.getAttribute('title'),name);
    assert.ok((await button.boundingBox()).y < (await toggle.boundingBox()).y,'maintenance above controls');
   }
@@ -160,13 +163,13 @@ try {
   const remove=page.locator('#artl-update-restore'); await remove.click();
   const confirm=page.getByRole('alertdialog'); assert.equal(await confirm.isVisible(),true);
   assert.match(await confirm.innerText(),/Codex will close and reopen automatically after removal/);
-  assert.equal(await confirm.getByRole('button',{name:'Keep RTL'}).evaluate(el=>el===document.activeElement),true);
+  assert.equal(await confirm.getByRole('button',{name:'Keep Rasta'}).evaluate(el=>el===document.activeElement),true);
   await panel.screenshot({path:path.join(output,`${file}-confirm.png`)});
   await page.keyboard.press('Escape'); assert.equal(await confirm.count(),0); assert.equal(await remove.evaluate(el=>el===document.activeElement),true);
   assert.equal(await page.evaluate(()=>window.previewCalls.includes('restore')),false);
-  await remove.click(); await confirm.getByRole('button',{name:'Keep RTL'}).click(); assert.equal(await confirm.count(),0);
+  await remove.click(); await confirm.getByRole('button',{name:'Keep Rasta'}).click(); assert.equal(await confirm.count(),0);
   await page.evaluate(()=>{localStorage.setItem('unrelated-host-setting','keep');localStorage.setItem('agent-rtl:message-direction:v1:fixture','rtl');});
-  await remove.click(); await confirm.getByRole('button',{name:'Remove RTL',exact:true}).click();
+  await remove.click(); await confirm.getByRole('button',{name:'Remove Rasta',exact:true}).click();
   await page.waitForFunction(()=>window.previewCalls.includes('restore'));
   await page.waitForFunction(()=>localStorage.getItem('agent-rtl-config')===null);
   assert.equal(await page.evaluate(()=>localStorage.getItem('agent-rtl:message-direction:v1:fixture')),null);
@@ -356,8 +359,8 @@ try {
  await page.getByRole('switch',{name:'Force RTL',exact:true}).click(); await page.waitForTimeout(200);
  await page.getByRole('combobox',{name:'Text size',exact:true}).click();
  await page.keyboard.press('End'); await page.waitForTimeout(250); await page.keyboard.press('Enter');
- await page.getByRole('button',{name:'Remove RTL',exact:true}).click(); await page.waitForTimeout(350);
- await page.getByRole('button',{name:'Keep RTL',exact:true}).click(); await page.waitForTimeout(250);
+ await page.getByRole('button',{name:'Remove Rasta',exact:true}).click(); await page.waitForTimeout(350);
+ await page.getByRole('button',{name:'Keep Rasta',exact:true}).click(); await page.waitForTimeout(250);
  await page.getByRole('button',{name:'Close settings',exact:true}).click(); await page.waitForTimeout(250);
  await trigger.click(); await page.waitForTimeout(250);
  await page.mouse.click(40,40); await page.waitForTimeout(250);

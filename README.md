@@ -46,14 +46,14 @@ The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. 
 | T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
-2. Open the Setup app for Codex or T3 Code, and choose **Install / Update RTL**.
+2. Open the Setup app for Codex or T3 Code, and choose **Install / Update Rasta**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
 The linked 1.0.1 archives were published under the previous name, **Agent RTL**. Their installers are named **Agent RTL Setup.app** and **Agent RTL T3 Setup.app**. New builds use **Rasta Setup.app** and **Rasta T3 Setup.app**.
 
 ### Update or remove
 
-Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened.
+Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove Rasta** and confirm; the original same-version app is restored and reopened.
 
 ---
 
@@ -81,13 +81,13 @@ Use **Check for updates** in the panel to review an available release, then choo
 - **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
-2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update RTL** را انتخاب کنید.
+2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update Rasta** را انتخاب کنید.
 3. پس از آماده‌شدن، **Launch** را بزنید؛ برنامه دوباره باز می‌شود و پنل در دسترس قرار می‌گیرد.
 
 ### به‌روزرسانی و حذف
 
 با **Check for updates** نسخهٔ تازه و خلاصهٔ تغییرات را ببینید؛ دانلود با انتخاب جداگانهٔ **Download update** شروع می‌شود.
 
-برای حذف، **Remove RTL** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود.
+برای حذف، **Remove Rasta** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود.
 
 </div>

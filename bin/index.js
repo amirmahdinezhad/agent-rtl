@@ -85,7 +85,7 @@ async function patchTarget(target, { restore, dryRun }) {
         const bundle = resolveT3App();
         if (!bundle) return 'missing';
         if (dryRun) { console.log(JSON.stringify(inspectNative(bundle), null, 2)); return 'dryrun'; }
-        console.error(red('Use Rasta T3 Setup.app to install or remove RTL on macOS. The graphical flow preserves signing, integrity, rollback and the explicit Launch step.'));
+        console.error(red('Use Rasta T3 Setup.app to install or remove Rasta on macOS. The graphical flow preserves signing, integrity, rollback and the explicit Launch step.'));
         return 'error';
     }
     if (target.mode === 'codex-native') {
@@ -97,7 +97,7 @@ async function patchTarget(target, { restore, dryRun }) {
                 const restored = bundle && restoreNative(bundle);
                 console.log(green(restored ? 'Restored the original Codex bundle and signature.'
                     : cancelled ? 'Cancelled the one-time Codex installation.'
-                        : removed ? 'Removed the legacy Codex service and launcher; restored its Dock tile.' : 'No Codex RTL backup or legacy service found.'));
+                        : removed ? 'Removed the legacy Codex service and launcher; restored its Dock tile.' : 'No Codex Rasta backup or legacy service found.'));
                 return 'restored';
             }
             const bundle = resolveCodexApp();
@@ -134,7 +134,7 @@ async function patchTarget(target, { restore, dryRun }) {
             installNative(bundle, { allowLocalSigning });
             verifyInstalledNative(bundle);
             await uninstallBackground();
-            console.log(green('Codex in-app RTL installed and verified. Open the original Codex app normally; the terminal can be closed.'));
+            console.log(green('Codex in-app Rasta installed and verified. Open the original Codex app normally; the terminal can be closed.'));
             return 'patched';
         } catch (error) { console.error(red(error.message)); return 'error'; }
     }

@@ -23,7 +23,7 @@ export function backgroundPaths(home = backgroundHome()) {
 export function readBackgroundConfig(home = backgroundHome()) {
     try {
         const config = JSON.parse(fs.readFileSync(backgroundPaths(home).config, 'utf8'));
-        if (config.label !== SERVICE_LABEL || config.version !== 1) throw new Error('Invalid Codex RTL service configuration.');
+        if (config.label !== SERVICE_LABEL || config.version !== 1) throw new Error('Invalid Codex Rasta service configuration.');
         return config;
     } catch (error) {
         if (error.code === 'ENOENT') return null;

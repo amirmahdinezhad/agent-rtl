@@ -23,12 +23,12 @@ function install({ app, ipcMain, session }, config) {
     let busy = false;
     ipcMain.handle(CHANNEL, async (event, action, input) => {
         const frame = event.senderFrame;
-        if (!frame || frame !== event.sender.mainFrame || !eligible(frame.url, config.target) || !ACTIONS.has(action)) throw new Error('Untrusted RTL request.');
-        if (action === 'appearance' && (!['auto', 'light', 'dark'].includes(input?.theme) || !['auto', '#ad8cf3', '#79adeb', '#68c7a4', '#e9bf59'].includes(input?.accent))) throw new Error('Invalid RTL appearance.');
+        if (!frame || frame !== event.sender.mainFrame || !eligible(frame.url, config.target) || !ACTIONS.has(action)) throw new Error('Untrusted Rasta request.');
+        if (action === 'appearance' && (!['auto', 'light', 'dark'].includes(input?.theme) || !['auto', '#ad8cf3', '#79adeb', '#68c7a4', '#e9bf59'].includes(input?.accent))) throw new Error('Invalid Rasta appearance.');
         if (action === 'font-select' && (typeof input?.id !== 'string' || !/^(vazir|[a-f0-9]{32})$/.test(input.id))) throw new Error('Invalid font selection.');
         if (action === 'font-import' && (typeof input?.name !== 'string' || input.name.length > 255 || !/\.(ttf|otf)$/i.test(input.name)
             || typeof input.data !== 'string' || input.data.length > 2796204)) throw new Error('Choose a TTF or OTF font up to 2 MB.');
-        if (busy && !['status', 'cancel', 'check', 'ready', 'fonts'].includes(action)) throw new Error('Another RTL action is running.');
+        if (busy && !['status', 'cancel', 'check', 'ready', 'fonts'].includes(action)) throw new Error('Another Rasta action is running.');
         const mutating = !['status', 'cancel', 'check', 'ready', 'fonts'].includes(action);
         if (mutating) busy = true;
         try {

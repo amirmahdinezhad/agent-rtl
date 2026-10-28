@@ -57,7 +57,7 @@ export async function finishGUIUninstall(job, { waitForWindow = true } = {}) {
     if (waitForWindow) {
         const deadline = Date.now() + 15000;
         while (readJSON(paths.status + '.ack')?.id !== job.id) {
-            if (Date.now() >= deadline) throw new Error('RTL was removed, but the removal window did not close.');
+            if (Date.now() >= deadline) throw new Error('Rasta was removed, but the removal window did not close.');
             await delay(100);
         }
     }

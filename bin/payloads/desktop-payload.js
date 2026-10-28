@@ -156,7 +156,7 @@
         .artl-select-option[aria-selected="true"] svg { visibility: visible; }
         .artl-widget-container .artl-select-option:is(:hover, .highlighted) { color: var(--artl-ink); background: var(--artl-soft); }
         .artl-widget-container .artl-widget-trigger { position: relative; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--artl-line); border-radius: 22px; color: var(--artl-text); background: var(--artl-base); box-shadow: 0 4px 16px #10081d18; direction: ltr; }
-        .artl-widget-trigger svg { width: 20px; height: 20px; }
+        .artl-widget-trigger svg { width: 28px; height: 28px; }
         .artl-widget-container .artl-widget-trigger.active { color: var(--artl-on-accent); background: var(--artl-accent); border-color: var(--artl-accent); }
         .artl-widget-container[data-artl-selected-accent="true"] :is(.artl-widget-trigger.active, .artl-update-install) { border-color: var(--artl-ink); }
         .artl-widget-container :is(.artl-widget-trigger, .artl-update-install, .artl-confirm-actions button):active { transform: scale(.98); }
@@ -235,7 +235,7 @@
     }
     updateDynamicCSS(rtlConfig.faFont, rtlConfig.enFont, rtlConfig.codeFont, rtlConfig.lh, rtlConfig.fs);
 
-    const UI = { settings: 'RTL settings', close: 'Close settings', autoRTL: 'Enable RTL', forceRTL: 'Force RTL', fixAt: 'Type @ with Shift+2', faFont: 'Persian font', enFont: 'English font', appFont: 'Font', theme: 'Theme', size: 'Text size', spacing: 'Line height', check: 'Check for updates', restore: 'Remove RTL', install: 'Download update', available: 'An RTL update is ready', noUpdates: 'No updates available.', checkFailed: 'Couldn’t check for updates. Try again.', openFailed: 'Couldn’t open the installer. Try again.', removeTitle: 'Remove Rasta?', removeCopy: HOST_NAME + ' will close and reopen automatically after removal. The RTL panel, helper, settings and added fonts will be deleted.', keep: 'Keep RTL' };
+    const UI = { settings: 'Rasta settings', close: 'Close settings', autoRTL: 'Enable RTL', forceRTL: 'Force RTL', fixAt: 'Type @ with Shift+2', faFont: 'Persian font', enFont: 'English font', appFont: 'Font', theme: 'Theme', size: 'Text size', spacing: 'Line height', check: 'Check for updates', restore: 'Remove Rasta', install: 'Download update', available: 'A Rasta update is ready', noUpdates: 'No updates available.', checkFailed: 'Couldn’t check for updates. Try again.', openFailed: 'Couldn’t open the installer. Try again.', removeTitle: 'Remove Rasta?', removeCopy: HOST_NAME + ' will close and reopen automatically after removal. The Rasta panel, helper, settings and added fonts will be deleted.', keep: 'Keep Rasta' };
     function icon(glyph, className = '') {
         const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg');
         for (const [key, value] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) svg.setAttribute(key, value);
@@ -282,7 +282,7 @@
         panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-labelledby', 'artl-panel-title'); panel.setAttribute('aria-hidden', 'true');
         const content = document.createElement('div'); content.className = 'artl-panel-content'; panel.appendChild(content);
         const header = document.createElement('div'); header.className = 'artl-panel-header';
-        const title = document.createElement('h2'); title.id = 'artl-panel-title'; title.className = 'artl-brand-title'; title.textContent = 'Rasta · RTL'; title.title = 'Rasta — Right-to-left reading controls';
+        const title = document.createElement('h2'); title.id = 'artl-panel-title'; title.className = 'artl-brand-title'; title.textContent = 'Rasta'; title.title = 'Rasta — Right-to-left reading controls';
         const close = document.createElement('button'); close.type = 'button'; close.className = 'artl-icon-button artl-panel-close'; bind(close, 'close', 'aria-label'); close.appendChild(icon('M6 6l12 12M18 6 6 18'));
         header.appendChild(brandIcon('artl-brand-mark')); header.appendChild(title); content.appendChild(header);
         const toolbar = header;
@@ -644,7 +644,7 @@
                 const currentVersion = value.installedAgentVersion || value.agentVersion;
                 version.textContent = currentVersion ? `v${currentVersion}` : ''; version.hidden = !currentVersion; version.title = currentVersion ? `Rasta ${currentVersion}` : '';
                 running = Boolean(value.running || active.has(value.operation?.phase)); latest = value.update || latest; render();
-                if (value.operation?.action === 'restore' && value.operation?.phase === 'failed') tell('Couldn’t remove RTL. Try again.', 'error');
+                if (value.operation?.action === 'restore' && value.operation?.phase === 'failed') tell('Couldn’t remove Rasta. Try again.', 'error');
                 if (running) updatePoll = setTimeout(refresh, 1000);
             } catch { if (!updatesDisposed) { running = false; render(); } }
         }

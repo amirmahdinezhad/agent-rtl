@@ -138,7 +138,7 @@ export class DebugClient {
             frameId: frameTree.frame.id, worldName: CODEX_WORLD,
         });
         const result = await this.send('Runtime.evaluate', { expression, contextId: executionContextId, returnByValue: true });
-        if (result.exceptionDetails) throw new Error(result.exceptionDetails.text || 'RTL payload failed.');
+        if (result.exceptionDetails) throw new Error(result.exceptionDetails.text || 'Rasta payload failed.');
         return result.result?.value;
     }
 

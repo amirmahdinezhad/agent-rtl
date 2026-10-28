@@ -74,7 +74,7 @@ async function main() {
     if (!config || config.app !== app) throw new Error('Rasta setup has not completed for this app.');
     if (action === 'ready') {
         const host = JSON.parse(asar.extractFile(bundle.archive, 'agent-rtl/host.json'));
-        if (host.app !== app || host.runtime !== config.runtime) throw new Error('RTL runtime does not match the installed host.');
+        if (host.app !== app || host.runtime !== config.runtime) throw new Error('Rasta runtime does not match the installed host.');
         saveJSON(paths.ready, { app, agentVersion: host.agentVersion, at: Date.now() }); return { ready: true };
     }
     if (action === 'open') return { pid: await launchWizard(config) };
@@ -84,7 +84,7 @@ async function main() {
         return requestGUIInstall(value('--job'), app);
     }
     if (action === 'cancel') { fs.writeFileSync(paths.cancel, 'cancel'); return { phase: 'cancelling' }; }
-    if (!['repair', 'prepare', 'restore'].includes(action)) throw new Error('Unknown RTL action.');
+    if (!['repair', 'prepare', 'restore'].includes(action)) throw new Error('Unknown Rasta action.');
     const fromPanel = !args.includes('--setup') && !args.includes('--attached-ui');
     return await launchGUIJob(action, { ...config, flow: 'download-launch',
         silentRestore: action === 'restore' && fromPanel, showWindow: action !== 'restore' && fromPanel });

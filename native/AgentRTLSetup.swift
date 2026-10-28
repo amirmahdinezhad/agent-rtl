@@ -123,7 +123,7 @@ func appFont(_ size: CGFloat, bold: Bool = false) -> NSFont {
 final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     enum Action { case install, update, check, retry, openApp, chooseApp, done }
     var window: NSWindow!
-    let title = NSTextField(wrappingLabelWithString: "Checking RTL…")
+    let title = NSTextField(wrappingLabelWithString: "Checking Rasta…")
     let message = NSTextField(wrappingLabelWithString: "")
     let version = NSTextField(labelWithString: "")
     let mark = BrandView()
@@ -149,8 +149,8 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var patchCurrent = false
     var requestedJob = false
     var fontPreferencesData: Data?
-    let phaseTitles = ["starting": "Preparing RTL", "checking": "Checking for updates", "downloading-agent": "Downloading RTL", "downloading-app": "Downloading Codex", "verifying": "Verifying the update", "preparing": "Preparing RTL", "ready-to-install": "Ready to launch", "quitting": "Closing Codex", "waiting-for-quit": "Waiting for Codex", "installing": "Applying RTL", "reopening": "Opening Codex", "complete": "RTL is ready", "failed": "Could not finish", "cancelled": "Cancelled"]
-    let phaseDetails = ["starting": "Codex stays open until you choose Launch.", "checking": "Finding the right update for your Codex app.", "downloading-agent": "You can keep using Codex while the update downloads.", "preparing": "Codex stays open until you choose Launch.", "ready-to-install": "Codex will restart with the new RTL panel.", "waiting-for-quit": "Finish any quit prompt in Codex.", "reopening": "Waiting for your reading controls to be ready."]
+    let phaseTitles = ["starting": "Preparing Rasta", "checking": "Checking for updates", "downloading-agent": "Downloading Rasta", "downloading-app": "Downloading Codex", "verifying": "Verifying the update", "preparing": "Preparing Rasta", "ready-to-install": "Ready to launch", "quitting": "Closing Codex", "waiting-for-quit": "Waiting for Codex", "installing": "Installing Rasta", "reopening": "Opening Codex", "complete": "Rasta is ready", "failed": "Could not finish", "cancelled": "Cancelled"]
+    let phaseDetails = ["starting": "Codex stays open until you choose Launch.", "checking": "Finding the right update for your Codex app.", "downloading-agent": "You can keep using Codex while the update downloads.", "preparing": "Codex stays open until you choose Launch.", "ready-to-install": "Codex will restart with the new Rasta panel.", "waiting-for-quit": "Finish any quit prompt in Codex.", "reopening": "Waiting for your reading controls to be ready."]
 
     override init() {
         let args = CommandLine.arguments
@@ -176,7 +176,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.setActivationPolicy(.accessory)
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 276), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
         window.contentView = CanvasView(frame: NSRect(x: 0, y: 0, width: 400, height: 276))
-        window.title = "Rasta — RTL for " + hostName; window.titlebarAppearsTransparent = true; window.titleVisibility = .visible; window.backgroundColor = Palette.canvas; window.delegate = self; window.isReleasedWhenClosed = false
+        window.title = "Rasta — " + hostName; window.titlebarAppearsTransparent = true; window.titleVisibility = .visible; window.backgroundColor = Palette.canvas; window.delegate = self; window.isReleasedWhenClosed = false
         let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .centerX; stack.spacing = 16; stack.detachesHiddenViews = true; stack.translatesAutoresizingMaskIntoConstraints = false; window.contentView!.addSubview(stack)
         NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: window.contentView!.leadingAnchor, constant: 24), stack.trailingAnchor.constraint(equalTo: window.contentView!.trailingAnchor, constant: -24), stack.topAnchor.constraint(equalTo: window.contentView!.topAnchor, constant: 24), stack.bottomAnchor.constraint(equalTo: window.contentView!.bottomAnchor, constant: -24)])
         mark.widthAnchor.constraint(equalToConstant: 56).isActive = true; mark.heightAnchor.constraint(equalToConstant: 56).isActive = true; stack.addArrangedSubview(mark)
@@ -262,7 +262,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func show(_ heading: String, _ text: String = "") {
         title.stringValue = heading.replacingOccurrences(of: "Codex", with: hostName); message.stringValue = text.replacingOccurrences(of: "Codex", with: hostName); message.toolTip = text.isEmpty ? nil : message.stringValue; message.isHidden = text.isEmpty
         message.alignment = text.count > 130 ? .left : .center
-        let working = ["Checking RTL…", "Checking for updates", "Preparing RTL", "Verifying the update", "Closing Codex", "Waiting for Codex", "Applying RTL", "Opening Codex"].contains(heading)
+        let working = ["Checking Rasta…", "Checking for updates", "Preparing Rasta", "Verifying the update", "Closing Codex", "Waiting for Codex", "Installing Rasta", "Opening Codex"].contains(heading)
         if working && activity.isHidden { activity.isHidden = false; activity.startAnimation(nil) }
         else if !working && !activity.isHidden { activity.stopAnimation(nil); activity.isHidden = true }
         if working { progress.isHidden = true }
@@ -282,14 +282,14 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func renderPreviews(to folder: String) {
         let states: [(String, String, String, String, Double?)] = [
             ("checking", phaseTitles["checking"]!, phaseDetails["checking"]!, "Checking…", nil),
-            ("available", "An RTL update is ready", "Download now. Restart Codex when you're ready.", "Download update", nil),
+            ("available", "A Rasta update is ready", "Download now. Restart Codex when you're ready.", "Download update", nil),
             ("downloading", phaseTitles["downloading-agent"]!, phaseDetails["downloading-agent"]!, "Cancel", 45),
             ("ready", phaseTitles["ready-to-install"]!, phaseDetails["ready-to-install"]!, "Launch", nil),
             ("waiting", phaseTitles["waiting-for-quit"]!, phaseDetails["waiting-for-quit"]!, "Installing…", nil),
-            ("complete", "RTL is ready", "Your reading controls are ready to use.", "Open Codex", nil),
+            ("complete", "Rasta is ready", "Your reading controls are ready to use.", "Open Codex", nil),
             ("unsupported", "A compatible update is needed", "No compatible release is available yet.", "Check again", nil),
             ("error", "Could not finish", "The download was interrupted. Check your connection, then try again.", "Try again", nil),
-            ("long-error", "Could not finish", "Codex opened, but the new RTL panel did not confirm startup. Close and reopen Codex, then try again. If this continues, check that you are opening the same Codex installation that you selected in Rasta Setup.", "Try again", nil)
+            ("long-error", "Could not finish", "Codex opened, but the new Rasta panel did not confirm startup. Close and reopen Codex, then try again. If this continues, check that you are opening the same Codex installation that you selected in Rasta Setup.", "Try again", nil)
         ]
         do {
             try FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
@@ -322,7 +322,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         } catch { fputs("Native UI preview failed. Error: \((error as NSError).domain) (\((error as NSError).code)).\n", stderr); exit(1) }
     }
     func loadPlan() {
-        show("Checking RTL…"); install.isEnabled = false; progress.isHidden = true
+        show("Checking Rasta…"); install.isEnabled = false; progress.isHidden = true
         rpc("status", setup: !watching) { value in
             if let current = value["installedAgentVersion"] as? String ?? value["agentVersion"] as? String { self.version.stringValue = "Rasta " + current }
             self.appPath = value["app"] as? String ?? self.appPath
@@ -352,7 +352,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let target = release["agentVersion"] as? String
         let notes = (release["releaseNotes"] as? [String] ?? []).prefix(3).map { "• " + String($0.prefix(120)) }
         let detail = (["Download now. Restart Codex when you're ready."] + notes).joined(separator: "\n")
-        show(target.map { "Rasta " + $0 + " is ready" } ?? "An RTL update is ready", detail)
+        show(target.map { "Rasta " + $0 + " is ready" } ?? "A Rasta update is ready", detail)
     }
     func checkUpdates() {
         show(phaseTitles["checking"]!, phaseDetails["checking"]!); install.isEnabled = false
@@ -364,9 +364,9 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
             } else if value["available"] as? Bool == true {
                 self.showUpdate(value); self.setButton("Download update", action: .update)
             } else if self.patchCurrent {
-                self.show("RTL is up to date", "Your reading controls are ready to use."); self.setButton("Done", action: .done)
+                self.show("Rasta is up to date", "Your reading controls are ready to use."); self.setButton("Done", action: .done)
             } else {
-                self.show("Update RTL", "Add reading controls to your Codex app."); self.setButton("Update RTL", action: .install)
+                self.show("Update Rasta", "Add reading controls to your Codex app."); self.setButton("Update Rasta", action: .install)
             }
 
         }
@@ -391,7 +391,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     func begin(_ action: String) {
         lastAction = action; requestedJob = true; expectedJobID = nil; jobStarted = Date(); missingWorkerChecks = 0; busy = true; phase = "starting"
-        show(action == "restore" ? "Removing RTL" : "Preparing RTL"); progress.doubleValue = 0; progress.isHidden = false; setButton("Cancel", action: .retry, primary: false); install.isEnabled = false
+        show(action == "restore" ? "Removing Rasta" : "Preparing Rasta"); progress.doubleValue = 0; progress.isHidden = false; setButton("Cancel", action: .retry, primary: false); install.isEnabled = false
         rpc(action, setup: !watching) { value in self.expectedJobID = value["id"] as? String; self.install.isEnabled = true }
     }
     func showError(_ text: String) {
@@ -404,7 +404,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if !busy, let data = try? Data(contentsOf: URL(fileURLWithPath: statusPath)), let state = try? JSONSerialization.jsonObject(with: data) as? [String: Any], state["uninstall"] as? Bool == true, state["phase"] as? String == "complete", state["app"] as? String == appPath, let id = state["id"] as? String { expectedJobID = id; busy = true }
         guard busy, let expected = expectedJobID, let data = try? Data(contentsOf: URL(fileURLWithPath: statusPath)), let state = try? JSONSerialization.jsonObject(with: data) as? [String: Any], state["id"] as? String == expected else { return }
         if let action = state["action"] as? String { lastAction = action }
-        phase = state["phase"] as? String ?? ""; show(phaseTitles[phase] ?? "Updating RTL…", phaseDetails[phase] ?? "")
+        phase = state["phase"] as? String ?? ""; show(phaseTitles[phase] ?? "Updating Rasta…", phaseDetails[phase] ?? "")
         if !["complete", "failed", "cancelled"].contains(phase) {
             if let pid = state["pid"] as? Int32 { if kill(pid, 0) != 0 && errno == ESRCH { missingWorkerChecks += 1 } else { missingWorkerChecks = 0 }; if missingWorkerChecks >= 3 { showError("The installer stopped. Try again."); return } }
             else if Date().timeIntervalSince(jobStarted) > 60 { showError("The installer did not start. Try again."); return }
@@ -417,12 +417,12 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 if state["uninstall"] as? Bool == true {
                     if awaitingUninstall { busy = true; return }
                     do { let acknowledgement = try JSONSerialization.data(withJSONObject: ["id": expected, "pid": Int(getpid())]); try acknowledgement.write(to: URL(fileURLWithPath: statusPath + ".ack"), options: .atomic) }
-                    catch { showError("RTL was removed, but cleanup could not finish. Try again."); return }
+                    catch { showError("Rasta was removed, but cleanup could not finish. Try again."); return }
                     awaitingUninstall = true; busy = true; show("Finishing removal", "Removing Rasta settings and helper."); return
                 }
                 timer?.invalidate(); NSApp.terminate(nil); return
             }
-            show(state["restored"] as? Bool == true ? "RTL removed" : "RTL is ready", state["autoPromptError"] == nil || state["autoPromptError"] is NSNull ? (state["restored"] as? Bool == true ? "" : "Your reading controls are ready to use.") : "The automatic update prompt could not be enabled."); setButton("Open Codex", action: .openApp)
+            show(state["restored"] as? Bool == true ? "Rasta removed" : "Rasta is ready", state["autoPromptError"] == nil || state["autoPromptError"] is NSNull ? (state["restored"] as? Bool == true ? "" : "Your reading controls are ready to use.") : "The automatic update prompt could not be enabled."); setButton("Open Codex", action: .openApp)
         } else if phase == "failed" { showError(state["error"] as? String ?? "Try again.") }
         else if phase == "cancelled" { busy = false; progress.isHidden = true; setButton("Try again", action: .retry) }
         else if phase == "ready-to-install" { setButton("Launch", action: .install) }

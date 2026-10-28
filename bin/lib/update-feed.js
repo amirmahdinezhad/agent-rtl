@@ -55,7 +55,7 @@ export function verifyReleaseEnvelope(envelope, key, platform, target = 'codex')
     const body = Buffer.from(envelope.payload, 'base64');
     if (!verify(null, body, edKey(key), Buffer.from(envelope.signature, 'base64'))) throw new Error('Rasta release signature is invalid.');
     const manifest = JSON.parse(body.toString());
-    if ((manifest.target || 'codex') !== target) throw new Error('The RTL release belongs to another application.');
+    if ((manifest.target || 'codex') !== target) throw new Error('The Rasta release belongs to another application.');
     if ((manifest.target !== undefined && !['codex', 't3'].includes(manifest.target)) || manifest.schema !== 1 || !/^\d+\.\d+\.\d+$/.test(manifest.agentVersion)
         || !Array.isArray(manifest.supportedAppVersions) || !manifest.supportedAppVersions.every(v => /^\d+(?:\.\d+){1,4}$/.test(v))) throw new Error('Unsupported Rasta release manifest.');
     const artifact = manifest.downloads?.[platform];

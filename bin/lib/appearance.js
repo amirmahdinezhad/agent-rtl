@@ -7,7 +7,7 @@ export const themes = ['auto', 'light', 'dark'];
 export const accents = ['auto', '#ad8cf3', '#79adeb', '#68c7a4', '#e9bf59'];
 /** Store only Rasta appearance; never change host application preferences. */
 export function saveAppearance(input, home = process.env.ARTL_CODEX_STATE_HOME || os.homedir()) {
-    if (!themes.includes(input?.theme) || !accents.includes(input?.accent)) throw new Error('Invalid RTL appearance.');
+    if (!themes.includes(input?.theme) || !accents.includes(input?.accent)) throw new Error('Invalid Rasta appearance.');
     const file = path.join(supportPath(home), 'appearance.json');
     fs.mkdirSync(path.dirname(file), { recursive: true });
     const temporary = file + '.' + randomUUID() + '.tmp';

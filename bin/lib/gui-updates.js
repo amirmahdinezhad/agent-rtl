@@ -50,7 +50,7 @@ export async function checkGUIUpdates(config, { fetcher, osVersion = execFileSyn
                 ? (await privateAsset(releaseConfig.feedUrl, releaseConfig.privateRepository, { signal, maximum: 128 * 1024 })).toString()
                 : await boundedText(await fetchTrusted(releaseConfig.feedUrl, { kind: 'release', signal, fetcher }), 128 * 1024);
             release = verifyReleaseEnvelope(JSON.parse(body), releaseConfig.publicKey, `darwin-${arch}`, targetId());
-            if ((release.target || 'codex') !== targetId()) throw new Error('The RTL release belongs to another application.');
+            if ((release.target || 'codex') !== targetId()) throw new Error('The Rasta release belongs to another application.');
         } catch (error) { release = null; releaseError = error.message; }
     }
     let patchMissing = false; try { asar.extractFile(bundle.archive, 'agent-rtl/host.json'); } catch { patchMissing = true; }
@@ -146,7 +146,7 @@ export async function runGUIJob(job, overrides = {}) {
                 const sourceRuntime = path.join(app, 'Contents/Resources/runtime');
                 const releasePackage = readJSON(path.join(sourceRuntime, 'package.json'));
                 const downloadedTarget = readJSON(path.join(sourceRuntime, 'bin/release-config.json'))?.target || 'codex';
-                if (downloadedTarget !== targetId()) throw new Error('Downloaded RTL installer belongs to another application.');
+                if (downloadedTarget !== targetId()) throw new Error('Downloaded Rasta installer belongs to another application.');
                 if (releasePackage?.version !== update.release.agentVersion || !fs.existsSync(path.join(sourceRuntime, 'node'))) throw new Error('Rasta archive does not match its signed release.');
                 const runtime = path.join(paths.runtimes, `${update.release.agentVersion}-${randomUUID()}`);
                 fs.cpSync(sourceRuntime, runtime, { recursive: true, verbatimSymlinks: true });
@@ -236,7 +236,7 @@ export async function runGUIJob(job, overrides = {}) {
                     if (running(bundle) && value?.app === bundle.app && value.agentVersion === next.agentVersion && value.at >= launchedAt) { ready = true; break; }
                     await delay(500);
                 }
-                if (!ready) throw new Error('Codex opened, but the new RTL panel did not confirm startup. Close and reopen Codex, then try again.');
+                if (!ready) throw new Error('Codex opened, but the new Rasta panel did not confirm startup. Close and reopen Codex, then try again.');
             }
         }
         if (action === 'restore') { (overrides.removeData || removeGUIData)({ jobId: job.id }); uninstalled = true; }
@@ -265,7 +265,7 @@ export async function runGUIJob(job, overrides = {}) {
                         const deadline = Date.now() + 15000;
                         const restoredBundle = resolveGUIApp(config.app);
                         while (!(overrides.running || isCodexRunning)(restoredBundle)) {
-                            if (Date.now() >= deadline) throw new Error('RTL was removed, but Codex did not reopen. Open Codex manually.');
+                            if (Date.now() >= deadline) throw new Error('Rasta was removed, but Codex did not reopen. Open Codex manually.');
                             await delay(250);
                         }
                     }
@@ -275,7 +275,7 @@ export async function runGUIJob(job, overrides = {}) {
         }
         if (cleanup.length && uninstalled) {
             releaseGUIJob(job.id);
-            publish({ phase: 'failed', error: 'RTL was removed, but cleanup failed: ' + cleanup.join('\n'), installed: false });
+            publish({ phase: 'failed', error: 'Rasta was removed, but cleanup failed: ' + cleanup.join('\n'), installed: false });
             return 'failed';
         }
         if (cleanup.length) attempt(() => saveJSON(paths.status, { ...readJSON(paths.status), cleanupWarning: cleanup.join('\n') }));

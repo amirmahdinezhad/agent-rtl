@@ -215,7 +215,7 @@ export function prepareNative(bundle, destination, options = {}) {
         const result = { ...report, ...inspectNative(bundle, options.htmlPaths), state: 'prepared',
             originalHeaderHash: hash(asar.getRawHeader(bundle.archive).headerString),
             frameworkRelative: path.relative(bundle.app, framework), nativeMetadataBytes: slots.length * 32,
-            originalLogicPreserved: true, note: 'Installing requires replacing the vendor signature with local signing. Login, Keychain access, macOS permissions and app updates may be affected. Official updates replace the RTL patch.' };
+            originalLogicPreserved: true, note: 'Installing requires replacing the vendor signature with local signing. Login, Keychain access, macOS permissions and app updates may be affected. Official updates replace the Rasta patch.' };
         fs.writeFileSync(path.join(destination, 'report.json'), JSON.stringify(result, null, 2) + '\n');
         return result;
     } catch (error) { fs.rmSync(destination, { recursive: true, force: true }); throw error; }
@@ -252,7 +252,7 @@ function readNativeState(bundle, paths) {
     const state = JSON.parse(fs.readFileSync(paths.state, 'utf8'));
     if (state.version !== 1 || state.app !== bundle.app || typeof state.backup !== 'string'
         || path.dirname(state.backup) !== paths.support || !path.basename(state.backup).startsWith('codex-original-')) {
-        throw new Error('Invalid Codex RTL backup metadata.');
+        throw new Error('Invalid Codex Rasta backup metadata.');
     }
     return state;
 }
@@ -264,7 +264,7 @@ export function verifyInstalledNative(bundle) {
     asar.uncache(bundle.archive);
     const headerHash = hash(asar.getRawHeader(bundle.archive).headerString);
     if (!state || headerHash !== state.headerHash || inspectNative(bundle).state !== 'patched-in-app') {
-        throw new Error('The installed Codex files do not match a completed RTL installation.');
+        throw new Error('The installed Codex files do not match a completed Rasta installation.');
     }
     const dictionary = readPlist(path.join(bundle.app, 'Contents/Info.plist')).ElectronAsarIntegrity;
     if (dictionary?.['Resources/app.asar']?.hash !== headerHash) throw new Error('Installed ASAR integrity metadata does not match.');
@@ -407,7 +407,7 @@ export function commitManagedNative(stage, { verifySource = verifyOfficialBundle
 }
 
 export function stageNative(bundle, { allowLocalSigning = false, payload, host } = {}) {
-    if (!allowLocalSigning) throw new Error('In-app RTL requires local re-signing of Codex. Review --prepare first; --allow-local-signing explicitly accepts replacing the OpenAI signature and possible login/Keychain/permission effects.');
+    if (!allowLocalSigning) throw new Error('In-app Rasta requires local re-signing of Codex. Review --prepare first; --allow-local-signing explicitly accepts replacing the OpenAI signature and possible login/Keychain/permission effects.');
     const paths = nativePaths();
     const previous = readNativeState(bundle, paths);
     asar.uncache(bundle.archive);
@@ -454,7 +454,7 @@ export function commitNative(stage, { verifyInstalled = verifyInstalledNative } 
         throw new Error('Codex changed after preparation; no changes were installed.');
     }
     const refreshing = !!report.refreshing;
-    if (refreshing && previous?.headerHash !== expectedHeaderHash) throw new Error('Codex RTL backup changed after preparation.');
+    if (refreshing && previous?.headerHash !== expectedHeaderHash) throw new Error('Codex Rasta backup changed after preparation.');
     command('/usr/bin/codesign', ['--verify', '--deep', '--strict', bundle.app]);
     command('/usr/bin/codesign', ['--verify', '--deep', '--strict', stagedApp]);
     fs.mkdirSync(paths.support, { recursive: true });
