@@ -40,8 +40,8 @@ Agent RTL adds a floating settings panel inside your coding app. Adjust Persian 
 
 | App | Tested app version | Installer |
 | :--- | :---: | :--- |
-| Codex | `26.1023.50603` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip) |
-| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-T3-1.0.0-darwin-arm64.zip) |
+| Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) |
+| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
 2. Open **Agent RTL Setup.app** for Codex, or **Agent RTL T3 Setup.app** for T3, and choose **Install / Update RTL**.
@@ -88,8 +88,8 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 **پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
 
-- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip) · [راهنمای Codex](docs/codex.md)
-- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-T3-1.0.0-darwin-arm64.zip) · [راهنمای T3](docs/t3.md)
+- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) · [راهنمای Codex](docs/codex.md)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) · [راهنمای T3](docs/t3.md)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update RTL** را انتخاب کنید.

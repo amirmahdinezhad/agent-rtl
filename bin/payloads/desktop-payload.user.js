@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Agent RTL (T3 Web)
 // @namespace    agent-rtl-pro
-// @version      1.0.0
+// @version      1.0.1
 // @description  Persian and English reading controls for T3 Code. Includes the offline Vazir font and English controls.
 // @match        https://app.t3.codes/*
 // @match        http://localhost:*/*
@@ -19,7 +19,7 @@
 (function() {
     if (window.__agentRTLPro && !window.__agentRTLPro.disabled) return;
     const STORAGE_KEY = 'agent-rtl-config';
-    const AGENT_VERSION = "1.0.0";
+    const AGENT_VERSION = "1.0.1";
     const HOST_NAME = window.location?.protocol === 't3code:' ? 'T3 Code' : 'Codex';
     // Fixed presets for size / line-height (dropdowns, not free inputs).
     const FONT_SIZES = ['14', '16', '18'];

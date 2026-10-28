@@ -1,6 +1,6 @@
 {
   "name": "agent-rtl-pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "In-app RTL controls with graphical installation and verified app updates, without a permanent helper.",
   "type": "module",
   "bin": {
