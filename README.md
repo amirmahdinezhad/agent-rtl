@@ -1,60 +1,133 @@
-<h1 align="center" dir="ltr">Agent RTL</h1>
-
-<p align="center" dir="rtl">
-پنل فارسی راست‌به‌چپ برای Codex و T3 Code
-<br>
-فونت دلخواه، نمایش خوانا و جهت مستقل پاسخ‌ها
+<p align="center">
+  <img src="bin/assets/agent-rtl-mark.svg" width="72" height="72" alt="Agent RTL">
 </p>
 
-<div dir="rtl">
+<h1 align="center">Agent RTL</h1>
 
-## دریافت نسخهٔ ۱٫۰٫۰
+<p align="center">Right-to-left reading controls for Codex and T3 Code.</p>
 
-برای **مک‌های Apple Silicon** با **macOS 13.5 یا جدیدتر**. نصب به Node.js یا حساب GitHub نیاز ندارد.
+<p align="center">
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest"><img src="https://img.shields.io/github/v/release/amirmahdinezhad/agent-rtl?label=release&amp;color=ad8cf3" alt="Latest release"></a>
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/amirmahdinezhad/agent-rtl/ci.yml?branch=main&amp;label=tests" alt="Installer tests"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/amirmahdinezhad/agent-rtl?color=79adeb" alt="MIT license"></a>
+</p>
 
-| برنامه | نسخهٔ بررسی‌شده | دانلود |
-| :--- | :---: | :---: |
-| [Codex](docs/codex.md) | `26.1023.50603` | [دریافت Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip) |
-| [T3 Code (Beta)](docs/t3.md) | `0.1.3` | [دریافت Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-T3-1.0.0-darwin-arm64.zip) |
+<p align="center">
+  <a href="#english-documentation">English</a> ·
+  <a href="#persian-documentation">راهنمای فارسی</a> ·
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest">Download</a>
+</p>
 
-## نصب در سه مرحله
+---
+
+<a id="english-documentation"></a>
+
+## English documentation
+
+Agent RTL adds a floating settings panel inside your coding app. Adjust Persian and English text direction, fonts and appearance while keeping each app’s settings and backups separate.
+
+### Features
+
+- **Text direction** — automatic RTL, Force RTL and Default / RTL / LTR controls for individual assistant replies.
+- **Typography** — bundled Vazir, custom TTF/OTF fonts, text size and line spacing.
+- **Appearance** — light, dark and automatic themes; Lavender, Blue, Mint and Yellow accents shared with Setup.
+- **Typing** — an optional `Shift+2` fix for entering `@`.
+- **Updates & removal** — installed version, update summaries and an in-panel removal flow that reopens the same app.
+
+### Download & install
+
+**Requirements:** macOS 13.5 or later on Apple Silicon. The packaged installers do not require Node.js or a GitHub account.
+
+| App | Tested app version | Installer |
+| :--- | :---: | :--- |
+| Codex | `26.1023.50603` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip) |
+| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-T3-1.0.0-darwin-arm64.zip) |
+
+1. Download and extract the ZIP for your app.
+2. Open **Agent RTL Setup.app** for Codex, or **Agent RTL T3 Setup.app** for T3, and choose **Install / Update RTL**.
+3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
+
+> **macOS approval:** these packages are locally signed and are not notarized by Apple. See [installation help](docs/installation.md#رفع-مشکل) if macOS blocks Setup.
+
+<a id="terminal-installation"></a>
+
+<details>
+<summary><strong>Optional: download Codex Setup from Terminal</strong></summary>
+
+```sh
+/bin/bash -c "$(curl -fsSL --proto '=https' --proto-redir '=https' https://raw.githubusercontent.com/amirmahdinezhad/agent-rtl/main/install.sh)"
+```
+
+This command downloads, verifies and opens the **Codex installer**. Installation still requires your click on **Launch**. Use the separate ZIP above for T3.
+
+</details>
+
+### Update or remove
+
+Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened. App data and files in Downloads are preserved.
+
+---
+
+<a id="persian-documentation"></a>
+
+<div dir="rtl" lang="fa">
+
+## راهنمای فارسی
+
+با Agent RTL می‌توانید جهت متن، فونت و ظاهر را از پنلی شناور داخل Codex و T3 Code تنظیم کنید. تنظیمات و نسخهٔ پشتیبان هر برنامه جدا نگه داشته می‌شوند.
+
+### قابلیت‌ها
+
+- **جهت متن** — تشخیص خودکار فارسی و انگلیسی، حالت اجباری RTL و انتخاب جهت هر پاسخ دستیار.
+- **خوانایی** — فونت وزیر، افزودن فونت TTF/OTF، اندازهٔ متن و فاصلهٔ خطوط.
+- **ظاهر** — تم روشن، تیره و خودکار؛ چهار رنگ یاسی، آبی، نعنایی و زرد، هماهنگ با نصب‌کننده.
+- **تایپ** — اصلاح اختیاری ورود علامت `@` با کلیدهای `Shift+2`.
+- **مدیریت RTL** — نمایش نسخه، خلاصهٔ تغییرات به‌روزرسانی و حذف از داخل پنل.
+
+### دانلود و نصب
+
+**پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
+
+- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip) · [راهنمای Codex](docs/codex.md)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-T3-1.0.0-darwin-arm64.zip) · [راهنمای T3](docs/t3.md)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
-2. برنامهٔ **Setup** داخل آن را اجرا و **Install / Update RTL** را انتخاب کنید.
+2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update RTL** را انتخاب کنید.
 3. پس از آماده‌شدن، **Launch** را بزنید؛ برنامه دوباره باز می‌شود و پنل در دسترس قرار می‌گیرد.
 
-> بسته‌ها امضای محلی دارند و تأیید اپل ندارند. اگر macOS مانع اجرا شد، [راهنمای رفع مشکل نصب](docs/installation.md#رفع-مشکل) را ببینید.
+> **تأیید macOS:** بسته‌ها امضای محلی دارند و notarization اپل ندارند. اگر Setup مسدود شد، [راهنمای رفع مشکل نصب](docs/installation.md#رفع-مشکل) را ببینید.
 
-## امکانات پنل
+برای دریافت نصب‌کنندهٔ Codex با یک فرمان، [روش نصب از ترمینال](#terminal-installation) را باز کنید؛ این روش هم به انتخاب **Launch** توسط شما نیاز دارد.
 
-- **جهت متن:** نمایش خودکار فارسی و انگلیسی، حالت اجباری RTL و جهت جداگانه برای هر پاسخ.
-- **خوانایی:** افزودن فونت، تنظیم اندازهٔ متن و فاصلهٔ خطوط.
-- **ظاهر:** تم روشن و تیره، چهار رنگ و Lavender به‌عنوان رنگ پیش‌فرض.
-- **تایپ:** اصلاح ورود علامت `@` با کلیدهای `Shift+2`.
+### به‌روزرسانی و حذف
 
-تنظیمات و نسخهٔ پشتیبان Codex و T3 جدا نگه داشته می‌شوند.
+با **Check for updates** نسخهٔ تازه و خلاصهٔ تغییرات را ببینید؛ دانلود با انتخاب جداگانهٔ **Download update** شروع می‌شود.
 
-## حذف RTL
+برای حذف، **Remove RTL** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود؛ اطلاعات برنامه و فایل‌های Downloads حفظ می‌شوند.
 
-از داخل پنل، **Remove RTL** را انتخاب و تأیید کنید. همان برنامه بدون پچ دوباره باز می‌شود؛ اطلاعات برنامه و فایل‌های Downloads حفظ می‌شوند.
+### راهنماهای بیشتر
 
-## راهنما و توسعه
-
-[نصب و رفع مشکل](docs/installation.md) · [تغییرات نسخه](docs/release-notes.md) · [گزارش مشکل](https://github.com/amirmahdinezhad/agent-rtl/issues)
-
-[مشارکت در پروژه](CONTRIBUTING.md) · [ساخت و انتشار](docs/updates.md) · [بررسی آپدیت اپ‌ها](docs/app-update-workflow.md)
-
-برای شروع توسعه، وابستگی‌ها را نصب و تست‌ها را اجرا کنید. ساخت Setup به macOS و ابزارهای خط فرمان Xcode نیاز دارد.
+[نصب و رفع مشکل](docs/installation.md) · [تغییرات نسخه](docs/release-notes.md) · [بررسی آپدیت اپ‌ها](docs/app-update-workflow.md)
 
 </div>
+
+---
+
+<details>
+<summary><strong>Development & contributing · توسعه و مشارکت</strong></summary>
+
+Use the Node.js version specified in `package.json`. Building Setup also requires macOS and Xcode Command Line Tools.
 
 ```sh
 npm ci
+npm run build:userscript
 npm test
 ```
 
-<div dir="rtl">
+[Contributing](CONTRIBUTING.md) · [Build & release guide](docs/updates.md) · [Report an issue](https://github.com/amirmahdinezhad/agent-rtl/issues) · [Security policy](SECURITY.md)
 
-مجوز کد: [MIT](LICENSE) · مجوز فونت همراه: [OFL](bin/assets/Vazir-OFL.txt)
+</details>
 
-</div>
+### License & font credits
+
+Code is licensed under [MIT](LICENSE). Bundled Vazir fonts are distributed under the [SIL Open Font License](bin/assets/Vazir-OFL.txt); [font sources and attribution](bin/assets/README.md).
