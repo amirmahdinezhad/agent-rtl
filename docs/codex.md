@@ -8,4 +8,4 @@ Agent RTL ۱٫۰٫۰ برای Codex `26.1023.51421` روی macOS / Apple Silicon
 
 تنظیمات، فونت‌ها و backup: `~/Library/Application Support/Agent RTL/`. حذف RTL فایل‌های Downloads را پاک نمی‌کند. نصب امضای محلی اپ را جایگزین می‌کند و ممکن است روی قابلیت‌های وابسته به امضا اثر بگذارد.
 
-[رفع مشکل نصب](installation.md) · [فلو آپدیت Codex](codex-update-workflow.md) · [گزارش سازگاری](compatibility/26.1023.51421.md)
+[فلو آپدیت Codex](codex-update-workflow.md) · [گزارش سازگاری](compatibility/26.1023.51421.md)

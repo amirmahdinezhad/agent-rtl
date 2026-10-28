@@ -47,8 +47,6 @@ Agent RTL adds a floating settings panel inside your coding app. Adjust Persian 
 2. Open **Agent RTL Setup.app** for Codex, or **Agent RTL T3 Setup.app** for T3, and choose **Install / Update RTL**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
-> **macOS approval:** these packages are locally signed and are not notarized by Apple. See [installation help](docs/installation.md#رفع-مشکل) if macOS blocks Setup.
-
 ### Update or remove
 
 Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened. App data and files in Downloads are preserved.
@@ -81,8 +79,6 @@ Use **Check for updates** in the panel to review an available release, then choo
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update RTL** را انتخاب کنید.
 3. پس از آماده‌شدن، **Launch** را بزنید؛ برنامه دوباره باز می‌شود و پنل در دسترس قرار می‌گیرد.
-
-> **تأیید macOS:** بسته‌ها امضای محلی دارند و notarization اپل ندارند. اگر Setup مسدود شد، [راهنمای رفع مشکل نصب](docs/installation.md#رفع-مشکل) را ببینید.
 
 ### به‌روزرسانی و حذف
 
