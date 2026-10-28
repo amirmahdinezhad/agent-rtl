@@ -1,10 +1,10 @@
 #!/bin/bash
 # Public bootstrap: only download and open Setup. Installation still needs Launch.
-# Pins come from the verified Ed25519 manifest for v1.0.0; see docs/installation.md.
-ARTL_INSTALL_VERSION='1.0.0'
-ARTL_INSTALL_URL='https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.0/Agent-RTL-1.0.0-darwin-arm64.zip'
-ARTL_INSTALL_SIZE='43567614'
-ARTL_INSTALL_SHA256='33070eb713f47db40fc984529b2c89fd65e91871d89ab032ba93a64e7392e81e'
+# Pins come from the verified Ed25519 manifest for v1.0.1; see docs/installation.md.
+ARTL_INSTALL_VERSION='1.0.1'
+ARTL_INSTALL_URL='https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip'
+ARTL_INSTALL_SIZE='43574557'
+ARTL_INSTALL_SHA256='cf899eeed9dc817299fc58767b75c0886cbc6cd80805af42a046ab2f8eb1f45c'
 
 # All UI state lives in the installer's subshell. Plain output works in logs,
 # narrow terminals and TERM=dumb; NO_COLOR retains the layout without ANSI colors.
