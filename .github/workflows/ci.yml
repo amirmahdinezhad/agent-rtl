@@ -26,10 +26,6 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Verify shared userscript
-        run: |
-          npm run build:userscript
-          git diff --exit-code -- bin/payloads/desktop-payload.user.js
       - run: npm test
         env:
           ARTL_TARGET: codex

@@ -15,6 +15,12 @@ For desktop releases, compatibility checks or RTL broken after an update:
   app packages. Use `--prerelease --latest=false` for prereleases and verify
   published downloads separately from local candidates.
 
+## Product scope
+
+Support the Codex and T3 Code desktop apps on macOS. Keep distribution focused
+on their graphical installers; add other app targets or web distributions only
+when the user explicitly requests them.
+
 ## Language policy
 
 Write all app and Setup labels, descriptions, errors, CLI output, release notes,

@@ -1,10 +1,10 @@
-import { PAYLOAD_FILENAME, HTML_INJECT_ANCHOR } from './targets.js';
+export const PAYLOAD_FILENAME = 'agent-rtl-payload.js';
 
 // Patch a single HTML string by injecting the payload script tag and
 // allowing embedded fonts in CSP when needed.
 // Returns { html, changed, alreadyPatched }. Pure function — safe to test.
 export function patchHtml(html, { scriptSrc = `./${PAYLOAD_FILENAME}` } = {}) {
-    if (html.includes(HTML_INJECT_ANCHOR)) return { html, changed: false, alreadyPatched: true };
+    if (html.includes(PAYLOAD_FILENAME)) return { html, changed: false, alreadyPatched: true };
     html = html.replace(/<meta\b[^>]*>/gi, meta => {
         if (!/\bhttp-equiv\s*=\s*(["'])Content-Security-Policy\1/i.test(meta)) return meta;
         return meta.replace(/(\bcontent\s*=\s*)(["'])(.*?)\2/gi, (attribute, prefix, quote, policy) => {

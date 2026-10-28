@@ -5,9 +5,8 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import * as asar from '@electron/asar';
-import { patchHtml } from './html.js';
+import { patchHtml, PAYLOAD_FILENAME } from './html.js';
 import { buildCodexPayload } from './codex.js';
-import { PAYLOAD_FILENAME } from './targets.js';
 
 export const CODEX_HTML = ['webview/index.html', 'webview/detached-window.html'];
 const digestSentinel = Buffer.from('AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A');

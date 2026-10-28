@@ -1,9 +1,9 @@
 /* AGENT RTL PRO PATCH - SMART RTL PAYLOAD */
-/* Ported from antigravity-pro-rtl's ide-payload.js for OpenCode, T3 & Codex.
+/* Ported from antigravity-pro-rtl's ide-payload.js for Codex and T3 Code.
  * Engine unchanged: MutationObserver + requestAnimationFrame, zero-delay.
  * Namespaced with the `artl-` prefix so it never collides with other
  * patchers. Chat selectors generalized beyond Monaco for React/Vite UIs
- * (OpenCode #root tree, T3 ChatMarkdown/ChatView).
+ * (Codex webviews and T3 ChatMarkdown/ChatView).
  */
 (function() {
     if (window.__agentRTLPro && !window.__agentRTLPro.disabled) return;
@@ -727,7 +727,7 @@
     // bubbles carry [data-user-message-body], and the composer is TipTap
     // (.composer-tiptap / .ProseMirror / [data-testid="composer-editor"]).
     // All of them are listed here; legacy selectors are kept for older builds
-    // and for OpenCode.
+    // across supported app views.
     const CONTENT_SCOPE = '.chat-markdown, [class*="ChatMarkdown"], [class*="chat-message"], [data-user-message-body], [data-user-message-footer], [data-timeline-root], [data-timeline-row-id], [data-message-id], [data-message-role], [data-assistant-citation-viewport], [data-queued-message-id], [data-testid="composer-editor"], [data-composer-rich-text], .composer-tiptap, .ProseMirror, [contenteditable="true"], textarea, .monaco-chat-request, .monaco-chat-response, .interactive-input-part, .chat-input-part, .interactive-session, [data-chat-composer-surface], [data-chat-composer-body], [data-chat-composer-main-surface], [data-chat-composer-top-drawer], [data-chat-composer-overlay], [data-chat-composer-tasks-drawer], [data-pending-user-input-toggle], [data-approval-detail]';
 
     // Sent messages use rich-text-user-turn and a bubble, while MCP questions

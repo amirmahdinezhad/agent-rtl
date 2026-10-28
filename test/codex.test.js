@@ -6,15 +6,9 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync, spawnSync } from 'node:child_process';
 import * as asar from '@electron/asar';
-import { buildCodexPayload, readyCodexPayload, isCodexPage, codexPages, DebugClient, resolveCodexApp, CODEX_WORLD } from '../bin/lib/codex.js';
-import { TARGETS, resolveAsar } from '../bin/lib/targets.js';
+import { buildCodexPayload, isCodexPage, codexPages, DebugClient, resolveCodexApp, CODEX_WORLD } from '../bin/lib/codex.js';
 
 describe('Codex detection and legacy overlay cleanup', () => {
-    it('routes Codex through its dedicated integrity-aware installer', () => {
-        assert.equal(TARGETS.codex.mode, 'codex-native');
-        assert.equal(resolveAsar(TARGETS.codex), null);
-    });
-
     it('selects main and detached app shells, excluding embedded pages and pet frames', () => {
         for (const url of ['app://-/index.html', 'app://-/index.html?initialRoute=/threads/123', 'app://-/detached-window.html']) {
             assert.equal(isCodexPage({ type: 'page', url }), true, url);
@@ -39,54 +33,6 @@ describe('Codex detection and legacy overlay cleanup', () => {
             assert.doesNotThrow(() => new Function(payload));
             assert.deepEqual(fs.readdirSync(dir), ['test.woff2']);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
-    });
-
-    function loadingPage() {
-        const values = new Map(), listeners = new Map();
-        return {
-            window: {}, listeners,
-            localStorage: { getItem: key => values.get(key), setItem: (key, value) => values.set(key, value) },
-            document: { head: null, body: null,
-                addEventListener: (name, callback) => listeners.set(name, callback),
-                removeEventListener: (name, callback) => { if (listeners.get(name) === callback) listeners.delete(name); } },
-        };
-    }
-    const fixturePayload = 'window.mounted = true; window.__agentRTLPro = { dispose() { window.__agentRTLPro = { disabled: true }; } };';
-    function evaluateReady(page, token = 'fixture-session') {
-        new Function('window', 'document', 'localStorage', readyCodexPayload(fixturePayload, token))(
-            page.window, page.document, page.localStorage,
-        );
-    }
-
-    it('waits for document readiness before mounting the runtime widget', () => {
-        const page = loadingPage();
-        evaluateReady(page);
-        assert.equal(page.window.mounted, undefined);
-        assert.equal(page.window.__agentRTLPro.pending, true);
-        const ready = page.listeners.get('DOMContentLoaded');
-        evaluateReady(page);
-        assert.equal(page.listeners.get('DOMContentLoaded'), ready, 'duplicate injection must not add a second pending mount');
-        page.document.head = {};
-        page.document.body = {};
-        ready();
-        assert.equal(page.window.mounted, true);
-        page.window.__agentRTLPro.dispose();
-        assert.equal(page.localStorage.getItem('agent-rtl-stopped-session'), 'fixture-session');
-    });
-
-    it('cancels pending mounts and blocks reinjection on immediate reload after restore', () => {
-        const page = loadingPage();
-        evaluateReady(page);
-        page.window.__agentRTLPro.dispose();
-        assert.equal(page.listeners.has('DOMContentLoaded'), false);
-        page.window = {};
-        page.document.head = {};
-        page.document.body = {};
-        evaluateReady(page);
-        assert.equal(page.window.mounted, undefined);
-        assert.equal(page.window.__agentRTLPro.disabled, true);
-        evaluateReady(page, 'new-session');
-        assert.equal(page.window.mounted, true, 'a new session can enable the overlay again');
     });
 
     it('rejects remote debug sockets and ignores non-Codex pages', async () => {

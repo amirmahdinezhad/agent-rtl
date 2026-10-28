@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
 import * as asar from '@electron/asar';
 import { collectFonts, buildFontList } from './fonts.js';
 import { createCodexMessageContext } from '../payloads/codex-message-context.js';
@@ -55,40 +54,6 @@ export function buildCodexPayload(fonts = collectFonts()) {
         .replace('__DEFAULT_FA__', JSON.stringify(fa[0]?.value || ''))
         .replace('__DEFAULT_EN__', JSON.stringify(en[0]?.value || ''))
         .replace('__FONT_FACES__', () => faces);
-}
-
-// CDP startup scripts run before <head>/<body> exist. Wait for the DOM and
-// keep the pending listener disposable, so restore also works during loading.
-export function readyCodexPayload(payload, sessionToken = randomUUID()) {
-    return `(() => {
-        const token = ${JSON.stringify(sessionToken)};
-        const stopKey = 'agent-rtl-stopped-session';
-        try {
-            if (localStorage.getItem(stopKey) === token) {
-                window.__agentRTLPro = { disabled: true };
-                return;
-            }
-        } catch {}
-        if (window.__agentRTLPro && !window.__agentRTLPro.disabled) return;
-        const stopSession = () => {
-            try { localStorage.setItem(stopKey, token); } catch {}
-        };
-        const mount = () => {
-            if (window.__agentRTLPro?.pending) delete window.__agentRTLPro;
-            ${payload}
-            const dispose = window.__agentRTLPro.dispose;
-            window.__agentRTLPro.dispose = () => { stopSession(); dispose(); };
-        };
-        if (document.head && document.body) mount();
-        else {
-            window.__agentRTLPro = { pending: true, dispose() {
-                stopSession();
-                document.removeEventListener('DOMContentLoaded', mount);
-                window.__agentRTLPro = { disabled: true };
-            } };
-            document.addEventListener('DOMContentLoaded', mount, { once: true });
-        }
-    })()`;
 }
 
 // Only the local app shell qualifies. Embedded websites, documents, terminals
