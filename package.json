@@ -1,0 +1,69 @@
+{
+  "name": "agent-rtl-pro",
+  "version": "1.0.0",
+  "description": "In-app RTL controls with graphical installation and verified app updates, without a permanent helper.",
+  "type": "module",
+  "bin": {
+    "agent-rtl": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:codex-browser": "node test/codex-browser-smoke.mjs",
+    "test:codex-content": "node test/codex-content-smoke.mjs",
+    "test:message-directions": "node test/message-directions-smoke.mjs",
+    "test:codex-native": "node test/codex-native-smoke.mjs",
+    "test:gui": "node test/gui-electron-smoke.mjs && node test/font-electron-smoke.mjs",
+    "test:installer": "node test/gui-job-smoke.mjs",
+    "test:events": "node test/update-event-smoke.mjs",
+    "test:design": "node test/ui-design-smoke.mjs",
+    "test:fonts": "node test/font-controls-smoke.mjs",
+    "preview:design": "node tools/preview-design.mjs",
+    "build:gui": "node tools/build-gui.mjs",
+    "build:userscript": "node tools/build-userscript.mjs",
+    "setup:developer": "node tools/setup-developer.mjs",
+    "release:manifest": "node tools/release-manifest.mjs",
+    "test:t3-design": "node test/t3-design-smoke.mjs",
+    "clean": "node tools/clean.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "keywords": [
+    "opencode",
+    "t3code",
+    "codex",
+    "electron",
+    "rtl",
+    "persian",
+    "arabic",
+    "hebrew",
+    "patcher"
+  ],
+  "license": "MIT",
+  "files": [
+    "bin",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
+  "dependencies": {
+    "@electron/asar": "^4.2.0",
+    "fast-xml-parser": "^5.11.2",
+    "ora": "^9.4.1",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "electron": "42.11.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amirmahdinezhad/agent-rtl.git"
+  },
+  "homepage": "https://github.com/amirmahdinezhad/agent-rtl#readme",
+  "bugs": {
+    "url": "https://github.com/amirmahdinezhad/agent-rtl/issues"
+  }
+}

@@ -1,0 +1,54 @@
+name: Test graphical installer
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  macos:
+    strategy:
+      matrix:
+        include:
+          - target: codex
+            setup: Agent RTL Setup.app
+          - target: t3
+            setup: Agent RTL T3 Setup.app
+    runs-on: macos-15
+    env:
+      ARTL_TARGET: ${{ matrix.target }}
+      ARTL_TEST_TARGET: ${{ matrix.target }}
+      ARTL_GUI_OUTPUT: ${{ github.workspace }}/dist/${{ matrix.setup }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Verify shared userscript
+        run: |
+          npm run build:userscript
+          git diff --exit-code -- bin/payloads/desktop-payload.user.js
+      - run: npm test
+        env:
+          ARTL_TARGET: codex
+      - run: npm run test:gui
+      - name: Build portable setup
+        run: |
+          export ARTL_PORTABLE_NODE="$(node -p process.execPath)"
+          npm run build:gui
+      - run: npm run test:installer
+      - run: npm run test:events
+      - name: Archive development build
+        run: |
+          if [ "$ARTL_TARGET" = t3 ]; then
+            ditto -c -k --keepParent 'dist/Agent RTL T3 Setup.app' dist/Agent-RTL-development.zip
+          else
+            ditto -c -k --keepParent 'dist/Agent RTL Setup.app' dist/Agent-RTL-development.zip
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Agent-RTL-development-${{ matrix.target }}
+          path: dist/Agent-RTL-development.zip
+          retention-days: 7

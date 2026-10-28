@@ -1,0 +1,49 @@
+<!-- Reconstructed presentation shapes checked against Codex 26.1023.50603 / build 22391.
+     app-primary-8a31c4436352.js, user-formatted-text-e6d2ae6a32d2.js,
+     app-initial-b539f0af92f3.js, request-panel-2ff22c602e2f.js and
+     queued-message-list-b88ffc19d04f.js retain the exercised message,
+     composer, form-choice and queue boundaries. Synthetic fixture; not a live DOM capture.
+     Additional radio/checkbox variants below are robustness cases, not all observed DOM. -->
+<aside><span id="content-chrome">منوی برنامه</span></aside>
+<div data-user-message-bubble="true" class="relative text-start">
+  <div class="flex flex-col items-end gap-1">
+    <div class="relative w-full min-w-0 text-size-chat leading-relaxed">
+      <div><div><div class="text-size-chat whitespace-pre-wrap">
+        <div class="rich-text-user-turn"><p id="sent-fa">پیام فارسی من</p><p id="sent-en">My English message</p>
+          <pre><code id="sent-code">const greeting = 'سلام';</code></pre>
+        </div>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+<div data-codex-composer-request-navigation="true">
+  <div class="px-4 text-sm font-medium" id="question-title">کدام روش را انتخاب می‌کنی؟</div>
+  <div role="radiogroup">
+    <div role="radio" aria-checked="false" tabindex="0" class="choice" id="question-option">
+      <span class="marker" id="question-marker" aria-hidden="true">1</span>
+      <span class="choice-content"><span class="inline-flex"><span id="question-label">روش پیشنهادی</span><span>Recommended</span></span><span id="question-description">تنظیمات فعلی حفظ می‌شود</span></span>
+    </div>
+    <div role="radio" aria-checked="false" tabindex="-1" class="choice" id="english-option"><span class="marker">2</span><span>English option</span></div>
+    <button role="radio" aria-checked="false" class="choice" id="button-option"><span class="marker">3</span><span>گزینهٔ فارسی</span></button>
+  </div>
+  <div role="group"><div role="checkbox" aria-checked="false" tabindex="0" class="choice" id="multi-option"><span class="marker">✓</span><span>انتخاب چندگانه</span></div></div>
+</div>
+<form data-codex-character-input-boundary="true" data-codex-escape-boundary="true">
+  <h3 id="mcp-title">یک گزینه انتخاب کن</h3>
+  <div data-mcp-form-choices="true" role="group">
+    <label class="choice" id="mcp-option"><input id="mcp-radio" type="radio" name="example" value="keep"><span class="marker">1</span><span id="mcp-label">حفظ تنظیمات</span></label>
+  </div>
+  <textarea id="custom-answer">پاسخ دلخواه</textarea>
+</form>
+<div data-codex-composer><div class="ProseMirror" contenteditable="true"><p id="content-typed">ورودی فارسی</p></div><button id="content-send">Send</button></div>
+<div class="vertical-scroll-fade-mask hide-scrollbar flex">
+  <div class="flex min-w-0 items-start">
+    <div role="group" tabindex="0" class="min-w-0 flex-1 text-start select-text">
+      <div class="line-clamp-1 max-h-lh min-w-0" data-tooltip-overflow-target="true">
+        <div class="text-size-chat whitespace-pre-wrap min-w-0 leading-5 text-secondary"><p id="queue-fa">پیام فارسی در صف</p><p id="queue-en">Queued English message</p></div>
+      </div>
+    </div>
+    <button id="queue-steer">Steer</button><button id="queue-delete">Delete</button>
+  </div>
+</div>
+<div role="dialog"><div id="queue-preview" class="min-h-0 flex-1 overflow-y-auto overscroll-contain wrap-anywhere whitespace-pre-wrap" tabindex="0">پیش‌نمایش کامل پیام در صف</div></div>

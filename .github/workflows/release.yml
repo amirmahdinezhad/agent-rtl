@@ -1,0 +1,68 @@
+name: Release graphical installer
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    env:
+      ARTL_RELEASE_PUBLIC_KEY: ${{ vars.ARTL_RELEASE_PUBLIC_KEY }}
+      ARTL_RELEASE_FEED: https://github.com/${{ github.repository }}/releases/latest/download/agent-rtl-release.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Import Developer ID certificate
+        env:
+          CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.BUILD_KEYCHAIN_PASSWORD }}
+        run: |
+          test -n "$CERTIFICATE"
+          test -n "$ARTL_RELEASE_PUBLIC_KEY"
+          printf '%s' "$CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/build.keychain-db"
+          security set-keychain-settings -lut 21600 "$RUNNER_TEMP/build.keychain-db"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/build.keychain-db"
+          security import "$RUNNER_TEMP/certificate.p12" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$RUNNER_TEMP/build.keychain-db"
+          security list-keychain -d user -s "$RUNNER_TEMP/build.keychain-db"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/build.keychain-db"
+      - name: Build and notarize
+        env:
+          ARTL_CODESIGN_IDENTITY: ${{ secrets.APPLE_CODESIGN_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          test -n "$ARTL_CODESIGN_IDENTITY"
+          export ARTL_PORTABLE_NODE="$(node -p process.execPath)"
+          npm run build:gui
+          ditto -c -k --keepParent 'dist/Agent RTL Setup.app' "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM" --wait
+          xcrun stapler staple 'dist/Agent RTL Setup.app'
+          node -e 'const fs=require("fs");const p=require("./package.json");fs.appendFileSync(process.env.GITHUB_ENV,`ARTL_VERSION=${p.version}\nARTL_PLATFORM=darwin-${process.arch}\n`)'
+      - name: Package and authenticate release
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.ARTL_RELEASE_PRIVATE_KEY_BASE64 }}
+        run: |
+          printf '%s' "$RELEASE_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/release-key.pem"
+          chmod 600 "$RUNNER_TEMP/release-key.pem"
+          export ARTL_RELEASE_PRIVATE_KEY_FILE="$RUNNER_TEMP/release-key.pem"
+          ditto -c -k --keepParent 'dist/Agent RTL Setup.app' "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip"
+          npm run release:manifest -- --artifact "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip" --repo "$GITHUB_REPOSITORY" --platform "$ARTL_PLATFORM"
+      - name: Publish verified GUI release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$ARTL_VERSION" "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip" dist/agent-rtl-release.json --title "Agent RTL $ARTL_VERSION" --generate-notes --verify-tag
+      - name: Remove temporary credentials
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/release-key.pem" "$RUNNER_TEMP/certificate.p12"
+          security delete-keychain "$RUNNER_TEMP/build.keychain-db" || true

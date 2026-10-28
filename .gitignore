@@ -1,0 +1,11 @@
+node_modules/
+dist/
+codex-preview/
+*.pem
+*.p12
+.DS_Store
+bin/assets/agent-rtl-ui
+.env*
+*.tgz
+npm-debug.log*
+coverage/
