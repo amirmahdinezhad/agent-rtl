@@ -18,5 +18,5 @@ execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${a
 // before loadPlan, timers and RPC; its app-path placeholder is never used.
 execFileSync(executable, ['--wizard', root, 'design-preview-only', '--preview-ui', native], { cwd: root, stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(root, 'tools/build-design-preview.mjs')], { cwd: root, stdio: 'inherit' });
-console.log(`Checklist: ${path.join(root, 'docs/design.md')}`);
+console.log("Review light/dark themes, narrow layouts, controls, focus, text wrapping and response direction.");
 if (process.argv.includes('--open')) execFileSync('/usr/bin/open', [path.join(output, 'review.html')]);

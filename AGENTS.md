@@ -1,15 +1,19 @@
 # Agent RTL workflows
 
-For desktop releases, compatibility checks or RTL broken after an update, follow
-[the app update workflow](docs/app-update-workflow.md).
+For desktop releases, compatibility checks or RTL broken after an update:
 
-- Named T3/T3 Code or Codex: start that app's workflow directly.
-- Unnamed app: ask "Which app has a new version: T3 or Codex?" and wait.
-- Editing the workflow is a documentation task, not an update run.
-
-Finish local diagnosis, fixes, tests and candidate preparation. The user performs
-Launch and manual acceptance. Publish only with explicit GitHub authorization;
-passing automated tests alone is insufficient.
+- If the user names T3/T3 Code or Codex, inspect that app directly.
+- If no app is named, ask "Which app has a new version: T3 or Codex?" and wait.
+- Read the target version/build from the actual bundle and ASAR, not the CLI.
+- Preserve original app logic, download verification, signing and rollback.
+  Keep Codex integrity active and retain T3's vendor integrity setting.
+- Keep each app's state, backups, jobs, packages and update feeds independent.
+- Finish local diagnosis, fixes, relevant tests and candidate preparation.
+  The user performs Launch and manual acceptance; do not close or replace the
+  original app yourself. Automated tests do not establish manual acceptance.
+- Publish only with explicit GitHub authorization and manual acceptance for
+  app packages. Use `--prerelease --latest=false` for prereleases and verify
+  published downloads separately from local candidates.
 
 ## Language policy
 

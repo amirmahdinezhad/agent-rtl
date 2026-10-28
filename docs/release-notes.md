@@ -9,5 +9,3 @@ Requires macOS 13.5+ and Apple Silicon. Packages are ad hoc signed and are not n
 The user installed and launched the Codex candidate and gave general acceptance. Detailed acceptance of every checklist item, sign-in/passkeys, all detached-window states, and fresh manual acceptance of T3 have not been recorded. The user must still verify installation and launch of the package downloaded from GitHub.
 
 Automated checks cover the target app version, GUI, fonts, response direction, installation/removal, and update events. The release provenance records the results and exact source commit.
-
-[Codex compatibility report](https://github.com/amirmahdinezhad/agent-rtl/blob/v1.0.1/docs/compatibility/26.1023.51421.md)

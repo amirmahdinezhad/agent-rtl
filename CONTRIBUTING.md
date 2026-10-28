@@ -18,4 +18,4 @@ npm run test:gui
 
 Structure: `bin/` contains CLI/runtime code, `native/` the AppKit UI, `tools/` build/release tools, `test/` tests and `docs/` guides. Build output is in `dist/`.
 
-[Build and release](docs/updates.md) · [App update checks](docs/app-update-workflow.md) · [Security reports](SECURITY.md)
+[Project instructions](AGENTS.md) · [Security reports](SECURITY.md)
