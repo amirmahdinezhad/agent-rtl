@@ -105,29 +105,4 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 برای حذف، **Remove RTL** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود؛ اطلاعات برنامه و فایل‌های Downloads حفظ می‌شوند.
 
-### راهنماهای بیشتر
-
-[نصب و رفع مشکل](docs/installation.md) · [تغییرات نسخه](docs/release-notes.md) · [بررسی آپدیت اپ‌ها](docs/app-update-workflow.md)
-
 </div>
-
----
-
-<details>
-<summary><strong>Development & contributing · توسعه و مشارکت</strong></summary>
-
-Use the Node.js version specified in `package.json`. Building Setup also requires macOS and Xcode Command Line Tools.
-
-```sh
-npm ci
-npm run build:userscript
-npm test
-```
-
-[Contributing](CONTRIBUTING.md) · [Build & release guide](docs/updates.md) · [Report an issue](https://github.com/amirmahdinezhad/agent-rtl/issues) · [Security policy](SECURITY.md)
-
-</details>
-
-### License & font credits
-
-Code is licensed under [MIT](LICENSE). Bundled Vazir fonts are distributed under the [SIL Open Font License](bin/assets/Vazir-OFL.txt); [font sources and attribution](bin/assets/README.md).
