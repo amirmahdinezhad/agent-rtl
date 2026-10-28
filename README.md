@@ -49,19 +49,6 @@ Agent RTL adds a floating settings panel inside your coding app. Adjust Persian 
 
 > **macOS approval:** these packages are locally signed and are not notarized by Apple. See [installation help](docs/installation.md#رفع-مشکل) if macOS blocks Setup.
 
-<a id="terminal-installation"></a>
-
-<details>
-<summary><strong>Optional: download Codex Setup from Terminal</strong></summary>
-
-```sh
-/bin/bash -c "$(curl -fsSL --proto '=https' --proto-redir '=https' https://raw.githubusercontent.com/amirmahdinezhad/agent-rtl/main/install.sh)"
-```
-
-This command downloads, verifies and opens the **Codex installer**. Installation still requires your click on **Launch**. Use the separate ZIP above for T3.
-
-</details>
-
 ### Update or remove
 
 Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened. App data and files in Downloads are preserved.
@@ -96,8 +83,6 @@ Use **Check for updates** in the panel to review an available release, then choo
 3. پس از آماده‌شدن، **Launch** را بزنید؛ برنامه دوباره باز می‌شود و پنل در دسترس قرار می‌گیرد.
 
 > **تأیید macOS:** بسته‌ها امضای محلی دارند و notarization اپل ندارند. اگر Setup مسدود شد، [راهنمای رفع مشکل نصب](docs/installation.md#رفع-مشکل) را ببینید.
-
-برای دریافت نصب‌کنندهٔ Codex با یک فرمان، [روش نصب از ترمینال](#terminal-installation) را باز کنید؛ این روش هم به انتخاب **Launch** توسط شما نیاز دارد.
 
 ### به‌روزرسانی و حذف
 

@@ -1,0 +1,5 @@
+[
+  "Support Codex 26.1023.51421; reinstall RTL after the official update.",
+  "Preserve original main/preload files, local signing, and active integrity checks.",
+  "Keep existing panel, font, and per-response direction behavior."
+]
