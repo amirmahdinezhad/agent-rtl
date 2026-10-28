@@ -55,7 +55,7 @@ jobs:
           chmod 600 "$RUNNER_TEMP/release-key.pem"
           export ARTL_RELEASE_PRIVATE_KEY_FILE="$RUNNER_TEMP/release-key.pem"
           ditto -c -k --keepParent 'dist/Agent RTL Setup.app' "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip"
-          npm run release:manifest -- --artifact "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip" --repo "$GITHUB_REPOSITORY" --platform "$ARTL_PLATFORM"
+          npm run release:manifest -- --artifact "dist/Agent-RTL-$ARTL_VERSION-$ARTL_PLATFORM.zip" --repo "$GITHUB_REPOSITORY" --platform "$ARTL_PLATFORM" --notes docs/release-notes-codex.json
       - name: Publish verified GUI release
         env:
           GH_TOKEN: ${{ github.token }}

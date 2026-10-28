@@ -1,13 +1,13 @@
-# بررسی آپدیت T3 و Codex
+# T3 and Codex update checks
 
-| درخواست | راهنما |
+| Request | Workflow |
 | --- | --- |
-| نام T3 یا T3 Code دارد | [فلو T3](t3-update-workflow.md)؛ مستقیم شروع کن. |
-| نام Codex یا کدکس دارد | [فلو Codex](codex-update-workflow.md)؛ مستقیم شروع کن. |
-| نام هر دو را دارد | هر دو، با candidate و گزارش مستقل. |
-| نام اپ ندارد؛ مثل «نسخه جدید اومده» | بپرس «نسخهٔ جدید کدوم اپ اومده؛ T3 یا Codex؟» و منتظر پاسخ بمان. |
-| درخواست ویرایش راهنماست | فقط مستندات را ویرایش کن. |
+| Names T3 or T3 Code | Start the [T3 workflow](t3-update-workflow.md) directly. |
+| Names Codex | Start the [Codex workflow](codex-update-workflow.md) directly. |
+| Names both apps | Run both with separate candidates and reports. |
+| Does not name an app, such as "a new version is out" | Ask "Which app has a new version: T3 or Codex?" and wait. |
+| Asks to edit the workflow | Edit documentation only. |
 
-نام‌ها به بزرگی حروف حساس نیستند. سابقهٔ چت یا اپ باز جای پاسخ کاربر را نمی‌گیرد. نسخهٔ هدف را از bundle واقعی بخوان.
+App names are case-insensitive. Chat history or the open app does not replace the user's answer. Read the target version from the actual bundle.
 
-ترتیب اجرا: تشخیص و اصلاح ← تست خودکار ← candidate محلی ← Launch توسط کاربر ← پذیرش دستی ← دستور صریح انتشار. این فلو پایش دائمی ایجاد نمی‌کند.
+Order: diagnose and fix, run automated tests, prepare a local candidate, let the user Launch, record manual acceptance, then obtain explicit publishing authorization. This workflow does not create continuous monitoring.

@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="#english-documentation">English</a> ·
-  <a href="#persian-documentation">راهنمای فارسی</a> ·
+  <a href="#persian-documentation">Persian</a> ·
   <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest">Download</a>
 </p>
 

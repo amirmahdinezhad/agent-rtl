@@ -1,29 +1,29 @@
-# فلو آپدیت Codex
+# Codex update workflow
 
-با «نسخه جدید Codex اومده» یا «بررسی سازگاری Codex رو اجرا کن» شروع کن. درخواست بدون نام اپ از [انتخاب اپ](app-update-workflow.md) می‌گذرد.
+Start when the user reports a new Codex version or requests a Codex compatibility check. For requests without an app name, follow [app selection](app-update-workflow.md).
 
-۱. `AGENTS.md`، [انتشار](updates.md)، گزارش سازگاری قبلی و تنظیمات را بخوان؛ تغییرات موجود را حفظ و در شاخهٔ `codex/` کار کن. نسخه/build، مسیر و هویت bundle/ASAR، Agent RTL، macOS و معماری را ثبت کن؛ نسخهٔ CLI مبنا نیست.
-۲. نسخهٔ هدف را با فید و تاریخچهٔ رسمی تطبیق بده. حذف پچ بر اثر آپدیت، تغییر ساختار، محدودیت فهرست سازگاری و خطای دریافت را جدا تشخیص بده. نسخهٔ بررسی‌نشده را سازگار اعلام نکن؛ نبود فایل یا نسخهٔ میانی را ثبت کن.
-۳. main/preload، Electron API، HTML/CSP، DOM واقعی پیام/composer/صف/سؤال، CSS، پنجرهٔ جدا، integrity و امضا را با مبنا مقایسه کن. منطق اصلی، حفاظت دریافت، امضا و rollback حفظ شوند؛ integrity فعال Codex الزامی است.
-۴. اصلاح و تست رگرسیون انجام بده؛ `supportedAppVersions` فقط نسخهٔ بررسی‌شده را شامل شود. تغییر payload مشترک، بازتولید userscript و بررسی رگرسیون T3 می‌خواهد.
-۵. `npm test`، `test:gui`، `test:codex-browser`، `test:codex-content`، `test:design`، `test:message-directions` و `test:fonts` را اجرا کن. content/design از CSS واقعی هدف و fixture DOM تطبیق‌داده‌شده استفاده کنند؛ fixture پذیرش اپ واقعی نیست. تست اجرا‌نشده و علتش ثبت شود.
-۶. با `ARTL_LOCAL_CANDIDATE=1` و مسیر خروجی صریح، `build:gui`، سپس `test:installer` و `test:events` را روی همان Setup اجرا کن. نسخه، commit پایه، diff کامل شامل فایل‌های تازه، هش سورس/ZIP، امضا و تطبیق runtime بسته با سورس را ثبت کن؛ feed candidate غیرفعال باشد.
-۷. اپ اصلی را خودت نبند یا جایگزین نکن. Setup دقیق و [چک‌لیست دستی](#چک‌لیست-تست-دستی-کاربر) را تحویل بده؛ Launch را کاربر انجام می‌دهد.
-۸. گزارش `docs/compatibility/<version>.md` شامل علت، شواهد، اصلاحات، نتایج خودکار، مشخصات candidate، نتایج دستی و محدودیت‌ها باشد. دادهٔ خصوصی وارد گزارش نشود. تغییر مؤثر پس از پذیرش، candidate و تست مرتبط تازه می‌خواهد.
+1. Read `AGENTS.md`, [release instructions](updates.md), the previous compatibility report and configuration. Preserve existing changes and work on a `codex/` branch. Record the actual bundle/ASAR version, build, path and identity, Agent RTL version, macOS and architecture; the CLI version is not the target.
+2. Match the target against the official feed and changelog. Distinguish patch removal after an update, structural changes, compatibility allowlist restrictions and download failures. Do not claim compatibility for an unchecked version; record missing files or intermediate versions.
+3. Compare main/preload, Electron APIs, HTML/CSP, actual message/composer/queue/question DOM, CSS, detached windows, integrity and signing against the baseline. Preserve original app logic, download safeguards, signing and rollback. Codex requires active integrity checks.
+4. Fix issues and run regression checks. Include only the checked version in `supportedAppVersions`. Shared payload changes require userscript regeneration and T3 regression checks.
+5. Run `npm test`, `test:language`, `test:gui`, `test:codex-browser`, `test:codex-content`, `test:design`, `test:message-directions` and `test:fonts`. Content/design checks must use the target's actual CSS and an adapted DOM fixture. Fixtures do not establish real-app acceptance. Record skipped checks and reasons.
+6. Run `build:gui` with `ARTL_LOCAL_CANDIDATE=1` and an explicit output path, then `test:installer` and `test:events` against that same Setup. Record version, base commit, full diff including new files, source/ZIP hashes, signing and agreement between packaged runtime and source. Disable the candidate's download feed.
+7. Do not close or replace the original app yourself. Deliver the exact Setup and [manual checklist](#user-manual-test-checklist); the user performs Launch.
+8. Write `docs/compatibility/<version>.md` with the cause, evidence, fixes, automated results, candidate identity, manual results and limitations. Exclude private data. A substantive change after acceptance requires a new candidate and relevant checks.
 
-## چک‌لیست تست دستی کاربر
+## User manual test checklist
 
-برای هر مورد «قبول / رد / تست‌نشده» و شاهد ثبت شود؛ گزارش کلی، تأیید جزئی همهٔ موارد نیست.
+Record pass, fail or untested with evidence for each item. General acceptance does not confirm every detailed item.
 
-- رفتار پایهٔ اپ، ورود و دسترسی‌ها پیش از نصب ثبت شود؛ انصراف پیش از Launch اپ را تغییر ندهد.
-- کاربر Setup مشخص را اجرا کند، آماده‌سازی و سپس Launch را بزند؛ همان اپ/نسخه باز و پنل فقط یک بار آماده شود.
-- فارسی، انگلیسی و متن ترکیبی شامل عدد، مسیر و لینک؛ تایپ/ارسال، Shift+2، پاسخ زنده، صف، سؤال و دکمه‌ها بررسی شوند.
-- کد/ترمینال و کپی کد سالم باشند؛ سه تاگل، جهت مستقل پاسخ، فونت تازه، اندازه و فاصلهٔ خطوط درست کار کنند.
-- تم روشن/تیره، چهار accent، پنجرهٔ باریک و پنجرهٔ جدا بررسی شوند؛ تنظیمات پس از `Cmd+Q` و بازگشایی بمانند.
-- Remove RTL با Keep RTL لغو شود؛ حذف واقعی با تأیید کاربر، همان اپ را بدون RTL باز کند. Downloads دست‌نخورده بماند و همان candidate دوباره نصب شود.
-- عامل `gui-status.json` با phase برابر complete و job/app/version/time را با `renderer-ready.json` و امضا/integrity تطبیق دهد. state پیش‌فرض Codex: `~/Library/Application Support/Agent RTL/`؛ مسیر سفارشی ثبت شود. اگر حذف state را پاک کرده، گزارش انسانی از شواهد نصب فعال جدا بماند.
-- بازگشت از Remove RTL، نسخهٔ اصلی همان اپ را برگرداند؛ backup قدیمی روی آپدیت جدید جایگزین نشود. معماری و سناریوهای امتحان‌نشده صریح بمانند.
+- Record baseline app behavior, sign-in and permissions. Cancelling before Launch must leave the app unchanged.
+- Have the user run the specified Setup, prepare and Launch. Confirm the same app/version opens with exactly one ready panel.
+- Check Persian, English and mixed text with numbers, paths and links; typing/sending, Shift+2, streaming, queues, questions and buttons.
+- Check code/terminal rendering and code copy, all three toggles, independent response direction, a new font, text size and line spacing.
+- Check light/dark themes, four accents, narrow and detached windows. Settings must persist after `Cmd+Q` and reopening.
+- Cancel Remove RTL using Keep RTL. With user confirmation, actual removal must reopen the same app without RTL, preserve Downloads and allow the same candidate to be installed again.
+- Match `gui-status.json` with phase complete and job/app/version/time against `renderer-ready.json`, signing and integrity. Default Codex state: `~/Library/Application Support/Agent RTL/`; record custom paths. If removal deleted state, keep the human report separate from active-installation evidence.
+- Removal must restore the original version of the same app. Never restore an old backup over a newer app update. Explicitly list untested architectures and scenarios.
 
-## انتشار
+## Publishing
 
-پذیرش دستی و مجوز صریح GitHub دو شرط جدا هستند. پس از دریافت هر دو، [مراحل انتشار](updates.md) را اجرا کن؛ مجوز، commit و موارد تست‌نشده ثبت شوند. انتشار آزمایشی با `--prerelease --latest=false` است؛ دانلود، اعتبارسنجی و آپدیت واقعی GitHub جدا از نصب محلی تست شوند. بستهٔ بازساخته/امضاشدهٔ CI هش و بررسی مستقل می‌خواهد.
+Manual acceptance and explicit GitHub authorization are separate requirements. After both, follow the [release steps](updates.md); record authorization, commit and untested items. Prereleases use `--prerelease --latest=false`. Test actual GitHub download, verification and updating separately from local installation. A CI-rebuilt/signed package needs independent hashes and checks.

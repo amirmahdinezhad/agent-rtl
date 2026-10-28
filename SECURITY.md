@@ -1,7 +1,7 @@
-# گزارش امنیتی
+# Security reports
 
-گزارش را با نسخهٔ اپ، Agent RTL، سیستم‌عامل و مراحل بازتولید ارائه کنید. کلید امضا، توکن، اطلاعات حساب و متن چت را منتشر نکنید.
+Include the app version, Agent RTL version, operating system and reproduction steps. Exclude signing keys, tokens, account information and chat content.
 
-اگر گزارش خصوصی در [بخش Security مخزن](https://github.com/amirmahdinezhad/agent-rtl/security) فعال است، از همان مسیر استفاده کنید؛ در غیر این صورت، یک issue صرفاً برای درخواست راه ارتباط خصوصی باز کنید و جزئیات آسیب‌پذیری را عمومی نکنید.
+If private reporting is enabled in the repository's [Security area](https://github.com/amirmahdinezhad/agent-rtl/security), use it. Otherwise, open an issue only to request a private contact channel; keep vulnerability details private.
 
-فقط نسخه‌های صریح `bin/release-config.json` مبنای سازگاری هستند. بسته‌های آزمایشی امضای محلی دارند و notarization اپل ندارند. امضای Ed25519 و SHA-256 اصالت دانلود را بررسی می‌کنند؛ پذیرش دستی اپ مرحله‌ای جداست.
+Compatibility applies only to the explicit versions in `bin/release-config.json`. Prerelease packages are ad hoc signed and are not notarized by Apple. Ed25519 signatures and SHA-256 verify download authenticity; manual app acceptance is a separate step.

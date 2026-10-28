@@ -310,7 +310,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 }
             }
             print("PASS: native light/dark previews, 9 states, wrapped errors, 44pt action and layout bounds; no installer jobs started.")
-        } catch { fputs("Native UI preview failed: \(error.localizedDescription)\n", stderr); exit(1) }
+        } catch { fputs("Native UI preview failed. Error: \((error as NSError).domain) (\((error as NSError).code)).\n", stderr); exit(1) }
     }
     func loadPlan() {
         show("Checking RTL…"); install.isEnabled = false; progress.isHidden = true
@@ -335,7 +335,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
             do {
                 try task.run(); let bytes = pipe.fileHandleForReading.readDataToEndOfFile(); task.waitUntilExit(); let json = try JSONSerialization.jsonObject(with: bytes) as? [String: Any] ?? [:]
                 DispatchQueue.main.async { if json["ok"] as? Bool == true { completion(json["value"] as? [String: Any] ?? [:]) } else { self.showError(json["error"] as? String ?? "Try again.") } }
-            } catch { DispatchQueue.main.async { self.showError(error.localizedDescription) } }
+            } catch { DispatchQueue.main.async { self.showError("Could not communicate with Setup. Try again. Error: \((error as NSError).domain) (\((error as NSError).code)).") } }
         }
     }
     func showUpdate(_ value: [String: Any]) {

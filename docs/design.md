@@ -1,26 +1,26 @@
-# طراحی و رفتار پنل
+# Panel design and behavior
 
-پنل مشترک T3 و Codex، فونت وزیر و برچسب‌های انگلیسی دارد. تم و accent با Setup همگام‌اند؛ ظاهر اپ میزبان تغییر نمی‌کند. پیش‌فرض Lavender است؛ Blue، Mint و Yellow هم در دسترس‌اند. دایرهٔ سه تاگل همیشه سفید است.
+The shared T3 and Codex panel uses Vazir and English labels. Theme and accent synchronize with Setup without changing the host app's appearance. Lavender is the default; Blue, Mint and Yellow are also available. All three toggle thumbs stay white.
 
-- عرض پنل ۳۵۲ پیکسل، هدف کلیک حداقل ۴۴ پیکسل؛ در فضای کم، اسکرول و چیدمان باریک سالم بمانند.
-- سه تاگل RTL، Force RTL و Shift+2؛ فونت TTF/OTF تا ۲ مگابایت، اندازه و فاصلهٔ خطوط ذخیره شوند. کد جهت و فونت مناسب خود را حفظ کند.
-- Tab، Enter/Space، فلش‌ها، Home/End و Escape کار کنند؛ فوکوس دیده شود و لغو انتخاب فایل تنظیمات را تغییر ندهد.
-- باز و بسته‌شدن پنل، منوها و پیام موقت پرش چیدمان نداشته باشند؛ Reduce Motion رعایت شود.
-- Setup یک اقدام اصلی دارد؛ آماده‌سازی از Launch جداست. خطا خوانا بماند؛ موفقیت پس از تأیید آماده‌شدن renderer اعلام شود.
+- Panel width is 352 pixels with click targets of at least 44 pixels. Scrolling and narrow layouts must remain usable.
+- Persist RTL, Force RTL and Shift+2 toggles, TTF/OTF fonts up to 2 MB, text size and line spacing. Preserve appropriate code direction and fonts.
+- Support Tab, Enter/Space, arrows, Home/End and Escape. Keep focus visible; cancelling file selection must preserve settings.
+- Opening/closing the panel, menus and transient messages must avoid layout jumps. Respect Reduce Motion.
+- Setup has one primary action. Preparation and Launch are separate. Keep errors readable and report success after renderer readiness is confirmed.
 
-## جهت هر پاسخ
+## Per-response direction
 
-Default تنظیم عمومی را دنبال می‌کند؛ RTL/LTR صریح بر Force مقدم‌اند. کد، ترمینال و ویرایشگر مستثنا هستند. Default ورودی ذخیره‌شده را حذف می‌کند؛ خاموش‌کردن RTL انتخاب را نگه می‌دارد. خطای ذخیره‌سازی، انتخاب تازه را اعمال نمی‌کند.
+Default follows the global setting; explicit RTL/LTR overrides Force RTL. Exclude code, terminals and editors. Default deletes the stored override; disabling RTL retains the selection. A storage failure must not apply a new selection.
 
-| اپ | محدودهٔ انتخاب مستقل |
+| App | Independent selection scope |
 | --- | --- |
-| Codex | چت محلی اصلی با شناسهٔ معتبر چت/پاسخ؛ میزبان راه دور، پیام کاربر، نمای جانبی و پنجرهٔ جدا کنترل ندارند. |
-| T3 | ردیف canonical دستیار با شناسهٔ معتبر پاسخ؛ کلید شامل محیط، چت و پاسخ است. |
+| Codex | Main local chat with valid chat/response IDs; no controls for remote hosts, user messages, side views or detached windows. |
+| T3 | Canonical assistant row with a valid response ID; keys include environment, chat and response. |
 
-ذخیره در localStorage با پیشوند `agent-rtl:message-direction:v1:` است؛ متن پیام ذخیره نمی‌شود. قرارداد DOM/رویداد داخلی اپ‌ها پس از هر آپدیت دوباره بررسی شود؛ کد اصلی و دادهٔ خصوصی React خوانده یا تغییر داده نمی‌شوند.
+Store overrides in localStorage under `agent-rtl:message-direction:v1:` without message text. Recheck internal DOM/event contracts after each app update. Original code and private React data are not read or modified.
 
-## بازبینی
+## Review
 
-`npm run preview:design -- --open` پنل تعاملی و ۹ حالت AppKit در دو تم می‌سازد؛ خروجی در `dist/` است و چیزی نصب نمی‌شود. این نمونه CSS اپ واقعی ندارد. تست‌های `test:design` با `ARTL_USE_CODEX_CSS=1` و `test:t3-design`، CSS واقعی اپ هدف را جدا می‌خوانند؛ Playwright و Chromium را طبق [راهنمای توسعه](updates.md) معرفی کنید.
+`npm run preview:design -- --open` builds an interactive panel and nine AppKit states in both themes under `dist/`, without installation. This preview has no actual app CSS. `test:design` with `ARTL_USE_CODEX_CSS=1` and `test:t3-design` read the target app's actual CSS separately. Configure Playwright and Chromium using the [development guide](updates.md).
 
-در روشن/تیره و عرض ۳۲۰ پیکسل، فونت تازه، تم/چهار رنگ، تاگل‌ها، تایپ فارسی/انگلیسی/@، کپی کد، جهت دو پاسخ، ماندگاری پس از بازگشایی، لغو حذف، فوکوس و خطای بلند Setup را بررسی کنید. با دو پنجرهٔ واقعی، همگامی فونت و تنظیمات را هم بسنجید. نتیجهٔ هر مورد «قبول / رد / تست‌نشده» باشد؛ fixture و تصویر ثابت جای [پذیرش واقعی](codex-update-workflow.md#چک‌لیست-تست-دستی-کاربر) نیستند.
+Check light/dark and 320-pixel layouts, a new font, themes/four accents, toggles, Persian/English/@ typing, code copy, two independent response directions, persistence after reopening, removal cancellation, focus and long Setup errors. Check font/settings synchronization across two real windows. Record each item as pass, fail or untested. Fixtures and static images do not replace [real acceptance](codex-update-workflow.md#user-manual-test-checklist).

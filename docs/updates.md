@@ -1,38 +1,39 @@
-# ساخت، تست و انتشار
+# Build, test and release
 
-برای توسعه: Node.js مطابق `package.json`؛ برای Setup: macOS، Xcode Command Line Tools و runtime مستقل Node به‌همراه مجوز آن. مسیر runtime را با `ARTL_PORTABLE_NODE` و در صورت نیاز `ARTL_NODE_LICENSE` تعیین کنید؛ در صورت وجود، Node همراه Codex خودکار پیدا می‌شود.
+Development requires Node.js as specified in `package.json`. Setup requires macOS, Xcode Command Line Tools and a portable Node runtime with its license. Set `ARTL_PORTABLE_NODE` and, if needed, `ARTL_NODE_LICENSE`; the Node runtime bundled with Codex is detected automatically when available.
 
 ```sh
 npm ci
 npm run build:userscript
 npm test
+npm run test:language
 npm run test:gui
 ARTL_LOCAL_CANDIDATE=1 npm run build:gui
 npm run test:installer
 npm run test:events
 ```
 
-برای T3، ساخت و تست نصب/رویداد با `ARTL_TARGET=t3` و `ARTL_GUI_OUTPUT` برابر مسیر مطلق `dist/Agent RTL T3 Setup.app` انجام شود؛ تست GUI/font با `ARTL_TEST_TARGET=t3` اجرا شود. خروجی پیش‌فرض Codex، `dist/Agent RTL Setup.app` است. candidate محلی با `ARTL_LOCAL_CANDIDATE=1` فید دریافت ندارد تا دقیقاً runtime داخل بسته تست شود.
+For T3, build and run installer/event tests with `ARTL_TARGET=t3` and `ARTL_GUI_OUTPUT` set to the absolute path of `dist/Agent RTL T3 Setup.app`. Run GUI/font tests with `ARTL_TEST_TARGET=t3`. The default Codex output is `dist/Agent RTL Setup.app`. Local candidates built with `ARTL_LOCAL_CANDIDATE=1` disable the download feed so tests exercise the exact packaged runtime.
 
-تست‌های مرورگر به `ARTL_PLAYWRIGHT_MODULE` (مسیر مطلق `playwright/index.mjs`) و در صورت نیاز `ARTL_CHROMIUM_EXECUTABLE` نیاز دارند. `test:codex-content` و `test:design` را با `ARTL_USE_CODEX_CSS=1` و fixture DOM متناسب با نسخهٔ هدف اجرا کنید. `test:t3-design`، CSS اپ نصب‌شده و payload سورس فعلی را می‌خواند؛ `ARTL_T3_ASAR` مسیر آرشیو مستقل را تعیین می‌کند. `test:codex-native` فقط کپی staging آماده‌شده را اجرا می‌کند و به manifest آن نیاز دارد.
+Browser tests require `ARTL_PLAYWRIGHT_MODULE` (the absolute path to `playwright/index.mjs`) and optionally `ARTL_CHROMIUM_EXECUTABLE`. Run `test:codex-content` and `test:design` with `ARTL_USE_CODEX_CSS=1` and a DOM fixture adapted to the target version. `test:t3-design` reads the installed app's CSS and current source payload; `ARTL_T3_ASAR` selects a separate archive. `test:codex-native` runs only a prepared staging copy and requires its manifest.
 
-`npm run clean` خروجی‌های قابل بازسازی `dist/` و helper کامپایل‌شده را حذف می‌کند؛ سورس، وابستگی‌ها و state اپ‌ها حفظ می‌شوند. ابتدا شواهد candidate مورد نیاز را بیرون `dist/` نگه دارید.
+`npm run clean` deletes reproducible `dist/` output and the compiled helper, preserving source, dependencies and app state. Preserve required candidate evidence outside `dist/` first.
 
-## نصب و سازگاری
+## Installation and compatibility
 
-[فلو آپدیت اپ‌ها](app-update-workflow.md) مرجع تشخیص و پذیرش است. main/preload اصلی حفظ می‌شوند؛ staging، خروج کامل پس از Launch کاربر، جایگزینی تراکنشی، امضا/integrity و rollback الزامی‌اند. launchd فقط بررسی محدود هنگام تغییر فایل‌ها/ورود انجام می‌دهد؛ پردازش دائمی ندارد. حذف RTL ثبت رویداد را هم پاک می‌کند.
+The [app update workflow](app-update-workflow.md) governs diagnosis and acceptance. Preserve original main/preload files. Staging, full exit after the user's Launch, transactional replacement, signing/integrity checks and rollback are required. launchd performs bounded checks on file changes/login without a permanent process. Removing RTL also removes event registration.
 
-فهرست نسخه‌های بررسی‌شده و کلید عمومی در `bin/release-config.json` است؛ `feedUrl` مربوط به Codex و `t3FeedUrl` مربوط به T3 است. بسته و manifest دو اپ مستقل‌اند؛ T3 از فید رسمی Codex استفاده نمی‌کند. دانلود فقط از میزبان مجاز و پس از بررسی امضای Ed25519، اندازه و SHA-256 پذیرفته می‌شود.
+Checked versions and the public key are in `bin/release-config.json`. `feedUrl` belongs to Codex; `t3FeedUrl` belongs to T3. Packages and manifests are independent; T3 does not use the official Codex feed. Accept downloads only from allowed hosts after Ed25519 signature, size and SHA-256 verification.
 
-## انتشار
+## Publishing
 
-۱. پذیرش دستی و دستور صریح انتشار کاربر را ثبت کنید؛ کلید خصوصی بیرون مخزن بماند.
-۲. نسخه، lockfile، فهرست سازگاری، فید، لینک‌ها و userscript را هماهنگ کنید؛ commit/push و CI همان commit باید قبول باشند. `npm pack --dry-run` محتوای پکیج را نشان می‌دهد.
-۳. Setup مستقل هر اپ را بدون `ARTL_LOCAL_CANDIDATE` بسازید؛ امضا، نسخه و تطبیق runtime با سورس را بررسی و ZIP کنید.
-۴. با `npm run release:manifest -- --artifact <zip> --repo <owner/repo> --platform darwin-arm64 --tag <tag> --output <json>`، متغیرهای `ARTL_RELEASE_PRIVATE_KEY_FILE` و `ARTL_RELEASE_PUBLIC_KEY` manifest را امضا کنید. برای T3، `--target t3` و نام `agent-rtl-t3-release.json`؛ برای Codex، `agent-rtl-release.json` استفاده شود.
-۵. هر دو ZIP/manifest را با commit دقیق و `gh release create ... --prerelease --latest=false --notes-file docs/release-notes.md` منتشر کنید؛ کانال آزمایشی latest نیست. انتشار تولیدِ notarized با اجرای دستی workflow امضا/notarization با Developer ID و secrets اپل می‌گذرد؛ در وضعیت فعلی workflow تولید فقط Codex را می‌سازد.
-۶. فایل‌های منتشرشده را دوباره دانلود و امضا/هش/نسخه/target را بررسی کنید. نصب و Launch واقعی بستهٔ GitHub توسط کاربر، طبق چک‌لیست پذیرش اپ مربوط، جدا ثبت شود.
+1. Record manual acceptance and the user's explicit publishing authorization. Keep the private key outside the repository.
+2. Synchronize version, lockfile, compatibility lists, feeds, links and userscript. Commit/push and require passing CI for the same commit. Use `npm pack --dry-run` to inspect package contents.
+3. Build each app's separate Setup without `ARTL_LOCAL_CANDIDATE`. Check signing, version and agreement between runtime and source, then ZIP it.
+4. Sign the manifest with `npm run release:manifest -- --artifact <zip> --repo <owner/repo> --platform darwin-arm64 --tag <tag> --output <json>` and the `ARTL_RELEASE_PRIVATE_KEY_FILE` and `ARTL_RELEASE_PUBLIC_KEY` environment variables. For T3 use `--target t3` and `agent-rtl-t3-release.json`; for Codex use `agent-rtl-release.json`.
+5. Publish both ZIPs/manifests for the exact commit with `gh release create ... --prerelease --latest=false --notes-file docs/release-notes.md`. The prerelease channel is not latest. A notarized production release uses the manually dispatched signing/notarization workflow with Developer ID and Apple secrets; the current production workflow builds Codex only.
+6. Download published files again and check signatures, hashes, versions and targets. Separately record the user's installation and Launch of the actual GitHub package against the relevant app's acceptance checklist.
 
-خلاصهٔ درون‌اپی و متن تغییرات انتشار باید انگلیسی باشند. هنگام ساخت manifest برای Codex از `--notes docs/release-notes-codex.json` و برای T3 از `--notes docs/release-notes-t3.json` استفاده کنید؛ این فایل‌ها را همراه `docs/release-notes.md` برای هر انتشار به‌روز کنید. `--notes <json>` آرایه‌ای از حداکثر سه رشتهٔ ۱۲۰ کاراکتری و بدون خط جدید می‌پذیرد؛ نمایش پیش از دانلود است و دانلود با کلیک جدا شروع می‌شود. manifest قدیمی بدون خلاصه همچنان پشتیبانی می‌شود.
+In-app summaries and release descriptions must be English. Use `--notes docs/release-notes-codex.json` for Codex and `--notes docs/release-notes-t3.json` for T3. Update these files alongside `docs/release-notes.md` for each release. `--notes <json>` accepts up to three strings of 120 characters each without line breaks. Summaries appear before download, which requires a separate click. Older manifests without summaries remain supported.
 
-شماره‌گذاری این مخزن از `1.0.0` شروع شده است. انتشار اولیه با tag `v1.0.0` و `--latest` انجام شد؛ انتشارهای آزمایشی بعدی با `--prerelease --latest=false` منتشر می‌شوند؛ بسته‌ها امضای محلی و بدون notarization هستند. کاربران نسخه‌های شماره‌گذاری قبلی باید Setup جدید را دستی دریافت کنند؛ مقایسهٔ نسخهٔ updater، کاهش شمارهٔ نسخه را آپدیت تلقی نمی‌کند.
+Repository version numbering starts at `1.0.0`. The initial `v1.0.0` release used `--latest`; later prereleases use `--prerelease --latest=false`. Packages are ad hoc signed and not notarized. Users of earlier numbering schemes must download the new Setup manually; the updater does not treat a lower version number as an update.

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
+    "test:language": "node --test test/language-policy.test.js",
     "test:codex-browser": "node test/codex-browser-smoke.mjs",
     "test:codex-content": "node test/codex-content-smoke.mjs",
     "test:message-directions": "node test/message-directions-smoke.mjs",

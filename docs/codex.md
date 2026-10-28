@@ -1,11 +1,11 @@
 # Codex
 
-Agent RTL ۱٫۰٫۰ برای Codex `26.1023.51421` روی macOS / Apple Silicon.
+Agent RTL 1.0.1 for Codex `26.1023.51421` on macOS / Apple Silicon.
 
-۱. [ZIP مخصوص Codex](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) را باز و **Agent RTL Setup.app** را اجرا کنید.
-۲. Install/Update RTL و پس از آماده‌سازی **Launch** را بزنید؛ همان Codex دوباره باز می‌شود.
-۳. RTL، فونت، تم، رنگ و جهت هر پاسخ را از پنل تنظیم کنید. **Remove RTL** نسخهٔ اصلی همان اپ را برمی‌گرداند و Codex را دوباره باز می‌کند.
+1. Extract the [Codex ZIP](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) and open **Agent RTL Setup.app**.
+2. Choose Install/Update RTL, then **Launch** after preparation. The same Codex app reopens.
+3. Adjust RTL, fonts, theme, accent and per-response direction in the panel. **Remove RTL** restores the original app and reopens Codex.
 
-تنظیمات، فونت‌ها و backup: `~/Library/Application Support/Agent RTL/`. حذف RTL فایل‌های Downloads را پاک نمی‌کند. نصب امضای محلی اپ را جایگزین می‌کند و ممکن است روی قابلیت‌های وابسته به امضا اثر بگذارد.
+Settings, fonts and backups: `~/Library/Application Support/Agent RTL/`. Removal preserves Downloads. Installation replaces the app's local signature and may affect features that depend on signing identity.
 
-[فلو آپدیت Codex](codex-update-workflow.md) · [گزارش سازگاری](compatibility/26.1023.51421.md)
+[Codex update workflow](codex-update-workflow.md) · [Compatibility report](compatibility/26.1023.51421.md)
