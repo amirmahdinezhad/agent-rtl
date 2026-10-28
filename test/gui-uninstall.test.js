@@ -7,7 +7,7 @@ import path from 'node:path';
 import { guiPaths, saveJSON } from '../bin/lib/gui-runtime.js';
 import { removeGUIData, finishGUIUninstall } from '../bin/lib/gui-uninstall.js';
 
-test('uninstall deletes only Agent RTL data, keeping its result until the window closes', async () => {
+test('uninstall deletes only Rasta data, keeping its result until the window closes', async () => {
     const home = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'artl-uninstall-')));
     const previous = process.env.ARTL_CODEX_STATE_HOME;
     process.env.ARTL_CODEX_STATE_HOME = home;
@@ -19,15 +19,15 @@ test('uninstall deletes only Agent RTL data, keeping its result until the window
         const codex = path.join(home, 'Library/Application Support/Codex/settings.json');
         const key = path.join(home, '.config/agent-rtl/release-private.pem');
         for (const file of [codex, key]) { fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, 'keep'); }
-        const setup = path.join(home, 'Downloads/Agent-RTL-2.4.6.fixture/Agent RTL Setup.app');
+        const setup = path.join(home, 'Downloads/Rasta-2.4.6.fixture/Rasta Setup.app');
         const runtime = path.join(setup, 'Contents/Resources/runtime'); fs.mkdirSync(runtime,{recursive:true});
         fs.writeFileSync(path.join(setup,'Contents/Info.plist'),JSON.stringify({CFBundleIdentifier:'dev.agentrtl.setup'}));
         const sibling = path.join(path.dirname(setup),'personal-note.txt'); fs.writeFileSync(sibling,'keep');
         saveJSON(path.join(paths.support, 'setup-sources.json'), [setup]);
-        const legacySetup = path.join(home, 'Downloads/Agent-RTL-2.4.5.old/Agent RTL Setup.app');
+        const legacySetup = path.join(home, 'Downloads/Rasta-2.4.5.old/Rasta Setup.app');
         fs.mkdirSync(path.join(legacySetup,'Contents'),{recursive:true});
         fs.copyFileSync(path.join(setup,'Contents/Info.plist'),path.join(legacySetup,'Contents/Info.plist'));
-        const archive = path.join(home,'Downloads/Agent-RTL-2.4.5-darwin-arm64.zip');
+        const archive = path.join(home,'Downloads/Rasta-2.4.5-darwin-arm64.zip');
         execFileSync('/usr/bin/ditto',['-c','-k','--keepParent',legacySetup,archive]);
         const cache = path.join(home,'Library/Caches/dev.agentrtl.setup/data');fs.mkdirSync(path.dirname(cache),{recursive:true});fs.writeFileSync(cache,'remove');
         const agents=path.join(home,'Library/LaunchAgents');fs.mkdirSync(agents,{recursive:true});

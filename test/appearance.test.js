@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { saveAppearance } from '../bin/lib/appearance.js';
-test('appearance saves only validated Agent RTL preferences outside runtime', () => {
+test('appearance saves only validated Rasta preferences outside runtime', () => {
  const home=fs.mkdtempSync(path.join(os.tmpdir(),'artl-appearance-'));
  try {
   saveAppearance({theme:'dark',accent:'#68c7a4',path:'/ignored'},home);

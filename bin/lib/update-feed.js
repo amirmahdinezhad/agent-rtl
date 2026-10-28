@@ -51,13 +51,13 @@ export function releaseNotes(value = []) {
 }
 export function verifyReleaseEnvelope(envelope, key, platform, target = 'codex') {
     if (!key || typeof envelope?.payload !== 'string' || typeof envelope.signature !== 'string'
-        || envelope.payload.length > 128 * 1024) throw new Error('Invalid Agent RTL release manifest.');
+        || envelope.payload.length > 128 * 1024) throw new Error('Invalid Rasta release manifest.');
     const body = Buffer.from(envelope.payload, 'base64');
-    if (!verify(null, body, edKey(key), Buffer.from(envelope.signature, 'base64'))) throw new Error('Agent RTL release signature is invalid.');
+    if (!verify(null, body, edKey(key), Buffer.from(envelope.signature, 'base64'))) throw new Error('Rasta release signature is invalid.');
     const manifest = JSON.parse(body.toString());
     if ((manifest.target || 'codex') !== target) throw new Error('The RTL release belongs to another application.');
     if ((manifest.target !== undefined && !['codex', 't3'].includes(manifest.target)) || manifest.schema !== 1 || !/^\d+\.\d+\.\d+$/.test(manifest.agentVersion)
-        || !Array.isArray(manifest.supportedAppVersions) || !manifest.supportedAppVersions.every(v => /^\d+(?:\.\d+){1,4}$/.test(v))) throw new Error('Unsupported Agent RTL release manifest.');
+        || !Array.isArray(manifest.supportedAppVersions) || !manifest.supportedAppVersions.every(v => /^\d+(?:\.\d+){1,4}$/.test(v))) throw new Error('Unsupported Rasta release manifest.');
     const artifact = manifest.downloads?.[platform];
     if (!artifact || !/^[a-f0-9]{64}$/.test(artifact.sha256) || !Number.isSafeInteger(artifact.size) || artifact.size < 1 || artifact.size > 1024 ** 3) throw new Error('No valid release for this Mac.');
     trustedURL(artifact.url, 'release');

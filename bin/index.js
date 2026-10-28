@@ -19,8 +19,8 @@ const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'
 
 function printBanner() {
     console.log('');
-    console.log(bold(cyan('  ⇄  Agent RTL')) + dim(`  v${pkg.version}`));
-    console.log(dim('     Reading controls for Codex and T3 Code on macOS.\n'));
+    console.log(bold(cyan('  Rasta')) + dim(`  v${pkg.version}`));
+    console.log(dim('     Right-to-left (RTL) reading controls for Codex and T3 Code on macOS.\n'));
 }
 
 printBanner();
@@ -41,7 +41,7 @@ const targetFlag = (() => {
 })();
 
 if (args.includes('--help') || args.includes('-h')) {
-    console.log(`Usage: agent-rtl [options]
+    console.log(`Usage: rasta [options]
 
 Options:
   --target <codex|t3|all>  Which app to patch (default: all)
@@ -85,7 +85,7 @@ async function patchTarget(target, { restore, dryRun }) {
         const bundle = resolveT3App();
         if (!bundle) return 'missing';
         if (dryRun) { console.log(JSON.stringify(inspectNative(bundle), null, 2)); return 'dryrun'; }
-        console.error(red('Use Agent RTL T3 Setup.app to install or remove RTL on macOS. The graphical flow preserves signing, integrity, rollback and the explicit Launch step.'));
+        console.error(red('Use Rasta T3 Setup.app to install or remove RTL on macOS. The graphical flow preserves signing, integrity, rollback and the explicit Launch step.'));
         return 'error';
     }
     if (target.mode === 'codex-native') {
@@ -184,7 +184,7 @@ async function main() {
         return;
     }
 
-    console.log(green(`\n⚡ Initializing Agent RTL Pro ${isRestore ? '(restore mode)' : ''}${isDryRun ? '(dry-run)' : ''}...`));
+    console.log(green(`\n⚡ Initializing Rasta ${isRestore ? '(restore mode)' : ''}${isDryRun ? '(dry-run)' : ''}...`));
 
     const results = [];
     for (const target of wanted) results.push(await patchTarget(target, { restore: isRestore, dryRun: isDryRun }));
@@ -197,7 +197,7 @@ async function main() {
 
     console.log(green(bold('\n⚡ Execution completed. Restart the apps to load the new UI.\n')));
     if (!isDryRun && !isRestore) {
-        console.log(dim('Tip: run `agent-rtl --status` to verify, `agent-rtl --restore` to revert.\n'));
+        console.log(dim('Tip: run `rasta --status` to verify, `rasta --restore` to revert.\n'));
     }
 }
 

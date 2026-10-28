@@ -11,7 +11,7 @@ import { nativeFixture } from './helpers/native-fixture.js';
 import { nativePaths } from '../bin/lib/codex-native.js';
 import { fontPaths, importFont, selectFont } from '../bin/lib/font-preferences.js';
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-gui-job-'));
-const setup = path.resolve(process.env.ARTL_GUI_OUTPUT || 'dist/Agent RTL Setup.app');
+const setup = path.resolve(process.env.ARTL_GUI_OUTPUT || 'dist/Rasta Setup.app');
 const sourceRuntime = path.join(setup, 'Contents/Resources/runtime');
 const runtime = path.join(dir, 'runtime'); fs.mkdirSync(runtime);
 for (const name of ['bin', 'node', 'agent-rtl-ui', 'node-LICENSE', 'package.json']) fs.cpSync(path.join(sourceRuntime, name), path.join(runtime, name), { recursive: true });
@@ -27,7 +27,7 @@ const env = { ...process.env, ARTL_CODEX_STATE_HOME: dir };
 for (const key of Object.keys(env)) if (key.startsWith('CODEX_') || key === 'ELECTRON_RUN_AS_NODE') delete env[key];
 const read = file => JSON.parse(fs.readFileSync(file));
 try {
-    const executable = path.join(setup, 'Contents/MacOS/Agent RTL Setup');
+    const executable = path.join(setup, 'Contents/MacOS/Rasta Setup');
     const preview = spawn(executable, ['--self-test'], { env, stdio: ['ignore', 'pipe', 'pipe'] });
     let previewLog = ''; preview.stdout.on('data', bytes => { previewLog += bytes; }); preview.stderr.on('data', bytes => { previewLog += bytes; });
     const previewTimeout = setTimeout(() => preview.kill('SIGTERM'), 10000);

@@ -83,7 +83,7 @@
         .artl-theme-panel { width: 352px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 104px); overflow: hidden; border: 1px solid var(--artl-line); border-radius: 16px; color: var(--artl-text); background: var(--artl-base); box-shadow: 0 12px 36px #15101f26, 0 2px 6px #15101f0a; }
         .artl-panel-content { max-height: calc(100dvh - 106px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 12px 16px 16px; }
         .artl-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--artl-line); }
-        .artl-brand-mark { width: 24px; height: 24px; color: var(--artl-ink); }
+        .artl-brand-mark { width: 24px; height: 24px; color: var(--artl-brand-ink, #8056c6); flex-shrink: 0; }
         .artl-brand-title { flex: 1; min-width: 0; margin: 0; white-space: nowrap; color: var(--artl-text); font: 700 17px/1.4 var(--artl-app-font, Vazir, system-ui, sans-serif); }
         .artl-widget-container .artl-icon-button { display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--artl-muted); transition: background .12s ease-out, color .12s ease-out; }
         .artl-icon-button svg { width: 16px; height: 16px; }
@@ -235,14 +235,18 @@
     }
     updateDynamicCSS(rtlConfig.faFont, rtlConfig.enFont, rtlConfig.codeFont, rtlConfig.lh, rtlConfig.fs);
 
-    const UI = { settings: 'RTL settings', close: 'Close settings', autoRTL: 'Enable RTL', forceRTL: 'Force RTL', fixAt: 'Type @ with Shift+2', faFont: 'Persian font', enFont: 'English font', appFont: 'Font', theme: 'Theme', size: 'Text size', spacing: 'Line height', check: 'Check for updates', restore: 'Remove RTL', install: 'Download update', available: 'An RTL update is ready', noUpdates: 'No updates available.', checkFailed: 'Couldn’t check for updates. Try again.', openFailed: 'Couldn’t open the installer. Try again.', removeTitle: 'Remove Agent RTL?', removeCopy: HOST_NAME + ' will close and reopen automatically after removal. The RTL panel, helper, settings and added fonts will be deleted.', keep: 'Keep RTL' };
+    const UI = { settings: 'RTL settings', close: 'Close settings', autoRTL: 'Enable RTL', forceRTL: 'Force RTL', fixAt: 'Type @ with Shift+2', faFont: 'Persian font', enFont: 'English font', appFont: 'Font', theme: 'Theme', size: 'Text size', spacing: 'Line height', check: 'Check for updates', restore: 'Remove RTL', install: 'Download update', available: 'An RTL update is ready', noUpdates: 'No updates available.', checkFailed: 'Couldn’t check for updates. Try again.', openFailed: 'Couldn’t open the installer. Try again.', removeTitle: 'Remove Rasta?', removeCopy: HOST_NAME + ' will close and reopen automatically after removal. The RTL panel, helper, settings and added fonts will be deleted.', keep: 'Keep RTL' };
     function icon(glyph, className = '') {
         const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg');
         for (const [key, value] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) svg.setAttribute(key, value);
         if (className) svg.setAttribute('class', className);
         const path = document.createElementNS(ns, 'path'); path.setAttribute('d', glyph); svg.appendChild(path); return svg;
     }
-    const ARROWS = 'M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4';
+    function brandIcon(className = '') {
+        const svg = icon('M5.75 5H19.4Q20 5 20 5.6V7.9Q20 8.5 19.4 8.5H5.75a1.75 1.75 0 0 1 0-3.5ZM9.75 10.25H19.4Q20 10.25 20 10.85V13.15Q20 13.75 19.4 13.75H9.75a1.75 1.75 0 0 1 0-3.5ZM13.75 15.5H19.4Q20 15.5 20 16.1V18.4Q20 19 19.4 19H13.75a1.75 1.75 0 0 1 0-3.5Z', className);
+        svg.setAttribute('stroke', 'none'); svg.setAttribute('fill', 'currentColor');
+        return svg;
+    }
 
     // Keep the chosen fill exact; derive readable icon/text colors separately.
     function accentColors(hex, background = '#ffffff') {
@@ -278,13 +282,13 @@
         panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-labelledby', 'artl-panel-title'); panel.setAttribute('aria-hidden', 'true');
         const content = document.createElement('div'); content.className = 'artl-panel-content'; panel.appendChild(content);
         const header = document.createElement('div'); header.className = 'artl-panel-header';
-        const title = document.createElement('h2'); title.id = 'artl-panel-title'; title.className = 'artl-brand-title'; title.textContent = 'Agent RTL';
+        const title = document.createElement('h2'); title.id = 'artl-panel-title'; title.className = 'artl-brand-title'; title.textContent = 'Rasta · RTL'; title.title = 'Rasta — Right-to-left reading controls';
         const close = document.createElement('button'); close.type = 'button'; close.className = 'artl-icon-button artl-panel-close'; bind(close, 'close', 'aria-label'); close.appendChild(icon('M6 6l12 12M18 6 6 18'));
-        header.appendChild(icon(ARROWS, 'artl-brand-mark')); header.appendChild(title); content.appendChild(header);
+        header.appendChild(brandIcon('artl-brand-mark')); header.appendChild(title); content.appendChild(header);
         const toolbar = header;
         const trigger = document.createElement('button'); trigger.type = 'button'; trigger.className = 'artl-widget-trigger'; bind(trigger, 'settings', 'aria-label');
         trigger.setAttribute('aria-controls', panel.id); trigger.setAttribute('aria-expanded', 'false'); trigger.setAttribute('aria-haspopup', 'dialog');
-        trigger.appendChild(icon(ARROWS));
+        trigger.appendChild(brandIcon());
         let panelOpen = false;
         function setPanelOpen(open, restoreFocus = false) {
             panelOpen = open; panel.classList.toggle('open', open); panel.setAttribute('aria-hidden', String(!open)); trigger.setAttribute('aria-expanded', String(open));
@@ -366,7 +370,7 @@
         let renderUpdates = () => {};
         if (window.agentRTLNative) renderUpdates = createUpdateControls(panel, toolbar, trigger, window.agentRTLNative, t, bind, content);
         else if (AGENT_VERSION) {
-            const version = document.createElement('span'); version.className = 'artl-version'; version.textContent = 'v' + AGENT_VERSION; version.title = 'Agent RTL ' + AGENT_VERSION; content.appendChild(version);
+            const version = document.createElement('span'); version.className = 'artl-version'; version.textContent = 'v' + AGENT_VERSION; version.title = 'Rasta ' + AGENT_VERSION; content.appendChild(version);
         }
         const readingGroup = document.createElement('div'); readingGroup.className = 'artl-settings-group';
         const typeGroup = document.createElement('div'); typeGroup.className = 'artl-settings-group artl-type-group';
@@ -437,6 +441,7 @@
                     if (value && !/^(var\(|currentColor|inherit|initial|unset)/i.test(value) && window.CSS.supports('color', value)) container.style.setProperty(own, value);
                 }
                 const style = window.getComputedStyle(container);
+                container.style.setProperty('--artl-brand-ink', accentColors('#ad8cf3', style.getPropertyValue('--artl-base').trim()).ink);
                 if (rtlConfig.accent !== 'auto') {
                     const colors = accentColors(rtlConfig.accent, style.getPropertyValue('--artl-base').trim());
                     container.style.setProperty('--artl-accent', rtlConfig.accent);
@@ -619,7 +624,7 @@
         const active = new Set(['starting', 'checking', 'downloading-agent', 'downloading-app', 'verifying', 'preparing', 'ready-to-install', 'quitting', 'waiting-for-quit', 'installing']);
         function render() {
             const available = Boolean(latest?.available && latest.release);
-            status.textContent = available ? `Agent RTL ${latest.release.agentVersion} is ready` : t('available');
+            status.textContent = available ? `Rasta ${latest.release.agentVersion} is ready` : t('available');
             notes.replaceChildren();
             for (const text of (Array.isArray(latest?.release?.releaseNotes) ? latest.release.releaseNotes : []).slice(0, 3)) {
                 if (typeof text !== 'string') continue;
@@ -637,7 +642,7 @@
             try {
                 const value = await native.status(); if (updatesDisposed) return;
                 const currentVersion = value.installedAgentVersion || value.agentVersion;
-                version.textContent = currentVersion ? `v${currentVersion}` : ''; version.hidden = !currentVersion; version.title = currentVersion ? `Agent RTL ${currentVersion}` : '';
+                version.textContent = currentVersion ? `v${currentVersion}` : ''; version.hidden = !currentVersion; version.title = currentVersion ? `Rasta ${currentVersion}` : '';
                 running = Boolean(value.running || active.has(value.operation?.phase)); latest = value.update || latest; render();
                 if (value.operation?.action === 'restore' && value.operation?.phase === 'failed') tell('Couldn’t remove RTL. Try again.', 'error');
                 if (running) updatePoll = setTimeout(refresh, 1000);

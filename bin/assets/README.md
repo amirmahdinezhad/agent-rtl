@@ -7,3 +7,11 @@ Vazir 30.1.0 is bundled for Persian and English text.
 - `Vazir-OFL.txt`: the complete SIL Open Font License 1.1 and copyright notice.
 
 Files are unchanged from the [official source](https://github.com/rastikerdar/vazirmatn/tree/v30.1.0).
+
+## Rasta brand assets
+
+- `rasta-mark.svg`: charcoal app tile with the approved lavender text mark.
+- `rasta-glyph.svg`: transparent mark for small interface surfaces.
+- `agent-rtl-mark.svg`: compatibility copy for existing documentation links.
+
+The panel uses the same three right-aligned strokes. The native `drawBrand` function draws them for Setup and all generated macOS icon sizes. Brand colors stay charcoal (`#252529`) and lavender (`#AD8CF3`) independently of the selected control accent. The panel darkens lavender on light surfaces to preserve contrast. The approved generated concept is saved in `docs/branding/rasta-approved-concept.png`.

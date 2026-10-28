@@ -1,6 +1,6 @@
 # Security reports
 
-Include the app version, Agent RTL version, operating system and reproduction steps. Exclude signing keys, tokens, account information and chat content.
+Include the app version, Rasta version, operating system and reproduction steps. Exclude signing keys, tokens, account information and chat content.
 
 If private reporting is enabled in the repository's [Security area](https://github.com/amirmahdinezhad/agent-rtl/security), use it. Otherwise, open an issue only to request a private contact channel; keep vulnerability details private.
 

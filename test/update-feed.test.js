@@ -66,7 +66,7 @@ describe('verified GUI update feeds', () => {
     it('authenticates beta-tagged downloads while retaining a numeric runtime version', () => {
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-beta-release-'));
         try {
-            const artifact = path.join(dir, 'Agent-RTL-2.4.2-darwin-arm64.zip'); fs.writeFileSync(artifact, 'beta artifact');
+            const artifact = path.join(dir, 'Rasta-2.4.2-darwin-arm64.zip'); fs.writeFileSync(artifact, 'beta artifact');
             const { privateKey } = generateKeyPairSync('ed25519');
             const options = { artifact, repository: 'owner/agent-rtl', platform: 'darwin-arm64', version: '2.4.2',
                 supportedAppVersions: ['26.1021.31345'], privateKey: privateKey.export({ format: 'pem', type: 'pkcs8' }) };
@@ -74,7 +74,7 @@ describe('verified GUI update feeds', () => {
             const manifest = verifyReleaseEnvelope(release.envelope, release.publicKey, 'darwin-arm64');
             assert.equal(manifest.agentVersion, '2.4.2');
             assert.deepEqual(manifest.releaseNotes, []);
-            assert.equal(manifest.artifact.url, 'https://github.com/owner/agent-rtl/releases/download/v2.4.2-beta.1/Agent-RTL-2.4.2-darwin-arm64.zip');
+            assert.equal(manifest.artifact.url, 'https://github.com/owner/agent-rtl/releases/download/v2.4.2-beta.1/Rasta-2.4.2-darwin-arm64.zip');
             for (const tag of ['v2.4.3-beta.1', 'v2.4.2/../../other', 'v2.4.2-beta.1?redirect=elsewhere'])
                 assert.throws(() => signedManifest({ ...options, tag }), /Invalid release tag/);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
@@ -83,7 +83,7 @@ describe('verified GUI update feeds', () => {
         await assert.rejects(boundedText(new Response('oversized'), 4), /too large/);
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-release-'));
         try {
-            const artifact = path.join(dir, 'Agent-RTL-2.1.0-darwin-arm64.zip'); fs.writeFileSync(artifact, 'fixture archive');
+            const artifact = path.join(dir, 'Rasta-2.1.0-darwin-arm64.zip'); fs.writeFileSync(artifact, 'fixture archive');
             const { privateKey } = generateKeyPairSync('ed25519');
             const release = signedManifest({ artifact, repository: 'owner/agent-rtl', platform: 'darwin-arm64', version: '2.1.0',
                 releaseNotes: ['Show the installed version.', 'Preview changes before downloading.'],

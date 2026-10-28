@@ -19,7 +19,7 @@ function install({ app, ipcMain, session }, config) {
         seen.add(ses);
     };
     app.on('session-created', register);
-    app.whenReady().then(() => register(session.defaultSession)).catch(error => console.error('[Agent RTL]', error.message));
+    app.whenReady().then(() => register(session.defaultSession)).catch(error => console.error('[Rasta]', error.message));
     let busy = false;
     ipcMain.handle(CHANNEL, async (event, action, input) => {
         const frame = event.senderFrame;

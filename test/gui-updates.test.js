@@ -93,13 +93,13 @@ it('waits for manual quit, supports cancellation, and does not commit unsupporte
     }
 });
 
-it('hands the operation to the authenticated new updater instead of keeping the old installer code', { skip: os.platform() !== 'darwin' }, async () => {
+for (const setupName of ['Rasta Setup.app', 'Agent RTL Setup.app']) it(`hands the operation to the authenticated updater from ${setupName}`, { skip: os.platform() !== 'darwin' }, async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-handoff-')), saved = process.env.ARTL_CODEX_STATE_HOME;
     try {
         process.env.ARTL_CODEX_STATE_HOME = dir;
         const app = await nativeFixture(path.join(dir, 'app'), '26.1016.61520', false), paths = guiPaths();
         const folder = path.join(paths.jobs, 'handoff'); fs.mkdirSync(folder, { recursive: true });
-        const releaseApp = path.join(dir, 'release/Agent RTL Setup.app'), runtime = path.join(releaseApp, 'Contents/Resources/runtime');
+        const releaseApp = path.join(dir, 'release', setupName), runtime = path.join(releaseApp, 'Contents/Resources/runtime');
         fs.mkdirSync(path.join(runtime, 'bin'), { recursive: true });
         fs.writeFileSync(path.join(runtime, 'package.json'), JSON.stringify({ version: '2.1.0' }));
         fs.symlinkSync(process.execPath, path.join(runtime, 'node'));

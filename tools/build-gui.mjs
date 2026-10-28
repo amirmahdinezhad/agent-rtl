@@ -8,7 +8,7 @@ import { copyPackage, copyPortableNode } from '../bin/lib/gui-runtime.js';
 import { edKey, trustedURL } from '../bin/lib/update-feed.js';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const t3 = process.env.ARTL_TARGET === 't3';
-const output = process.env.ARTL_GUI_OUTPUT ? path.resolve(process.env.ARTL_GUI_OUTPUT) : path.join(root, t3 ? 'dist/Agent RTL T3 Setup.app' : 'dist/Agent RTL Setup.app');
+const output = process.env.ARTL_GUI_OUTPUT ? path.resolve(process.env.ARTL_GUI_OUTPUT) : path.join(root, t3 ? 'dist/Rasta T3 Setup.app' : 'dist/Rasta Setup.app');
 const helper = path.join(root, 'bin/assets/agent-rtl-ui');
 const identity = process.env.ARTL_CODESIGN_IDENTITY || '-';
 const architecture = process.arch === 'arm64' ? 'arm64' : 'x86_64';
@@ -45,7 +45,7 @@ const node = process.env.ARTL_PORTABLE_NODE || (bundled && path.join(bundled.app
 if (!node || !fs.existsSync(node)) throw new Error('Provide ARTL_PORTABLE_NODE for the distributable macOS Node executable.');
 copyPortableNode(node, runtime);
 fs.copyFileSync(helper, path.join(runtime, 'agent-rtl-ui'));
-const executable = path.join(output, 'Contents/MacOS/Agent RTL Setup'); fs.mkdirSync(path.dirname(executable), { recursive: true }); fs.copyFileSync(helper, executable);
+const executable = path.join(output, 'Contents/MacOS/Rasta Setup'); fs.mkdirSync(path.dirname(executable), { recursive: true }); fs.copyFileSync(helper, executable);
 const artwork = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-rtl-artwork-'));
 try {
     const iconset = path.join(artwork, 'AgentRTL.iconset'); fs.mkdirSync(iconset);
@@ -56,7 +56,7 @@ try {
 } finally { fs.rmSync(artwork, { recursive: true, force: true }); }
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
 const plist = path.join(output, 'Contents/Info.plist');
-fs.writeFileSync(plist, JSON.stringify({ CFBundleName: 'Agent RTL Setup', CFBundleDisplayName: 'Agent RTL', CFBundleExecutable: 'Agent RTL Setup',
+fs.writeFileSync(plist, JSON.stringify({ CFBundleName: 'Rasta Setup', CFBundleDisplayName: t3 ? 'Rasta — RTL for T3 Code' : 'Rasta — RTL for Codex', CFBundleExecutable: 'Rasta Setup',
     CFBundleIdentifier: t3 ? 'dev.agentrtl.t3.setup' : 'dev.agentrtl.setup', CFBundleShortVersionString: pkg.version, CFBundleVersion: pkg.version,
     CFBundlePackageType: 'APPL', CFBundleIconFile: 'AgentRTL.icns', LSMinimumSystemVersion: '13.5', LSUIElement: true, NSHighResolutionCapable: true }));
 execFileSync('/usr/bin/plutil', ['-convert', 'xml1', plist]);

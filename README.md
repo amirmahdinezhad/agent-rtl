@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="bin/assets/agent-rtl-mark.svg" width="72" height="72" alt="Agent RTL">
+  <img src="bin/assets/rasta-mark.svg" width="72" height="72" alt="Rasta">
 </p>
 
-<h1 align="center">Agent RTL</h1>
+<h1 align="center">Rasta — RTL Support for Codex &amp; T3 Code</h1>
 
-<p align="center">Right-to-left reading controls for Codex and T3 Code.</p>
+<p align="center">Read Persian, Arabic and mixed right-to-left (RTL) text in Codex and T3 Code on macOS.</p>
 
 <p align="center">
   <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/latest"><img src="https://img.shields.io/github/v/release/amirmahdinezhad/agent-rtl?label=release&amp;color=ad8cf3" alt="Latest release"></a>
@@ -24,7 +24,9 @@
 
 ## English documentation
 
-Agent RTL adds a floating settings panel inside your coding app. Adjust Persian and English text direction, fonts and appearance while keeping each app’s settings and backups separate.
+Rasta adds right-to-left (RTL) support for Persian, Arabic and mixed-language conversations in Codex and T3 Code on macOS, with a floating settings panel inside your coding app. Adjust Persian and English text direction, fonts and appearance while keeping each app’s settings and backups separate.
+
+The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. Existing settings, backups and signed update feeds retain their original internal identifiers for compatibility.
 
 ### Features
 
@@ -44,8 +46,10 @@ Agent RTL adds a floating settings panel inside your coding app. Adjust Persian 
 | T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
-2. Open **Agent RTL Setup.app** for Codex, or **Agent RTL T3 Setup.app** for T3, and choose **Install / Update RTL**.
+2. Open the Setup app for Codex or T3 Code, and choose **Install / Update RTL**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
+
+The linked 1.0.1 archives were published under the previous name, **Agent RTL**. Their installers are named **Agent RTL Setup.app** and **Agent RTL T3 Setup.app**. New builds use **Rasta Setup.app** and **Rasta T3 Setup.app**.
 
 ### Update or remove
 
@@ -59,7 +63,7 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 ## راهنمای فارسی
 
-با Agent RTL می‌توانید جهت متن، فونت و ظاهر را از پنلی شناور داخل Codex و T3 Code تنظیم کنید. تنظیمات و نسخهٔ پشتیبان هر برنامه جدا نگه داشته می‌شوند.
+با Rasta می‌توانید جهت متن، فونت و ظاهر را از پنلی شناور داخل Codex و T3 Code تنظیم کنید. تنظیمات و نسخهٔ پشتیبان هر برنامه جدا نگه داشته می‌شوند.
 
 ### قابلیت‌ها
 

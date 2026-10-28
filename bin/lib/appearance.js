@@ -5,7 +5,7 @@ import os from 'node:os';
 import { randomUUID } from 'node:crypto';
 export const themes = ['auto', 'light', 'dark'];
 export const accents = ['auto', '#ad8cf3', '#79adeb', '#68c7a4', '#e9bf59'];
-/** Store only Agent RTL appearance; never change host application preferences. */
+/** Store only Rasta appearance; never change host application preferences. */
 export function saveAppearance(input, home = process.env.ARTL_CODEX_STATE_HOME || os.homedir()) {
     if (!themes.includes(input?.theme) || !accents.includes(input?.accent)) throw new Error('Invalid RTL appearance.');
     const file = path.join(supportPath(home), 'appearance.json');

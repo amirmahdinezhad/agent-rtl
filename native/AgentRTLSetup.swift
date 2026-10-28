@@ -25,13 +25,22 @@ enum Palette {
 
 func drawBrand(in rect: NSRect) {
     let side = min(rect.width, rect.height)
-    Palette.primary.setFill()
+    NSColor(srgbRed: 37 / 255, green: 37 / 255, blue: 41 / 255, alpha: 1).setFill()
     NSBezierPath(roundedRect: rect, xRadius: side * 0.23, yRadius: side * 0.23).fill()
-    let path = NSBezierPath(); path.lineWidth = side * 0.058; path.lineCapStyle = .round; path.lineJoinStyle = .round
-    func point(_ x: CGFloat, _ y: CGFloat) -> NSPoint { NSPoint(x: rect.minX + side * x / 24, y: rect.minY + side * y / 24) }
-    path.move(to: point(5, 16)); path.line(to: point(18, 16)); path.move(to: point(14.5, 19.5)); path.line(to: point(18, 16)); path.line(to: point(14.5, 12.5))
-    path.move(to: point(19, 8)); path.line(to: point(6, 8)); path.move(to: point(9.5, 11.5)); path.line(to: point(6, 8)); path.line(to: point(9.5, 4.5))
-    Palette.onAccent.setStroke(); path.stroke()
+    NSColor(srgbRed: 173 / 255, green: 140 / 255, blue: 243 / 255, alpha: 1).setFill()
+    // Match the approved right-aligned text mark; AppKit's Y axis points up.
+    func point(_ x: CGFloat, _ y: CGFloat) -> NSPoint { NSPoint(x: rect.minX + side * x / 24, y: rect.minY + side * (24 - y) / 24) }
+    for (left, top) in [(CGFloat(4), CGFloat(5)), (8, 10.25), (12, 15.5)] {
+        let line = NSBezierPath(), bottom = top + 3.5
+        line.move(to: point(left + 1.75, top)); line.line(to: point(19.4, top))
+        line.curve(to: point(20, top + 0.6), controlPoint1: point(19.8, top), controlPoint2: point(20, top + 0.2))
+        line.line(to: point(20, bottom - 0.6))
+        line.curve(to: point(19.4, bottom), controlPoint1: point(20, bottom - 0.2), controlPoint2: point(19.8, bottom))
+        line.line(to: point(left + 1.75, bottom))
+        line.curve(to: point(left, top + 1.75), controlPoint1: point(left + 0.7835, bottom), controlPoint2: point(left, top + 2.7165))
+        line.curve(to: point(left + 1.75, top), controlPoint1: point(left, top + 0.7835), controlPoint2: point(left + 0.7835, top))
+        line.close(); line.fill()
+    }
 }
 
 final class BrandView: NSView {
@@ -167,11 +176,11 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.setActivationPolicy(.accessory)
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 276), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
         window.contentView = CanvasView(frame: NSRect(x: 0, y: 0, width: 400, height: 276))
-        window.title = "Agent RTL"; window.titlebarAppearsTransparent = true; window.titleVisibility = .visible; window.backgroundColor = Palette.canvas; window.delegate = self; window.isReleasedWhenClosed = false
+        window.title = "Rasta — RTL for " + hostName; window.titlebarAppearsTransparent = true; window.titleVisibility = .visible; window.backgroundColor = Palette.canvas; window.delegate = self; window.isReleasedWhenClosed = false
         let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .centerX; stack.spacing = 16; stack.detachesHiddenViews = true; stack.translatesAutoresizingMaskIntoConstraints = false; window.contentView!.addSubview(stack)
         NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: window.contentView!.leadingAnchor, constant: 24), stack.trailingAnchor.constraint(equalTo: window.contentView!.trailingAnchor, constant: -24), stack.topAnchor.constraint(equalTo: window.contentView!.topAnchor, constant: 24), stack.bottomAnchor.constraint(equalTo: window.contentView!.bottomAnchor, constant: -24)])
         mark.widthAnchor.constraint(equalToConstant: 56).isActive = true; mark.heightAnchor.constraint(equalToConstant: 56).isActive = true; stack.addArrangedSubview(mark)
-        if let data = try? Data(contentsOf: URL(fileURLWithPath: runtime + "/package.json")), let pkg = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let current = pkg["version"] as? String { version.stringValue = "Agent RTL " + current }
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: runtime + "/package.json")), let pkg = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let current = pkg["version"] as? String { version.stringValue = "Rasta " + current }
         version.font = appFont(11); version.textColor = Palette.muted; version.alignment = .center
         version.setContentCompressionResistancePriority(.required, for: .vertical); stack.addArrangedSubview(version)
         title.font = appFont(22, bold: true); title.textColor = Palette.text; title.alignment = .center; title.maximumNumberOfLines = 0
@@ -202,7 +211,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 let expected = [CGFloat((rgb >> 16) & 255), CGFloat((rgb >> 8) & 255), CGFloat(rgb & 255)].map { $0 / 255 }
                 precondition(zip([actual.redComponent, actual.greenComponent, actual.blueComponent], expected).allSatisfy { abs($0 - $1) < 0.005 }, "Setup accent differs from the selected panel accent")
             }
-            print("Agent RTL native window started with \(appFont(13).fontName)"); DispatchQueue.main.async { NSApp.terminate(nil) }; return
+            print("Rasta native window started with \(appFont(13).fontName)"); DispatchQueue.main.async { NSApp.terminate(nil) }; return
         }
         if let index = CommandLine.arguments.firstIndex(of: "--preview-ui"), CommandLine.arguments.count > index + 1 {
             renderPreviews(to: CommandLine.arguments[index + 1]); NSApp.terminate(nil); return
@@ -280,7 +289,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
             ("complete", "RTL is ready", "Your reading controls are ready to use.", "Open Codex", nil),
             ("unsupported", "A compatible update is needed", "No compatible release is available yet.", "Check again", nil),
             ("error", "Could not finish", "The download was interrupted. Check your connection, then try again.", "Try again", nil),
-            ("long-error", "Could not finish", "Codex opened, but the new RTL panel did not confirm startup. Close and reopen Codex, then try again. If this continues, check that you are opening the same Codex installation that you selected in Agent RTL Setup.", "Try again", nil)
+            ("long-error", "Could not finish", "Codex opened, but the new RTL panel did not confirm startup. Close and reopen Codex, then try again. If this continues, check that you are opening the same Codex installation that you selected in Rasta Setup.", "Try again", nil)
         ]
         do {
             try FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
@@ -315,7 +324,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func loadPlan() {
         show("Checking RTL…"); install.isEnabled = false; progress.isHidden = true
         rpc("status", setup: !watching) { value in
-            if let current = value["installedAgentVersion"] as? String ?? value["agentVersion"] as? String { self.version.stringValue = "Agent RTL " + current }
+            if let current = value["installedAgentVersion"] as? String ?? value["agentVersion"] as? String { self.version.stringValue = "Rasta " + current }
             self.appPath = value["app"] as? String ?? self.appPath
             if value["running"] as? Bool == true, let operation = value["operation"] as? [String: Any], let id = operation["id"] as? String {
                 self.busy = true; self.requestedJob = true; self.expectedJobID = id; self.refresh(); return
@@ -343,7 +352,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let target = release["agentVersion"] as? String
         let notes = (release["releaseNotes"] as? [String] ?? []).prefix(3).map { "• " + String($0.prefix(120)) }
         let detail = (["Download now. Restart Codex when you're ready."] + notes).joined(separator: "\n")
-        show(target.map { "Agent RTL " + $0 + " is ready" } ?? "An RTL update is ready", detail)
+        show(target.map { "Rasta " + $0 + " is ready" } ?? "An RTL update is ready", detail)
     }
     func checkUpdates() {
         show(phaseTitles["checking"]!, phaseDetails["checking"]!); install.isEnabled = false
@@ -402,14 +411,14 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
         progress.doubleValue = (state["progress"] as? Double ?? 0) * 100; progress.isHidden = !activity.isHidden || ["complete", "failed", "cancelled", "ready-to-install"].contains(phase)
         if phase == "complete" {
-            if let current = state["agentVersion"] as? String { version.stringValue = "Agent RTL " + current }
+            if let current = state["agentVersion"] as? String { version.stringValue = "Rasta " + current }
             busy = false
             if state["autoClose"] as? Bool == true {
                 if state["uninstall"] as? Bool == true {
                     if awaitingUninstall { busy = true; return }
                     do { let acknowledgement = try JSONSerialization.data(withJSONObject: ["id": expected, "pid": Int(getpid())]); try acknowledgement.write(to: URL(fileURLWithPath: statusPath + ".ack"), options: .atomic) }
                     catch { showError("RTL was removed, but cleanup could not finish. Try again."); return }
-                    awaitingUninstall = true; busy = true; show("Finishing removal", "Removing Agent RTL settings and helper."); return
+                    awaitingUninstall = true; busy = true; show("Finishing removal", "Removing Rasta settings and helper."); return
                 }
                 timer?.invalidate(); NSApp.terminate(nil); return
             }

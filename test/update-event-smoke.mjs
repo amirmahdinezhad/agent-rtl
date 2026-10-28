@@ -10,7 +10,7 @@ import { guiPaths, saveJSON, readJSON } from '../bin/lib/gui-runtime.js';
 import { updateEventPaths, installUpdateEvent, removeUpdateEvent } from '../bin/lib/update-events.js';
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-event-smoke-'));
 process.env.ARTL_CODEX_STATE_HOME = dir;
-const setup = path.resolve(process.env.ARTL_GUI_OUTPUT || 'dist/Agent RTL Setup.app');
+const setup = path.resolve(process.env.ARTL_GUI_OUTPUT || 'dist/Rasta Setup.app');
 const source = path.join(setup, 'Contents/Resources/runtime');
 let config;
 try {

@@ -81,7 +81,8 @@ function extractZip(file, destination) {
     execFileSync('/usr/bin/ditto', ['-x', '-k', file, destination], { stdio: 'pipe' });
 }
 function findApp(folder, expectedName = null) {
-    const apps = fs.readdirSync(folder, { withFileTypes: true }).filter(e => e.isDirectory() && e.name.endsWith('.app') && (!expectedName || e.name === expectedName));
+    // Signed releases published before the rename retain their original bundle names.
+    const apps = fs.readdirSync(folder, { withFileTypes: true }).filter(e => e.isDirectory() && e.name.endsWith('.app') && (!expectedName || [expectedName, expectedName.replace('Rasta', 'Agent RTL')].includes(e.name)));
     if (apps.length !== 1) throw new Error('The signed update contains an unexpected application layout.');
     return path.join(folder, apps[0].name);
 }
@@ -133,7 +134,7 @@ export async function runGUIJob(job, overrides = {}) {
             checkCancellation();
             if (interactive && (update.requiresAppUpdate || update.appUpdate)) throw new Error('Update Codex to ' + update.targetVersion + ' first, then try again.');
             if (!interactive && !update.available) throw new Error('No update is available.');
-            if (!update.supported) throw new Error('The new ChatGPT version needs a compatible Agent RTL release.');
+            if (!update.supported) throw new Error('The new ChatGPT version needs a compatible Rasta release.');
             if (update.release) {
                 publish({ phase: 'downloading-agent', progress: 0 });
                 const archive = path.join(job.folder, 'agent.zip');
@@ -141,12 +142,12 @@ export async function runGUIJob(job, overrides = {}) {
                 await (overrides.download || releaseDownload)(update.release.artifact, archive, { kind: 'release', signal: controller.signal,
                     progress: progressFor('downloading-agent') });
                 const extracted = path.join(job.folder, 'agent'); extractZip(archive, extracted);
-                const app = findApp(extracted, targetId() === 't3' ? 'Agent RTL T3 Setup.app' : 'Agent RTL Setup.app');
+                const app = findApp(extracted, targetId() === 't3' ? 'Rasta T3 Setup.app' : 'Rasta Setup.app');
                 const sourceRuntime = path.join(app, 'Contents/Resources/runtime');
                 const releasePackage = readJSON(path.join(sourceRuntime, 'package.json'));
                 const downloadedTarget = readJSON(path.join(sourceRuntime, 'bin/release-config.json'))?.target || 'codex';
                 if (downloadedTarget !== targetId()) throw new Error('Downloaded RTL installer belongs to another application.');
-                if (releasePackage?.version !== update.release.agentVersion || !fs.existsSync(path.join(sourceRuntime, 'node'))) throw new Error('Agent RTL archive does not match its signed release.');
+                if (releasePackage?.version !== update.release.agentVersion || !fs.existsSync(path.join(sourceRuntime, 'node'))) throw new Error('Rasta archive does not match its signed release.');
                 const runtime = path.join(paths.runtimes, `${update.release.agentVersion}-${randomUUID()}`);
                 fs.cpSync(sourceRuntime, runtime, { recursive: true, verbatimSymlinks: true });
                 next = { ...config, runtime, agentVersion: update.release.agentVersion, verifiedReleaseVersion: update.release.agentVersion };
@@ -177,7 +178,7 @@ export async function runGUIJob(job, overrides = {}) {
                 execFileSync('/usr/bin/lipo', ['-verify_arch', item.arch === 'x64' ? 'x86_64' : 'arm64', official.executable], { stdio: 'pipe' });
             }
         } else if (action === 'repair') {
-            if (!releaseConfiguration().supportedAppVersions.includes(bundle.version)) throw new Error('This ChatGPT version needs a compatible Agent RTL release.');
+            if (!releaseConfiguration().supportedAppVersions.includes(bundle.version)) throw new Error('This ChatGPT version needs a compatible Rasta release.');
         }
         if (action !== 'restore') {
             checkCancellation(); publish({ phase: 'preparing', progress: 0 });
@@ -193,7 +194,7 @@ export async function runGUIJob(job, overrides = {}) {
             const latest = await (overrides.check || checkGUIUpdates)(next);
             checkCancellation();
             if (latest.requiresAppUpdate || latest.appUpdate) throw new Error('Update Codex to ' + latest.targetVersion + ' first, then try again.');
-            if (!latest.supported) throw new Error('A compatible Agent RTL release is needed.');
+            if (!latest.supported) throw new Error('A compatible Rasta release is needed.');
             publish({ phase: 'quitting', progress: 1 });
             // Only this explicit Install approval can request normal termination.
             if (running(bundle)) (overrides.quit || requestCodexQuit)(bundle.app);

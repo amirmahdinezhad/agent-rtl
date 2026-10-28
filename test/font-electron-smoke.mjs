@@ -16,7 +16,7 @@ const result = path.join(folder, 'result.json');
 try {
     for (const name of ['main.cjs', 'bridge.cjs', 'preload.cjs']) fs.copyFileSync(new URL(`../bin/host/${name}`, import.meta.url), path.join(host, name));
     fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'agent-rtl-font-fixture', version: '1.0.0', main: 'agent-rtl/main.cjs' }));
-    fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Agent RTL Font Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'fixture.cjs' }));
+    fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Rasta Font Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'fixture.cjs' }));
     fs.symlinkSync(process.execPath, path.join(runtime, 'node'));
     const preferencesModule = new URL('../bin/lib/font-preferences.js', import.meta.url).href;
     fs.writeFileSync(path.join(runtime, 'bin/gui-service.js'), `

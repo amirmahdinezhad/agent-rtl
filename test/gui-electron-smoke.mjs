@@ -16,7 +16,7 @@ const sentinel = path.join(folder, 'original-main.cjs');
 try {
     for (const name of ['main.cjs', 'bridge.cjs', 'preload.cjs']) fs.copyFileSync(new URL(`../bin/host/${name}`, import.meta.url), path.join(host, name));
     fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'agent-rtl-fixture', version: '1.0.0', main: 'agent-rtl/main.cjs' }));
-    fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Agent RTL Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'original-main.cjs' }));
+    fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Rasta Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'original-main.cjs' }));
     fs.symlinkSync(process.execPath, path.join(runtime, 'node'));
     fs.writeFileSync(path.join(runtime, 'bin/gui-service.js'), `const fs=require('fs');const action=process.argv[process.argv.indexOf('--rpc')+1];fs.appendFileSync(${JSON.stringify(calls)},JSON.stringify(action)+String.fromCharCode(10));
 const operation=fs.existsSync(${JSON.stringify(calls + '.prepared')})?{phase:'ready-to-install',progress:1}:null;

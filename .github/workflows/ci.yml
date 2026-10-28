@@ -11,9 +11,9 @@ jobs:
       matrix:
         include:
           - target: codex
-            setup: Agent RTL Setup.app
+            setup: Rasta Setup.app
           - target: t3
-            setup: Agent RTL T3 Setup.app
+            setup: Rasta T3 Setup.app
     runs-on: macos-15
     env:
       ARTL_TARGET: ${{ matrix.target }}
@@ -39,12 +39,12 @@ jobs:
       - name: Archive development build
         run: |
           if [ "$ARTL_TARGET" = t3 ]; then
-            ditto -c -k --keepParent 'dist/Agent RTL T3 Setup.app' dist/Agent-RTL-development.zip
+            ditto -c -k --keepParent 'dist/Rasta T3 Setup.app' dist/Rasta-development.zip
           else
-            ditto -c -k --keepParent 'dist/Agent RTL Setup.app' dist/Agent-RTL-development.zip
+            ditto -c -k --keepParent 'dist/Rasta Setup.app' dist/Rasta-development.zip
           fi
       - uses: actions/upload-artifact@v4
         with:
-          name: Agent-RTL-development-${{ matrix.target }}
-          path: dist/Agent-RTL-development.zip
+          name: Rasta-development-${{ matrix.target }}
+          path: dist/Rasta-development.zip
           retention-days: 7

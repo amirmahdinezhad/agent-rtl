@@ -58,7 +58,7 @@ async function main() {
     if (action === 'status') {
         const running = activeWorker(); let operation = readJSON(paths.status);
         if (operation && ['starting', 'checking', 'downloading-agent', 'downloading-app', 'verifying', 'preparing', 'ready-to-install', 'quitting', 'waiting-for-quit', 'installing', 'reopening'].includes(operation.phase) && !running)
-            operation = { ...operation, phase: 'failed', error: 'The installer stopped. Please retry from Agent RTL.' };
+            operation = { ...operation, phase: 'failed', error: 'The installer stopped. Please retry from Rasta.' };
         const patch = inspectNative(bundle).state;
         let installedAgentVersion = null;
         try { installedAgentVersion = JSON.parse(asar.extractFile(bundle.archive, 'agent-rtl/host.json')).agentVersion || null; } catch {}
@@ -71,7 +71,7 @@ async function main() {
             patchCurrent: Boolean(healthy && installedAgentVersion && compareVersions(installedAgentVersion, agentVersion) >= 0),
             patch, operation, update: readJSON(paths.cache), running };
     }
-    if (!config || config.app !== app) throw new Error('Agent RTL setup has not completed for this app.');
+    if (!config || config.app !== app) throw new Error('Rasta setup has not completed for this app.');
     if (action === 'ready') {
         const host = JSON.parse(asar.extractFile(bundle.archive, 'agent-rtl/host.json'));
         if (host.app !== app || host.runtime !== config.runtime) throw new Error('RTL runtime does not match the installed host.');

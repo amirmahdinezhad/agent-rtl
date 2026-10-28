@@ -1,8 +1,8 @@
-# Agent RTL 1.0.1
+# Rasta 1.0.1
 
 - Support Codex `26.1023.51421` (build `22530`); reinstall RTL after the official app update.
 - Keep the original main/preload files and CSP unchanged, preserving app logic and integrity checks.
-- Provide a separate T3 Code (Beta) `0.1.3` package with the same behavior and the updated Agent RTL version.
+- Provide a separate T3 Code (Beta) `0.1.3` package with the same behavior and the updated Rasta version.
 
 Requires macOS 13.5+ and Apple Silicon. Packages are ad hoc signed and are not notarized by Apple. This is a prerelease and does not change the latest release.
 

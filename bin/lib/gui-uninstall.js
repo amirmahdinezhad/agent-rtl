@@ -24,7 +24,7 @@ function removeRegistrations(home, support, jobId, run) {
         run('/bin/launchctl',['bootout',`${domain}/${label}`],{stdio:['pipe','pipe','pipe']});
         let present = true;
         try { run('/bin/launchctl',['print',`${domain}/${label}`],{stdio:['pipe','pipe','pipe']}); } catch { present = false; }
-        if (present) throw new Error('An Agent RTL background registration could not be removed.');
+        if (present) throw new Error('An Rasta background registration could not be removed.');
     }
     const agents = path.join(home, 'Library/LaunchAgents');
     if (fs.existsSync(agents)) for (const name of fs.readdirSync(agents)) {
@@ -35,7 +35,7 @@ function removeRegistrations(home, support, jobId, run) {
     }
 }
 
-/** Remove Agent RTL data after a successful restore, keeping only the active result and job until its window exits. */
+/** Remove Rasta data after a successful restore, keeping only the active result and job until its window exits. */
 export function removeGUIData({ jobId, run = execFileSync } = {}) {
     const paths = guiPaths();
     const home = process.env.ARTL_CODEX_STATE_HOME || os.homedir();

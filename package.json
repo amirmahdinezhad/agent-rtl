@@ -1,9 +1,10 @@
 {
-  "name": "agent-rtl-pro",
+  "name": "rasta",
   "version": "1.0.1",
-  "description": "In-app RTL controls with graphical installation and verified app updates, without a permanent helper.",
+  "description": "Rasta adds right-to-left (RTL) text, Persian and Arabic reading controls, fonts and themes to Codex and T3 Code on macOS.",
   "type": "module",
   "bin": {
+    "rasta": "./bin/index.js",
     "agent-rtl": "./bin/index.js"
   },
   "scripts": {
@@ -28,14 +29,18 @@
     "node": ">=22.12.0"
   },
   "keywords": [
-    "t3code",
+    "rasta",
     "codex",
-    "electron",
+    "t3-code",
+    "t3code",
     "rtl",
+    "right-to-left",
     "persian",
+    "farsi",
     "arabic",
     "hebrew",
-    "patcher"
+    "macos",
+    "typography"
   ],
   "license": "MIT",
   "files": [
