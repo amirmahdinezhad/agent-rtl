@@ -49,7 +49,7 @@ Agent RTL adds a floating settings panel inside your coding app. Adjust Persian 
 
 ### Update or remove
 
-Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened. App data and files in Downloads are preserved.
+Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove RTL** and confirm; the original same-version app is restored and reopened.
 
 ---
 
@@ -73,8 +73,8 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 **پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
 
-- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) · [راهنمای Codex](docs/codex.md)
-- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) · [راهنمای T3](docs/t3.md)
+- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-1.0.1-darwin-arm64.zip) · [Codex guide](docs/codex.md)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.1/Agent-RTL-T3-1.0.1-darwin-arm64.zip) · [T3 guide](docs/t3.md)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update RTL** را انتخاب کنید.
@@ -84,6 +84,6 @@ Use **Check for updates** in the panel to review an available release, then choo
 
 با **Check for updates** نسخهٔ تازه و خلاصهٔ تغییرات را ببینید؛ دانلود با انتخاب جداگانهٔ **Download update** شروع می‌شود.
 
-برای حذف، **Remove RTL** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود؛ اطلاعات برنامه و فایل‌های Downloads حفظ می‌شوند.
+برای حذف، **Remove RTL** را انتخاب و تأیید کنید. نسخهٔ اصلی همان برنامه بازگردانده و دوباره باز می‌شود.
 
 </div>

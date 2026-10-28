@@ -6,6 +6,4 @@ Agent RTL 1.0.1 for Codex `26.1023.51421` on macOS / Apple Silicon.
 2. Choose Install/Update RTL, then **Launch** after preparation. The same Codex app reopens.
 3. Adjust RTL, fonts, theme, accent and per-response direction in the panel. **Remove RTL** restores the original app and reopens Codex.
 
-Settings, fonts and backups: `~/Library/Application Support/Agent RTL/`. Removal preserves Downloads. Installation replaces the app's local signature and may affect features that depend on signing identity.
-
-[Codex update workflow](codex-update-workflow.md) · [Compatibility report](compatibility/26.1023.51421.md)
+Settings, fonts and backups: `~/Library/Application Support/Agent RTL/`. Installation replaces the app's local signature and may affect features that depend on signing identity.
