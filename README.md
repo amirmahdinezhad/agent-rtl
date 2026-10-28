@@ -7,7 +7,7 @@
 <p align="center">Read Persian, Arabic and mixed right-to-left (RTL) text in Codex and T3 Code on macOS.</p>
 
 <p align="center">
-  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-ad8cf3" alt="Rasta 1.0.2 prerelease"></a>
+  <a href="https://github.com/amirmahdinezhad/agent-rtl/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-ad8cf3" alt="Rasta 1.0.2 stable release"></a>
   <a href="https://github.com/amirmahdinezhad/agent-rtl/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/amirmahdinezhad/agent-rtl/ci.yml?branch=main&amp;label=tests" alt="Installer tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/amirmahdinezhad/agent-rtl?color=79adeb" alt="MIT license"></a>
 </p>
@@ -49,7 +49,7 @@ The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. 
 2. Open the Setup app for Codex or T3 Code, and choose **Install / Update Rasta**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
-Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. Both downloads are Rasta 1.0.2 prerelease packages.
+Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. Both downloads are Rasta 1.0.2 stable release packages.
 
 ### Update or remove
 
