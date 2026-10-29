@@ -132,7 +132,7 @@
         .artl-accent-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 12px 0 8px; color: var(--artl-text); font-size: 13px; font-weight: 500; }
         .artl-accent-value { color: var(--artl-muted); font-size: 12px; font-weight: 400; }
         .artl-accent-options { display: grid; grid-template-columns: repeat(4, minmax(44px, 1fr)); gap: 4px; }
-        .artl-widget-container .artl-accent-swatch { position: relative; display: grid; place-items: center; min-width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 10px; background: transparent; }
+        .artl-widget-container .artl-accent-swatch { position: relative; display: grid; place-items: center; justify-self: center; width: 44px; min-width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 10px; background: transparent; }
         .artl-widget-container .artl-accent-swatch:hover { background: var(--artl-canvas); }
         .artl-widget-container .artl-accent-swatch[aria-pressed="true"] { border-color: var(--artl-ink); background: var(--artl-canvas); }
         .artl-accent-dot { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid #80808080; border-radius: 50%; background: var(--artl-swatch); color: var(--artl-swatch-text, #fff); }
