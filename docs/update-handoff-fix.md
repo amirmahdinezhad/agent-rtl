@@ -1,11 +1,13 @@
-# Update handoff fix candidate
+# Update handoff and support migration
 
-Rasta 1.0.4 downloads successfully, but its worker rejects jobs created in the support directory of an earlier installation. Renaming the default support directory broke the handoff before staging or app replacement.
+Each updater download uses its own temporary directory inside the authenticated job. A newer release discovered during handoff cannot reopen or erase the parent's archive. Exclusive file creation, signed manifests, checksums and app-target checks remain enforced.
 
-The fix retains the support directory that owns an authenticated updater runtime. Standalone Setup locates an installed host through the actual ASAR package entry and uses that installation’s support directory. New installations keep the Rasta defaults. No historical brand strings are embedded in the resolver. Job path validation still rejects another installation’s jobs.
+The authenticated worker accepts a handoff in the directory that owns its runtime. Preparation reads the existing installation and original signed backup, but stages a replacement host pointing to the canonical `Rasta` or `Rasta T3` support directory. Neither the existing app nor its support directory moves during download or preparation.
 
-The native Setup queries the same resolver for fonts, appearance, status and cancellation paths. Existing backups stay in place. No automatic app replacement or state migration is performed.
+Only after the user selects Launch and the app has exited does the worker atomically move the support directory and rebase mutable state, job and font paths. Original signed backup bundles and authenticated runtime bytes are not rewritten. A failed application commit restores the prior support paths and metadata.
 
-Regression tests exercise both targets from a differently named support directory, including real worker startup, preparation, explicit-install waiting and cancellation. They also verify standalone discovery and rejection of foreign jobs.
+A temporary directory bridge lets the old parent updater and progress window finish reading their job. After the replacement renderer confirms startup and old workers/windows exit, a bounded canonical helper removes that bridge and obsolete internal runtimes. It verifies the installed host, version, ready signal and bridge destination before cleanup. If takeover or shutdown is incomplete, it retains the bridge and backup for recovery. It never deletes a conflicting destination directory.
 
-The 1.0.5 installers are test candidates for the v1.0.5-beta.1 prerelease. The user authorized a public GitHub prerelease and opt-in testing only on their existing Codex and T3 installations. Stable publication and manual acceptance of this correction remain pending. The exact prerelease ZIP bytes must be retained for stable promotion. Testing a direct Setup installation does not establish acceptance of an upgrade from the panel. Before publication, use a separate signed test feed to verify the closed-panel update dot, Refresh offering 1.0.5 and the in-panel upgrade completing with 1.0.5 shown and normal app behavior. Production-feed acceptance must be recorded separately afterward.
+The new app uses only canonical Rasta paths. The canonical update registration replaces the previous per-app registration after installation succeeds. Codex and T3 data remain independent. Fresh installs already use canonical paths and do not need migration.
+
+Regression checks cover a parent archive present during a second handoff; preservation of that parent archive; preparation and cancellation without moving state; both apps' signed native refresh and original-bundle rollback after migration; conflict refusal; rollback of metadata; cleanup waiting for old processes; and execution from paths containing spaces. Manual panel acceptance remains separate from these automated checks.

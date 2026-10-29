@@ -121,6 +121,36 @@ for (const setupName of ['Rasta Setup.app']) it(`hands the operation to the auth
     }
 });
 
+for (const setupName of ['Rasta Setup.app']) it(`downloads a newer handoff release without overwriting its parent archive from ${setupName}`, { skip: os.platform() !== 'darwin' }, async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-handoff-')), saved = process.env.ARTL_CODEX_STATE_HOME;
+    try {
+        process.env.ARTL_CODEX_STATE_HOME = dir;
+        const app = await nativeFixture(path.join(dir, 'app'), '26.1016.61520', false), paths = guiPaths();
+        const folder = path.join(paths.jobs, 'handoff'); fs.mkdirSync(folder, { recursive: true });
+        const releaseApp = path.join(dir, 'release', setupName), runtime = path.join(releaseApp, 'Contents/Resources/runtime');
+        fs.mkdirSync(path.join(runtime, 'bin'), { recursive: true });
+        fs.writeFileSync(path.join(runtime, 'package.json'), JSON.stringify({ version: '2.1.0' }));
+        fs.symlinkSync(process.execPath, path.join(runtime, 'node'));
+        fs.writeFileSync(path.join(runtime, 'bin/gui-service.js'), `const fs=require('fs');const file=process.argv[process.argv.indexOf('--worker')+1];const job=JSON.parse(fs.readFileSync(file));fs.writeFileSync(${JSON.stringify(paths.status)},JSON.stringify({id:job.id,phase:'complete',agentVersion:job.config.agentVersion}));fs.writeFileSync(${JSON.stringify(path.join(folder, 'new-engine-ran'))},'yes');`);
+        const zip = path.join(dir, 'release.zip'); execFileSync('/usr/bin/ditto', ['-c', '-k', '--keepParent', releaseApp, zip]);
+        fs.writeFileSync(path.join(folder, 'agent.zip'), 'authenticated parent download');
+        const config = { app: app.app, runtime: dir, agentVersion: '2.0.0' };
+        const result = await runGUIJob({ schema: 1, id: 'handoff', folder, config, action: 'prepare' }, {
+            noUI: true, check: async () => ({ available: true, supported: true, appUpdate: null, release: { agentVersion: '2.1.0', artifact: {} } }),
+            download: async (_artifact, file) => { const fd = fs.openSync(file, 'wx'); try { fs.writeFileSync(fd, fs.readFileSync(zip)); } finally { fs.closeSync(fd); } },
+            stage() { throw new Error('The old updater must not stage this release.'); },
+        });
+        assert.equal(result, 'complete');
+        assert.equal(fs.readFileSync(path.join(folder, 'agent.zip'), 'utf8'), 'authenticated parent download', 'each updater cleans only its own download');
+        assert.equal(fs.existsSync(path.join(folder, 'new-engine-ran')), true);
+        assert.equal(readJSON(paths.status).agentVersion, '2.1.0');
+        assert.equal(readJSON(path.join(folder, 'job.json')).config.showWindow, false, 'the existing progress window is reused');
+    } finally {
+        if (saved === undefined) delete process.env.ARTL_CODEX_STATE_HOME; else process.env.ARTL_CODEX_STATE_HOME = saved;
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
+});
+
 it('requires explicit Install approval before requesting quit, and closes the wizard only on verified success', async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-click-install-')), saved = process.env.ARTL_CODEX_STATE_HOME;
     try {

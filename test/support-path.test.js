@@ -62,6 +62,7 @@ for (const target of ['codex', 't3']) it(`keeps ${target} handoff jobs, backups 
                 await delay(50);
             }
             assert.equal(value?.phase, 'ready-to-install', JSON.stringify(value));
+            assert.equal(fs.existsSync(path.join(home, 'Library/Application Support', target === 't3' ? 'Rasta T3' : 'Rasta')), false, 'no support migration before explicit Launch');
             assert.deepEqual(fs.readFileSync(fixture.archive), before, 'preparation never modifies the installed app');
             fs.writeFileSync(path.join(support, 'gui-cancel'), 'cancel');
             assert.equal(await Promise.race([completion, delay(5000).then(() => 'timeout')]), 0);

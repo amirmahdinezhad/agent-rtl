@@ -15,7 +15,7 @@ export function runtimeSupportPath(runtime, home) {
     if (!path.isAbsolute(runtime)) return null;
     const root = path.resolve(runtime), runtimes = path.dirname(root), support = path.dirname(runtimes);
     return path.basename(runtimes) === 'ui-runtimes'
-        && path.dirname(support) === path.join(home, 'Library/Application Support') ? support : null;
+        && path.dirname(support) === path.join(home, 'Library/Application Support') ? (fs.existsSync(support) ? fs.realpathSync(support) : support) : null;
 }
 
 /** Read the installed host through its package entry rather than a historical brand name. */
@@ -32,6 +32,8 @@ export function installedSupportPath({ home, app, target }) {
         return runtimeSupportPath(host.runtime, home);
     } catch { return null; }
 }
+
+export const canonicalSupportPath = (home = process.env.ARTL_CODEX_STATE_HOME || os.homedir()) => path.join(home, 'Library/Application Support', targetId() === 't3' ? 'Rasta T3' : 'Rasta');
 
 export function supportPath(home = process.env.ARTL_CODEX_STATE_HOME || os.homedir()) {
     const own = runtimeSupportPath(runtimeRoot, home);
@@ -56,5 +58,5 @@ export function supportPath(home = process.env.ARTL_CODEX_STATE_HOME || os.homed
             if (installed) return installed;
         }
     }
-    return path.join(home, 'Library/Application Support', target === 't3' ? 'Rasta T3' : 'Rasta');
+    return canonicalSupportPath(home);
 }

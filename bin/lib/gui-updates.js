@@ -1,3 +1,4 @@
+import { planSupportMigration, beginSupportMigration, rollbackSupportMigration, retirePriorUpdateEvent, scheduleSupportCleanup } from './support-migration.js';
 import { resolveReleaseChannel } from './update-channels.js';
 import { removeGUIData, finishGUIUninstall } from './gui-uninstall.js';
 import fs from 'node:fs';
@@ -14,7 +15,7 @@ import { stageNative, stageManagedNative, commitNative, commitManagedNative, dis
 import { guiPaths, saveJSON, readJSON, agentVersion, packageRoot, installedFonts, releaseGUIJob } from './gui-runtime.js';
 import { downloadPrivateArtifact, privateAsset } from './github-release.js';
 import { requestCodexQuit } from './codex-after-quit.js';
-import { installUpdateEvent, removeUpdateEvent } from './update-events.js';
+import { installUpdateEvent, removeUpdateEvent, updateEventPaths } from './update-events.js';
 import { fetchTrusted, boundedText, parseAppcast, verifyReleaseEnvelope, compareVersions, downloadArtifact, VENDOR_KEY } from './update-feed.js';
 
 export function resolveGUIApp(app) {
@@ -118,7 +119,7 @@ export async function runGUIJob(job, overrides = {}) {
     };
     const interactive = ['download-install', 'download-launch'].includes(config.flow);
     const relaunch = config.flow === 'download-launch' && action !== 'restore';
-    let stage, committed = false, ui, uninstalled = false;
+    let stage, migration, downloadFolder, priorEvent, committed = false, ui, uninstalled = false;
     try {
         fs.rmSync(path.join(job.folder, 'once.plist'), { force: true });
         publish({ phase: 'checking', progress: 0 });
@@ -138,14 +139,15 @@ export async function runGUIJob(job, overrides = {}) {
             if (!update.supported) throw new Error('The new ChatGPT version needs a compatible Rasta release.');
             if (update.release) {
                 publish({ phase: 'downloading-agent', progress: 0 });
-                const archive = path.join(job.folder, 'agent.zip');
+                downloadFolder = fs.mkdtempSync(path.join(job.folder, 'rasta-release-'));
+                const archive = path.join(downloadFolder, 'rasta.zip');
                 const source = await resolveReleaseChannel(releaseConfiguration());
                 if (update.channel === 'beta' && source.channel !== 'beta') throw new Error('Beta access changed. Refresh updates and try again.');
                 const releaseDownload = source.privateRepository
                     ? (artifact, file, options) => downloadPrivateArtifact(artifact, file, source.privateRepository, { ...options, ownerId: source.betaOwnerId }) : downloadArtifact;
                 await (overrides.download || releaseDownload)(update.release.artifact, archive, { kind: 'release', signal: controller.signal,
                     progress: progressFor('downloading-agent') });
-                const extracted = path.join(job.folder, 'agent'); extractZip(archive, extracted);
+                const extracted = path.join(downloadFolder, 'extracted'); extractZip(archive, extracted);
                 const app = findApp(extracted, targetId() === 't3' ? 'Rasta T3 Setup.app' : 'Rasta Setup.app');
                 const sourceRuntime = path.join(app, 'Contents/Resources/runtime');
                 const releasePackage = readJSON(path.join(sourceRuntime, 'package.json'));
@@ -186,6 +188,8 @@ export async function runGUIJob(job, overrides = {}) {
         }
         if (action !== 'restore') {
             checkCancellation(); publish({ phase: 'preparing', progress: 0 });
+            migration = planSupportMigration(next, paths.support);
+            if (migration) { priorEvent = updateEventPaths(next.app); next = { ...next, runtime: migration.runtime }; }
             stage = (overrides.stage || prepareGUIStage)({ config: next, official });
         }
         checkCancellation();
@@ -218,6 +222,7 @@ export async function runGUIJob(job, overrides = {}) {
         checkCancellation(); clearInterval(cancellation); publish({ phase: 'installing', progress: 1 });
         if (action === 'restore') (overrides.restore || restoreNative)(bundle);
         else {
+            beginSupportMigration(migration);
             if (stage.report.managedUpdate) (overrides.commitManaged || commitManagedNative)(stage); else (overrides.commit || commitNative)(stage);
             committed = true;
             saveJSON(paths.config, { ...next, showWindow: undefined });
@@ -225,7 +230,7 @@ export async function runGUIJob(job, overrides = {}) {
         committed = true;
         if (interactive) fs.rmSync(paths.cache, { force: true });
         let autoPromptError = null;
-        try { if (action === 'restore') (overrides.removeEvent || removeUpdateEvent)(next); else (overrides.installEvent || installUpdateEvent)(next); }
+        try { if (action === 'restore') (overrides.removeEvent || removeUpdateEvent)(next); else { const event = (overrides.installEvent || installUpdateEvent)(next); retirePriorUpdateEvent(migration, priorEvent, event); } }
         catch (error) { if (action === 'restore') throw error; autoPromptError = error.message; }
         if (relaunch) {
             publish({ phase: 'reopening', progress: 1 });
@@ -245,8 +250,10 @@ export async function runGUIJob(job, overrides = {}) {
         }
         if (action === 'restore') { (overrides.removeData || removeGUIData)({ jobId: job.id }); uninstalled = true; }
         publish({ phase: 'complete', progress: 1, uninstall: uninstalled, targetVersion: official?.version || bundle.version, agentVersion: next.agentVersion, restored: action === 'restore', autoPromptError, autoClose: interactive && !autoPromptError });
+        scheduleSupportCleanup(migration, next.agentVersion);
         return 'complete';
     } catch (error) {
+        if (migration?.started && !committed) rollbackSupportMigration(migration);
         const phase = controller.signal.aborted ? 'cancelled' : 'failed';
         const message = targetId() === 't3' ? error.message.replaceAll('ChatGPT', targetName()).replaceAll('Codex', targetName()) : error.message;
         publish({ phase, error: message, installed: committed }); return phase;
@@ -254,9 +261,10 @@ export async function runGUIJob(job, overrides = {}) {
         clearInterval(cancellation);
         const cleanup = [];
         const attempt = fn => { try { fn(); } catch (error) { cleanup.push(error.message); } };
+        if (downloadFolder) attempt(() => fs.rmSync(downloadFolder, { recursive: true, force: true }));
         if (stage) attempt(() => (overrides.discard || discardNativeStage)(stage));
         // A complete/prior bundle stays in the separate verified backup.
-        for (const name of ['chatgpt.zip', 'agent.zip', 'official', 'agent', 'install-request.json']) attempt(() => fs.rmSync(path.join(job.folder, name), { recursive: true, force: true }));
+        for (const name of ['chatgpt.zip', 'official', 'install-request.json']) attempt(() => fs.rmSync(path.join(job.folder, name), { recursive: true, force: true }));
         attempt(() => fs.rmSync(paths.cancel, { force: true }));
         if (!job.handoffParentPid && !uninstalled) attempt(() => releaseGUIJob(job.id));
         if (uninstalled && !cleanup.length) {
