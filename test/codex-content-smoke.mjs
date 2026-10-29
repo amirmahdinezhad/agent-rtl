@@ -24,8 +24,8 @@ const server = http.createServer((request, response) => {
             response.end(asar.extractFile(bundle.archive, asset.slice(1))); return;
         } catch { response.writeHead(404); response.end(); return; }
     }
-    response.setHeader('Content-Type', request.url === '/agent-rtl-payload.js' ? 'application/javascript' : 'text/html; charset=utf-8');
-    response.end(request.url === '/agent-rtl-payload.js' ? payload : patchHtml(html).html);
+    response.setHeader('Content-Type', request.url === '/rasta-payload.js' ? 'application/javascript' : 'text/html; charset=utf-8');
+    response.end(request.url === '/rasta-payload.js' ? payload : patchHtml(html).html);
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const browser = await chromium.launch({ headless: true, executablePath: process.env.ARTL_CHROMIUM_EXECUTABLE });

@@ -20,7 +20,7 @@ try {
     for (const name of ['bin', 'node_modules', 'node', 'package.json']) fs.symlinkSync(path.join(source, name), path.join(runtime, name));
     // This is an owned stub, not a replacement for the installed Codex UI.
     const marker = path.join(dir, 'wizard.json');
-    fs.writeFileSync(path.join(runtime, 'agent-rtl-ui'), '#!/bin/sh\nexec "' + path.join(source, 'node') + '" "' + path.join(dir, 'ui-stub.mjs') + '" "$@"\n', { mode: 0o755 });
+    fs.writeFileSync(path.join(runtime, 'rasta-ui'), '#!/bin/sh\nexec "' + path.join(source, 'node') + '" "' + path.join(dir, 'ui-stub.mjs') + '" "$@"\n', { mode: 0o755 });
     fs.writeFileSync(path.join(dir, 'ui-stub.mjs'), `import fs from 'node:fs';fs.writeFileSync(${JSON.stringify(marker)},JSON.stringify({pid:process.pid,args:process.argv.slice(2)}));setTimeout(()=>{},1000);`);
     config = { app: app.app, runtime }; saveJSON(guiPaths().config, config);
     const paths = installUpdateEvent(config);

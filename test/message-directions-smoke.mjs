@@ -24,13 +24,13 @@ const server = http.createServer((request, response) => {
         try { response.setHeader('Content-Type', asset.endsWith('.css') ? 'text/css' : 'font/woff2'); response.end(asar.extractFile(bundle.archive, asset.slice(1))); return; }
         catch { response.writeHead(404); response.end(); return; }
     }
-    if (request.url === '/agent-rtl-payload.js') { response.setHeader('Content-Type', 'application/javascript'); response.end(payload); }
+    if (request.url === '/rasta-payload.js') { response.setHeader('Content-Type', 'application/javascript'); response.end(payload); }
     else if (request.url === '/original.js') { response.setHeader('Content-Type', 'application/javascript'); response.end(bootstrap); }
     else { response.setHeader('Content-Type', 'text/html; charset=utf-8'); response.end(patchHtml(html).html); }
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const browser = await chromium.launch({ headless: true, executablePath: process.env.ARTL_CHROMIUM_EXECUTABLE });
-const prefix = 'agent-rtl:message-direction:v1:';
+const prefix = 'rasta:message-direction:v1:';
 const key = (thread, message) => prefix + JSON.stringify(['codex', 'local', thread, message]);
 const output = new URL('../dist/message-direction-preview/', import.meta.url);
 fs.mkdirSync(output, { recursive: true });
@@ -163,7 +163,7 @@ try {
     // Saving errors keep the prior direction and report the failure in place.
     await page.evaluate(() => {
         window.originalSetItem = Storage.prototype.setItem;
-        Storage.prototype.setItem = function(key, value) { if (key.startsWith('agent-rtl:message-direction:v1:')) throw new Error('Quota'); return window.originalSetItem.call(this, key, value); };
+        Storage.prototype.setItem = function(key, value) { if (key.startsWith('rasta:message-direction:v1:')) throw new Error('Quota'); return window.originalSetItem.call(this, key, value); };
     });
     await choose('response-a', 'RTL');
     assert.equal(await page.getByRole('status').last().textContent(), 'Couldn’t save direction. Try again.');
@@ -176,7 +176,7 @@ try {
     // Deleting the preference can fail too; keep the existing direction.
     await page.evaluate(() => {
         window.originalRemoveItem = Storage.prototype.removeItem;
-        Storage.prototype.removeItem = function(key) { if (key.startsWith('agent-rtl:message-direction:v1:')) throw new Error('Denied'); return window.originalRemoveItem.call(this, key); };
+        Storage.prototype.removeItem = function(key) { if (key.startsWith('rasta:message-direction:v1:')) throw new Error('Denied'); return window.originalRemoveItem.call(this, key); };
     });
     await choose('response-a', 'Default');
     assert.equal(await page.getByRole('status').last().textContent(), 'Couldn’t save direction. Try again.');
@@ -212,7 +212,7 @@ try {
     const bounds = await page.getByRole('menu').boundingBox();
     assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 360 && bounds.y >= 0 && bounds.y + bounds.height <= 640);
     await page.screenshot({ path: new URL('narrow.png', output).pathname, fullPage: true });
-    await page.evaluate(() => window.__agentRTLPro.dispose());
+    await page.evaluate(() => window.__rastaPro.dispose());
     assert.equal(await controls.count(), 0);
     assert.equal(await page.getByRole('menu').count(), 0);
     assert.equal(await page.locator('#artl-message-direction-style').count(), 0);

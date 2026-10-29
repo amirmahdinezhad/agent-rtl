@@ -10,12 +10,12 @@ import { buildCodexPayload } from '../bin/lib/codex.js';
 const t3 = process.env.ARTL_TEST_TARGET === 't3';
 const require = createRequire(import.meta.url), electron = require('electron');
 const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-font-electron-'));
-const host = path.join(folder, 'agent-rtl'), runtime = path.join(folder, 'runtime');
+const host = path.join(folder, 'rasta'), runtime = path.join(folder, 'runtime');
 fs.mkdirSync(host); fs.mkdirSync(path.join(runtime, 'bin'), { recursive: true });
 const result = path.join(folder, 'result.json');
 try {
     for (const name of ['main.cjs', 'bridge.cjs', 'preload.cjs']) fs.copyFileSync(new URL(`../bin/host/${name}`, import.meta.url), path.join(host, name));
-    fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'agent-rtl-font-fixture', version: '1.0.0', main: 'agent-rtl/main.cjs' }));
+    fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'rasta-font-fixture', version: '1.0.0', main: 'rasta/main.cjs' }));
     fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Rasta Font Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'fixture.cjs' }));
     fs.symlinkSync(process.execPath, path.join(runtime, 'node'));
     const preferencesModule = new URL('../bin/lib/font-preferences.js', import.meta.url).href;
@@ -55,18 +55,18 @@ app.whenReady().then(async()=>{
  if(${JSON.stringify(focusBeforeFile)})await evaluate("window.dispatchEvent(new Event('focus'))");
  const refreshing=await evaluate("document.querySelector('#artl-font-add').disabled");
  await win.webContents.debugger.sendCommand('DOM.setFileInputFiles',{nodeId,files:[${JSON.stringify(fontFile)}]});
- for(let i=0;i<150;i++){const ready=await evaluate("!document.querySelector('#artl-font-add').disabled && (getComputedStyle(document.querySelector('#sidebar')).fontFamily.includes('AgentRTLUser_') || !document.querySelector('.artl-font-error').hidden)");if(ready)break;await pause(30)}
+ for(let i=0;i<150;i++){const ready=await evaluate("!document.querySelector('#artl-font-add').disabled && (getComputedStyle(document.querySelector('#sidebar')).fontFamily.includes('RastaUser_') || !document.querySelector('.artl-font-error').hidden)");if(ready)break;await pause(30)}
  const state=await evaluate("({secure:isSecureContext,crypto:typeof crypto.subtle,font:getComputedStyle(document.querySelector('#sidebar')).fontFamily,selected:document.querySelector('#artl-app-font').innerText,error:document.querySelector('.artl-font-error').hidden?'':document.querySelector('.artl-font-error').innerText,files:document.querySelector('#artl-font-file').files.length})");
- assert.match(state.font,/AgentRTLUser_/,JSON.stringify({...state,refreshingAtFileSelection:refreshing}));
- const saved=await evaluate("agentRTLNative.fonts().then(value=>({selected:value.selected,count:value.fonts.length,label:value.fonts.find(font=>font.id===value.selected)?.label}))");
+ assert.match(state.font,/RastaUser_/,JSON.stringify({...state,refreshingAtFileSelection:refreshing}));
+ const saved=await evaluate("rastaNative.fonts().then(value=>({selected:value.selected,count:value.fonts.length,label:value.fonts.find(font=>font.id===value.selected)?.label}))");
  assert.notEqual(saved.selected,'vazir');assert.equal(saved.count,1);
  await win.webContents.debugger.sendCommand('CSS.enable');
  const {nodeId:sidebarNode}=await win.webContents.debugger.sendCommand('DOM.querySelector',{nodeId:root.nodeId,selector:'#sidebar'});
  const {fonts:renderedFonts}=await win.webContents.debugger.sendCommand('CSS.getPlatformFontsForNode',{nodeId:sidebarNode});
  assert.ok(renderedFonts.some(font=>font.isCustomFont&&font.glyphCount>0&&font.familyName===saved.label),'The imported face must actually render the Persian glyphs.');
  await new Promise(resolve=>{win.webContents.once('did-finish-load',resolve);win.reload();});
- for(let i=0;i<150;i++){if(await evaluate("!!document.querySelector('#sidebar') && getComputedStyle(document.querySelector('#sidebar')).fontFamily.includes('AgentRTLUser_')"))break;await pause(30)}
- assert.match(await evaluate("getComputedStyle(document.querySelector('#sidebar')).fontFamily"),/AgentRTLUser_/);
+ for(let i=0;i<150;i++){if(await evaluate("!!document.querySelector('#sidebar') && getComputedStyle(document.querySelector('#sidebar')).fontFamily.includes('RastaUser_')"))break;await pause(30)}
+ assert.match(await evaluate("getComputedStyle(document.querySelector('#sidebar')).fontFamily"),/RastaUser_/);
  fs.writeFileSync(${JSON.stringify(result)},JSON.stringify({ok:true,state}));app.exit(0);
 }).catch(error=>{fs.writeFileSync(${JSON.stringify(result)},JSON.stringify({ok:false,error:error.stack}));app.exit(1)});`;
     if (t3) fixtureCode = fixtureCode.replaceAll("scheme:'app'", "scheme:'t3code'").replaceAll("protocol.handle('app'", "protocol.handle('t3code'").replaceAll('app://-', 't3code://app');

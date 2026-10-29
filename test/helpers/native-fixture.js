@@ -19,7 +19,7 @@ export async function nativeFixture(dir, version = '26.1013.40934', signed = tru
     const dictionary = { 'Resources/app.asar': { algorithm: 'SHA256', hash: createHash('sha256').update(asar.getRawHeader(archive).headerString).digest('hex') } };
     const executable = path.join(app, 'Contents/MacOS/Codex'); fs.mkdirSync(path.dirname(executable), { recursive: true });
     const plist = (file, value) => { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(value)); execFileSync('/usr/bin/plutil', ['-convert', 'xml1', file]); };
-    plist(path.join(app, 'Contents/Info.plist'), { CFBundleExecutable: 'Codex', CFBundleIdentifier: 'dev.agentrtl.fixture', CFBundlePackageType: 'APPL', ElectronAsarIntegrity: dictionary });
+    plist(path.join(app, 'Contents/Info.plist'), { CFBundleExecutable: 'Codex', CFBundleIdentifier: 'dev.rasta.fixture', CFBundlePackageType: 'APPL', ElectronAsarIntegrity: dictionary });
     if (!signed) { fs.writeFileSync(executable, 'fixture'); return { app, archive, executable, version }; }
     const framework = path.join(app, 'Contents/Frameworks/' + frameworkName + '.framework'), binary = path.join(framework, 'Versions/A/' + frameworkName);
     const bytes = Buffer.concat([Buffer.from('AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A'), Buffer.from([1, 1]), dictionaryDigest(dictionary)]);
@@ -27,7 +27,7 @@ export async function nativeFixture(dir, version = '26.1013.40934', signed = tru
     fs.writeFileSync(c, `__attribute__((used,section("__DATA_CONST,__asar_integrity"),aligned(1))) static const unsigned char integrity[66] = {${[...bytes].join(',')}}; int main(void) {return 0;}`);
     fs.mkdirSync(path.dirname(binary), { recursive: true });
     execFileSync('/usr/bin/xcrun', ['clang', c, '-o', binary]); fs.copyFileSync(binary, executable);
-    plist(path.join(framework, 'Versions/A/Resources/Info.plist'), { CFBundleExecutable: frameworkName, CFBundleIdentifier: 'dev.agentrtl.fixture-framework', CFBundlePackageType: 'FMWK' });
+    plist(path.join(framework, 'Versions/A/Resources/Info.plist'), { CFBundleExecutable: frameworkName, CFBundleIdentifier: 'dev.rasta.fixture-framework', CFBundlePackageType: 'FMWK' });
     fs.symlinkSync('A', path.join(framework, 'Versions/Current'));
     for (const entry of [frameworkName, 'Resources']) fs.symlinkSync(`Versions/Current/${entry}`, path.join(framework, entry));
     for (const target of [framework, app]) execFileSync('/usr/bin/codesign', ['--force', '--sign', '-', target], { stdio: 'pipe' });

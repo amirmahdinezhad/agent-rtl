@@ -5,7 +5,7 @@
  * This function is embedded verbatim in the renderer payload: keep it closed.
  */
 export function createCodexMessageDirections({ document, window, context, enabled, refresh, icon, beforeOpen }) {
-    const PREFIX = 'agent-rtl:message-direction:v1:';
+    const PREFIX = 'rasta:message-direction:v1:';
     const TARGET = context?.selector || '[data-response-annotation-conversation][data-response-annotation-target]';
     const OWN = '.artl-message-direction-control, .artl-message-direction-menu';
     const choices = ['Default', 'RTL', 'LTR'];
@@ -227,7 +227,7 @@ export function createCodexMessageDirections({ document, window, context, enable
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
     const media = window.matchMedia?.('(prefers-color-scheme: dark)');
     media?.addEventListener?.('change', themeChanged);
-    window.addEventListener('agent-rtl-appearance-change', themeChanged);
+    window.addEventListener('rasta-appearance-change', themeChanged);
     const style = document.createElement('style');
     style.id = 'artl-message-direction-style';
     style.textContent = `
@@ -266,7 +266,7 @@ export function createCodexMessageDirections({ document, window, context, enable
             window.removeEventListener('storage', stored);
             themeObserver.disconnect();
             media?.removeEventListener?.('change', themeChanged);
-            window.removeEventListener('agent-rtl-appearance-change', themeChanged);
+            window.removeEventListener('rasta-appearance-change', themeChanged);
         },
     };
 }

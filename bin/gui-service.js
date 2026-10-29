@@ -61,7 +61,7 @@ async function main() {
             operation = { ...operation, phase: 'failed', error: 'The installer stopped. Please retry from Rasta.' };
         const patch = inspectNative(bundle).state;
         let installedAgentVersion = null;
-        try { installedAgentVersion = JSON.parse(asar.extractFile(bundle.archive, 'agent-rtl/host.json')).agentVersion || null; } catch {}
+        try { installedAgentVersion = JSON.parse(asar.extractFile(bundle.archive, 'rasta/host.json')).agentVersion || null; } catch {}
         let healthy = patch === 'patched-in-app';
         // Only the setup window requests the expensive signature check. Widget polling stays cheap.
         if (healthy && args.includes('--setup')) { try { verifyInstalledNative(bundle); } catch { healthy = false; } }
@@ -73,7 +73,7 @@ async function main() {
     }
     if (!config || config.app !== app) throw new Error('Rasta setup has not completed for this app.');
     if (action === 'ready') {
-        const host = JSON.parse(asar.extractFile(bundle.archive, 'agent-rtl/host.json'));
+        const host = JSON.parse(asar.extractFile(bundle.archive, 'rasta/host.json'));
         if (host.app !== app || host.runtime !== config.runtime) throw new Error('Rasta runtime does not match the installed host.');
         saveJSON(paths.ready, { app, agentVersion: host.agentVersion, at: Date.now() }); return { ready: true };
     }

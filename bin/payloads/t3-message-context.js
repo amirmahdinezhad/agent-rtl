@@ -18,7 +18,7 @@ export function createT3MessageContext({ document, window, changed }) {
             const id = element.getAttribute('data-message-id');
             if (!valid(id) || !view.root.contains(element) || element.closest('.messages-timeline-scroll') !== view.root
                 || element.closest('pre,code,[contenteditable="true"]')) return null;
-            return 'agent-rtl:message-direction:v1:' + JSON.stringify(['t3', view.conversationId, id]);
+            return 'rasta:message-direction:v1:' + JSON.stringify(['t3', view.conversationId, id]);
         },
         dispose() { window.removeEventListener('popstate', changed); },
     };

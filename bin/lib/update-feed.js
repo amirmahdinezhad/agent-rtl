@@ -66,7 +66,7 @@ export function verifyReleaseEnvelope(envelope, key, platform, target = 'codex')
 export async function fetchTrusted(url, { kind = 'vendor', signal, fetcher = fetch } = {}) {
     for (let i = 0; i < 6; i++) {
         url = trustedURL(url, kind);
-        const response = await fetcher(url, { redirect: 'manual', signal, headers: { 'User-Agent': 'AgentRTL-Updater' } });
+        const response = await fetcher(url, { redirect: 'manual', signal, headers: { 'User-Agent': 'Rasta-Updater' } });
         if ([301, 302, 303, 307, 308].includes(response.status)) {
             const location = response.headers.get('location');
             await response.body?.cancel();

@@ -36,7 +36,7 @@ describe('legacy Codex service migration', () => {
             fs.mkdirSync(paths.runtime, { recursive: true });
             fs.mkdirSync(paths.launcher, { recursive: true });
             fs.mkdirSync(path.dirname(paths.agent), { recursive: true });
-            fs.writeFileSync(path.join(paths.launcher, '.agent-rtl-launcher'), SERVICE_LABEL);
+            fs.writeFileSync(path.join(paths.launcher, '.rasta-launcher'), SERVICE_LABEL);
             fs.writeFileSync(paths.agent, 'legacy agent');
             fs.writeFileSync(paths.log, 'legacy log');
             fs.writeFileSync(paths.config, JSON.stringify({ label: SERVICE_LABEL, version: 1, port: 0 }));

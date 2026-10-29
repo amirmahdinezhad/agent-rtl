@@ -64,15 +64,15 @@ export function createCodexArchive(source, destination, payload = buildCodexPayl
         if (typeof pkg.main !== 'string' || pkg.main.includes('..') || path.posix.isAbsolute(pkg.main)
             || pkg.type === 'module' || !lookup(header, pkg.main)) throw new Error('Unsupported Codex main entry for native controls.');
         const originalMain = pkg.main;
-        pkg.main = 'agent-rtl/main.cjs';
+        pkg.main = 'rasta/main.cjs';
         add('package.json', Buffer.from(JSON.stringify(pkg, null, 2) + '\n')); changed.push('package.json');
-        header.files['agent-rtl'] = { files: {} };
+        header.files['rasta'] = { files: {} };
         for (const name of ['main.cjs', 'bridge.cjs', 'preload.cjs']) {
-            add(`agent-rtl/${name}`, fs.readFileSync(new URL(`../host/${name}`, import.meta.url)));
-            added.push(`agent-rtl/${name}`);
+            add(`rasta/${name}`, fs.readFileSync(new URL(`../host/${name}`, import.meta.url)));
+            added.push(`rasta/${name}`);
         }
-        add('agent-rtl/host.json', Buffer.from(JSON.stringify({ ...host, originalMain })));
-        added.push('agent-rtl/host.json');
+        add('rasta/host.json', Buffer.from(JSON.stringify({ ...host, originalMain })));
+        added.push('rasta/host.json');
     }
     const json = Buffer.from(JSON.stringify(header));
     const padded = Math.ceil(json.length / 4) * 4;
@@ -350,7 +350,7 @@ export function stageManagedNative(bundle, official, { payload, host, verifySour
     verifySource(official);
     asar.uncache(bundle.archive);
     const installedHeaderHash = hash(asar.getRawHeader(bundle.archive).headerString);
-    const staging = fs.mkdtempSync(path.join(path.dirname(bundle.app), '.agent-rtl-stage-'));
+    const staging = fs.mkdtempSync(path.join(path.dirname(bundle.app), '.rasta-stage-'));
     const stagedApp = path.join(staging, path.basename(bundle.app));
     try {
         const preview = path.join(staging, 'preview');
@@ -420,7 +420,7 @@ export function stageNative(bundle, { allowLocalSigning = false, payload, host }
         executable: path.join(previous.backup, path.relative(bundle.app, bundle.executable)) } : bundle;
     command('/usr/bin/codesign', ['--verify', '--deep', '--strict', bundle.app]);
     if (refreshing) command('/usr/bin/codesign', ['--verify', '--deep', '--strict', source.app]);
-    const parent = path.dirname(bundle.app), staging = fs.mkdtempSync(path.join(parent, '.agent-rtl-stage-'));
+    const parent = path.dirname(bundle.app), staging = fs.mkdtempSync(path.join(parent, '.rasta-stage-'));
     const stagedApp = path.join(staging, path.basename(bundle.app)), preview = path.join(staging, 'preview');
     try {
         const report = { ...prepareNative(source, preview, { payload, host, htmlPaths: bundle.htmlPaths, scriptSrc: bundle.scriptSrc, allowDisabledIntegrity: bundle.allowDisabledIntegrity }), app: bundle.app, installedHeaderHash, refreshing };
@@ -490,7 +490,7 @@ export function commitNative(stage, { verifyInstalled = verifyInstalledNative } 
 
 export function discardNativeStage(stage) {
     if (path.dirname(stage.staging) !== path.dirname(stage.bundle.app)
-        || !path.basename(stage.staging).startsWith('.agent-rtl-stage-')) throw new Error('Invalid Codex staging path.');
+        || !path.basename(stage.staging).startsWith('.rasta-stage-')) throw new Error('Invalid Codex staging path.');
     fs.rmSync(stage.staging, { recursive: true, force: true });
 }
 
@@ -511,7 +511,7 @@ export function restoreNative(bundle) {
     if (hash(asar.getRawHeader(bundle.archive).headerString) !== state.headerHash) throw new Error('Codex has changed since patching. Refusing to replace an updated app with an older backup.');
     assertCodexClosed(bundle);
     command('/usr/bin/codesign', ['--verify', '--deep', '--strict', state.backup]);
-    const removed = path.join(path.dirname(bundle.app), `.agent-rtl-restore-${randomUUID()}`);
+    const removed = path.join(path.dirname(bundle.app), `.rasta-restore-${randomUUID()}`);
     fs.renameSync(bundle.app, removed);
     try { fs.renameSync(state.backup, bundle.app); }
     catch (error) { fs.renameSync(removed, bundle.app); throw error; }

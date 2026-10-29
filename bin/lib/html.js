@@ -1,4 +1,4 @@
-export const PAYLOAD_FILENAME = 'agent-rtl-payload.js';
+export const PAYLOAD_FILENAME = 'rasta-payload.js';
 
 // Patch a single HTML string by injecting the payload script tag and
 // allowing embedded fonts in CSP when needed.

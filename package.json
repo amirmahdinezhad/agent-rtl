@@ -4,8 +4,7 @@
   "description": "Rasta adds right-to-left (RTL) text, Persian and Arabic reading controls, fonts and themes to Codex and T3 Code on macOS.",
   "type": "module",
   "bin": {
-    "rasta": "./bin/index.js",
-    "agent-rtl": "./bin/index.js"
+    "rasta": "./bin/index.js"
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
@@ -61,10 +60,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amirmahdinezhad/agent-rtl.git"
+    "url": "git+https://github.com/amirmahdinezhad/rasta.git"
   },
-  "homepage": "https://github.com/amirmahdinezhad/agent-rtl#readme",
+  "homepage": "https://github.com/amirmahdinezhad/rasta#readme",
   "bugs": {
-    "url": "https://github.com/amirmahdinezhad/agent-rtl/issues"
+    "url": "https://github.com/amirmahdinezhad/rasta/issues"
   }
 }

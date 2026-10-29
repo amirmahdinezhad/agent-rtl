@@ -32,6 +32,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
         target: args.includes('--target') ? arg('--target') : 'codex',
         version: pkg.version, tag: args.includes('--tag') ? arg('--tag') : undefined, supportedAppVersions: args.includes('--target') && arg('--target') === 't3' ? config.supportedT3Versions : config.supportedAppVersions, privateKey: fs.readFileSync(process.env.ARTL_RELEASE_PRIVATE_KEY_FILE) });
     if (process.env.ARTL_RELEASE_PUBLIC_KEY !== result.publicKey) throw new Error('The release signing key does not match the key embedded in the setup build.');
-    const output = path.resolve(args.includes('--output') ? arg('--output') : 'dist/agent-rtl-release.json');
+    const output = path.resolve(args.includes('--output') ? arg('--output') : 'dist/rasta-release.json');
     fs.writeFileSync(output, JSON.stringify(result.envelope, null, 2) + '\n'); console.log(output);
 }

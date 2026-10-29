@@ -13,7 +13,7 @@ const bundle = process.env.ARTL_USE_CODEX_CSS === '1' ? resolveCodexApp() : null
 const cssFiles = bundle ? asar.listPackage(bundle.archive).filter(name => /^\/webview\/assets\/app-(initial|primary|shared)-[^/]+\.css$/.test(name)) : [];
 if (process.env.ARTL_USE_CODEX_CSS === '1') assert.ok(cssFiles.length);
 const mock = `window.previewCalls=[];window.previewRunning=false;window.previewRelease={available:false,supported:true,phase:'up-to-date'};
-window.agentRTLNative={
+window.rastaNative={
 status:async()=>({agentVersion:'2.4.9',installedAgentVersion:'2.4.8',running:window.previewRunning,operation:{phase:window.previewRunning?'quitting':'complete'},update:window.previewRelease}),
 check:async()=>{window.previewCalls.push('check');return window.previewCheck ? await window.previewCheck : window.previewRelease},
 prepare:async()=>{window.previewCalls.push('prepare');window.previewRunning=true;return{id:'preview'}},
@@ -42,7 +42,7 @@ try {
  const contrast = (a,b) => (Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
  for(const [scheme,width,height] of [['light',1100,900],['dark',1100,900],['light',360,800],['dark',320,700],['light',900,480]]) {
   const context=await browser.newContext({colorScheme:scheme,viewport:{width,height},deviceScaleFactor:2,reducedMotion:'reduce'});
-  await context.addInitScript(()=>localStorage.setItem('agent-rtl-config',JSON.stringify({locale:'fa',layoutDir:true})));
+  await context.addInitScript(()=>localStorage.setItem('rasta-config',JSON.stringify({locale:'fa',layoutDir:true})));
   const page=await context.newPage(); page.on('pageerror',error=>errors.push(error.message)); await page.goto(`http://127.0.0.1:${server.address().port}`);
   const trigger=page.locator('.artl-widget-trigger'), panel=page.locator('.artl-widget-panel');
   assert.equal(await panel.locator('.artl-brand-title').textContent(),'Rasta');
@@ -168,11 +168,11 @@ try {
   await page.keyboard.press('Escape'); assert.equal(await confirm.count(),0); assert.equal(await remove.evaluate(el=>el===document.activeElement),true);
   assert.equal(await page.evaluate(()=>window.previewCalls.includes('restore')),false);
   await remove.click(); await confirm.getByRole('button',{name:'Keep Rasta'}).click(); assert.equal(await confirm.count(),0);
-  await page.evaluate(()=>{localStorage.setItem('unrelated-host-setting','keep');localStorage.setItem('agent-rtl:message-direction:v1:fixture','rtl');});
+  await page.evaluate(()=>{localStorage.setItem('unrelated-host-setting','keep');localStorage.setItem('rasta:message-direction:v1:fixture','rtl');});
   await remove.click(); await confirm.getByRole('button',{name:'Remove Rasta',exact:true}).click();
   await page.waitForFunction(()=>window.previewCalls.includes('restore'));
-  await page.waitForFunction(()=>localStorage.getItem('agent-rtl-config')===null);
-  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-rtl:message-direction:v1:fixture')),null);
+  await page.waitForFunction(()=>localStorage.getItem('rasta-config')===null);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('rasta:message-direction:v1:fixture')),null);
   assert.equal(await page.evaluate(()=>localStorage.getItem('unrelated-host-setting')),'keep');
   assert.equal(await panel.locator('#artl-update-cancel').count(),0);
   assert.equal(await confirm.count(),0); assert.equal(await panel.locator('.artl-update-notice').isHidden(),true);
@@ -293,14 +293,14 @@ try {
  await appearancePage.keyboard.press('Escape');
  assert.equal(await appearancePage.locator('.artl-widget-trigger').getAttribute('aria-expanded'),'false');
  // Invalid or removed accents fall back before paint; failed storage permits live controls.
- await appearancePage.evaluate(()=>localStorage.setItem('agent-rtl-config',JSON.stringify({theme:'invalid',accent:'#ff0000',customAccent:'#ff0000'})));
+ await appearancePage.evaluate(()=>localStorage.setItem('rasta-config',JSON.stringify({theme:'invalid',accent:'#ff0000',customAccent:'#ff0000'})));
  await appearancePage.reload(); await appearancePage.locator('.artl-widget-trigger').click();
  assert.equal(await theme.innerText(),'Auto'); assert.equal(await appearancePage.locator('.artl-accent-value').innerText(),'Lavender');
  await appearancePage.evaluate(()=>{Storage.prototype.setItem=()=>{throw new DOMException('Blocked','SecurityError')}});
  await chooseTheme('Light'); await mint.click();
  assert.equal(await panelBase(),'rgb(255, 255, 255)'); assert.equal(await accentFill(),'rgb(104, 199, 164)');
  // Disposal removes owned CSS and restores theme markers, preserving host styles.
- await appearancePage.evaluate(()=>{document.documentElement.style.setProperty('--host-owned-test','kept');window.__agentRTLPro.dispose()});
+ await appearancePage.evaluate(()=>{document.documentElement.style.setProperty('--host-owned-test','kept');window.__rastaPro.dispose()});
  assert.equal(await appearancePage.locator('#artl-app-appearance-style').count(),0);
  assert.equal(await appearancePage.locator('html').getAttribute('data-artl-app-theme'),null);
  assert.equal(await appearancePage.locator('html').getAttribute('data-artl-app-accent'),null);

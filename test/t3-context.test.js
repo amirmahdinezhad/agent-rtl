@@ -34,10 +34,10 @@ it('isolates T3 settings, fonts, jobs and backups from Codex', () => {
         assert.notEqual(t3.support, codex.support);
         assert.notEqual(t3.jobs, codex.jobs);
         assert.notEqual(t3Fonts.preferences, codexFonts.preferences);
-        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.3']);
-        assert.match(releaseConfiguration().feedUrl, /\/agent-rtl-t3-release\.json$/);
+        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.4']);
+        assert.match(releaseConfiguration().feedUrl, /\/rasta-t3-release\.json$/);
         process.env.ARTL_TARGET = 'codex';
-        assert.match(releaseConfiguration().feedUrl, /\/agent-rtl-release\.json$/);
+        assert.match(releaseConfiguration().feedUrl, /\/rasta-release\.json$/);
         assert.notEqual(releaseConfiguration().feedUrl, releaseConfiguration().t3FeedUrl);
     } finally { if (old === undefined) delete process.env.ARTL_TARGET; else process.env.ARTL_TARGET = old; }
 });
@@ -52,8 +52,8 @@ it('T3 uninstall preserves Codex files and its update registration', async () =>
         process.env.ARTL_TARGET = 't3'; const t3 = guiPaths();
         fs.mkdirSync(t3.support, { recursive: true }); fs.writeFileSync(t3.config, 'remove');
         const agents = path.join(home, 'Library/LaunchAgents'); fs.mkdirSync(agents, { recursive: true });
-        const codexAgent = path.join(agents, 'dev.agentrtl.update.aaaaaaaaaaaa.plist');
-        const t3Agent = path.join(agents, 'dev.agentrtl.update.bbbbbbbbbbbb.plist');
+        const codexAgent = path.join(agents, 'dev.rasta.update.aaaaaaaaaaaa.plist');
+        const t3Agent = path.join(agents, 'dev.rasta.update.bbbbbbbbbbbb.plist');
         fs.writeFileSync(codexAgent, codex.support + '/node'); fs.writeFileSync(t3Agent, t3.support + '/node');
         removeGUIData({ run: () => '' });
         await finishGUIUninstall({ id: 'fixture' }, { waitForWindow: false });

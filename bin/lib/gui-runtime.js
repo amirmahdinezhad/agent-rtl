@@ -43,7 +43,7 @@ export function copyPortableNode(source, destination, license = process.env.ARTL
     fs.copyFileSync(source, path.join(destination, 'node')); fs.chmodSync(path.join(destination, 'node'), 0o755);
     fs.copyFileSync(licenseFile, path.join(destination, 'node-LICENSE'));
 }
-export function snapshotRuntime(bundle, { nativeUI = path.join(packageRoot, 'bin/assets/agent-rtl-ui') } = {}) {
+export function snapshotRuntime(bundle, { nativeUI = path.join(packageRoot, 'bin/assets/rasta-ui') } = {}) {
     const paths = guiPaths(), runtime = path.join(paths.runtimes, `${agentVersion}-${randomUUID()}`);
     fs.mkdirSync(runtime, { recursive: true });
     try {
@@ -57,7 +57,7 @@ export function snapshotRuntime(bundle, { nativeUI = path.join(packageRoot, 'bin
         if (!fs.existsSync(node)) throw new Error('This app has no portable installer runtime.');
         copyPortableNode(node, runtime);
         if (!fs.existsSync(nativeUI)) throw new Error('The native setup interface has not been built.');
-        fs.copyFileSync(nativeUI, path.join(runtime, 'agent-rtl-ui')); fs.chmodSync(path.join(runtime, 'agent-rtl-ui'), 0o755);
+        fs.copyFileSync(nativeUI, path.join(runtime, 'rasta-ui')); fs.chmodSync(path.join(runtime, 'rasta-ui'), 0o755);
         const fonts = collectFonts(); fs.mkdirSync(paths.fonts, { recursive: true });
         const catalog = fonts.all.map((font, i) => { const file = `${i}${font.ext}`; fs.copyFileSync(font.file, path.join(paths.fonts, file)); return { ...font, file, persian: fonts.fa.includes(font), english: fonts.en.includes(font) }; });
         saveJSON(path.join(paths.fonts, 'catalog.json'), catalog);
@@ -108,7 +108,7 @@ export async function launchGUIJob(action, config) {
     catch (error) { fs.rmSync(folder, { recursive: true, force: true }); throw new Error('An update is already starting.', { cause: error }); }
     fs.rmSync(paths.cancel, { force: true });
     const job = path.join(folder, 'job.json'), plist = path.join(folder, 'once.plist'), log = path.join(folder, 'log');
-    const label = `dev.agentrtl.ui.${id}`, domain = `gui/${process.getuid()}`;
+    const label = `dev.rasta.ui.${id}`, domain = `gui/${process.getuid()}`;
     saveJSON(job, { schema: 1, id, action, config, folder });
     saveJSON(paths.status, { id, action, phase: 'starting', app: config.app, progress: 0 });
     saveJSON(plist, { Label: label, ProgramArguments: [path.join(config.runtime, 'node'), path.join(config.runtime, 'bin/gui-service.js'), '--worker', job],

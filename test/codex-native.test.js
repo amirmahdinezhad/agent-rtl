@@ -124,15 +124,15 @@ describe('Codex in-app resources', () => {
             }
             for (const name of report.changed) {
                 const next = asar.extractFile(destination, name).toString();
-                assert.equal(next.match(/agent-rtl-payload.js/g).length, 1);
+                assert.equal(next.match(/rasta-payload.js/g).length, 1);
                 assert.ok(next.includes('src="./assets/original.js"'));
                 assert.ok(next.includes('script-src &#39;self&#39;'));
             }
-            assert.equal(asar.extractFile(destination, 'webview/agent-rtl-payload.js').toString(), 'window.widget = true;');
+            assert.equal(asar.extractFile(destination, 'webview/rasta-payload.js').toString(), 'window.widget = true;');
             assert.throws(() => createCodexArchive(bundle.archive, bundle.archive), /separate destination/);
             const refreshed = path.join(dir, 'refreshed.asar');
             createCodexArchive(destination, refreshed, 'window.widget = "refreshed";');
-            assert.equal(asar.extractFile(refreshed, 'webview/index.html').toString().match(/agent-rtl-payload.js/g).length, 1);
+            assert.equal(asar.extractFile(refreshed, 'webview/index.html').toString().match(/rasta-payload.js/g).length, 1);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
     });
 
@@ -171,16 +171,16 @@ describe('Codex in-app resources', () => {
             fs.writeFileSync(path.join(source, 'boot.cjs'), '// vendor boot');
             const archive = path.join(dir, 'app.asar'), patched = path.join(dir, 'patched.asar');
             await asar.createPackage(source, archive);
-            const options = { htmlPaths: [client + '/index.html'], scriptSrc: '/agent-rtl-payload.js' };
+            const options = { htmlPaths: [client + '/index.html'], scriptSrc: '/rasta-payload.js' };
             const report = createCodexArchive(archive, patched, '// shared panel', options);
             assert.equal(report.originalDataHash, report.preservedDataHash);
             for (const file of ['package.json', 'boot.cjs', client + '/original.js']) assert.deepEqual(asar.extractFile(patched, file), asar.extractFile(archive, file));
-            assert.equal(asar.extractFile(patched, client + '/agent-rtl-payload.js').toString(), '// shared panel');
-            const script = asar.extractFile(patched, client + '/index.html').toString().match(/<script src="([^"]*agent-rtl-payload.js)"><\/script>/)[1];
-            assert.equal(new URL(script, 't3code://app/local/thread-1').href, 't3code://app/agent-rtl-payload.js');
+            assert.equal(asar.extractFile(patched, client + '/rasta-payload.js').toString(), '// shared panel');
+            const script = asar.extractFile(patched, client + '/index.html').toString().match(/<script src="([^"]*rasta-payload.js)"><\/script>/)[1];
+            assert.equal(new URL(script, 't3code://app/local/thread-1').href, 't3code://app/rasta-payload.js');
             const refreshed = path.join(dir, 'refreshed.asar');
             createCodexArchive(patched, refreshed, '// refreshed panel', options);
-            assert.equal(asar.extractFile(refreshed, client + '/index.html').toString().match(/agent-rtl-payload.js/g).length, 1);
+            assert.equal(asar.extractFile(refreshed, client + '/index.html').toString().match(/rasta-payload.js/g).length, 1);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
     });
 
@@ -244,11 +244,11 @@ describe('Codex in-app resources', () => {
             fs.chmodSync(bundle.executable, 0o755); fs.chmodSync(bundle.framework, 0o755);
             const framework = path.dirname(path.dirname(path.dirname(bundle.framework)));
             const resources = path.join(path.dirname(bundle.framework), 'Resources'); fs.mkdirSync(resources);
-            fs.writeFileSync(path.join(resources, 'Info.plist'), JSON.stringify({ CFBundleExecutable: 'Codex Framework', CFBundleIdentifier: 'dev.agentrtl.test-framework', CFBundlePackageType: 'FMWK' }));
+            fs.writeFileSync(path.join(resources, 'Info.plist'), JSON.stringify({ CFBundleExecutable: 'Codex Framework', CFBundleIdentifier: 'dev.rasta.test-framework', CFBundlePackageType: 'FMWK' }));
             plutil(['-convert', 'xml1', path.join(resources, 'Info.plist')]);
             fs.symlinkSync('Versions/Current/Codex Framework', path.join(framework, 'Codex Framework'));
             fs.symlinkSync('Versions/Current/Resources', path.join(framework, 'Resources'));
-            plutil(['-insert', 'CFBundleIdentifier', '-string', 'dev.agentrtl.test-app', path.join(bundle.app, 'Contents/Info.plist')]);
+            plutil(['-insert', 'CFBundleIdentifier', '-string', 'dev.rasta.test-app', path.join(bundle.app, 'Contents/Info.plist')]);
             // Sparkle's nested updater tools must share the host's local
             // signing mode; leaving the vendor's Autoupdate signature behind
             // makes its Team ID requirement reject the patched host (4005).
@@ -259,7 +259,7 @@ describe('Codex in-app resources', () => {
                 fs.writeFileSync(file, JSON.stringify(value)); plutil(['-convert', 'xml1', file]);
             };
             writePlist(path.join(sparkleVersion, 'Resources/Info.plist'), {
-                CFBundleExecutable: 'Sparkle', CFBundleIdentifier: 'dev.agentrtl.test-sparkle', CFBundlePackageType: 'FMWK' });
+                CFBundleExecutable: 'Sparkle', CFBundleIdentifier: 'dev.rasta.test-sparkle', CFBundlePackageType: 'FMWK' });
             fs.symlinkSync('B', path.join(sparkle, 'Versions/Current'));
             for (const name of ['Sparkle', 'Resources']) fs.symlinkSync(`Versions/Current/${name}`, path.join(sparkle, name));
             const sparkleTools = ['Autoupdate', 'Updater.app', 'XPCServices/Installer.xpc', 'XPCServices/Downloader.xpc'];
@@ -273,7 +273,7 @@ describe('Codex in-app resources', () => {
                 if (name !== 'Autoupdate') {
                     const executableName = path.basename(name, path.extname(name));
                     writePlist(path.join(target, 'Contents/Info.plist'), { CFBundleExecutable: executableName,
-                        CFBundleIdentifier: `dev.agentrtl.test-${executableName.toLowerCase()}`,
+                        CFBundleIdentifier: `dev.rasta.test-${executableName.toLowerCase()}`,
                         CFBundlePackageType: name.endsWith('.xpc') ? 'XPC!' : 'APPL' });
                     executable = path.join(target, 'Contents/MacOS', executableName);
                     fs.mkdirSync(path.dirname(executable), { recursive: true });

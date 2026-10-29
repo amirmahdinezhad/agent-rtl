@@ -43,7 +43,7 @@ int main(void) { @autoreleasepool {
 } return 0; }`);
             execFileSync('/usr/bin/xcrun', ['clang', source, '-framework', 'AppKit', '-o', executable], { stdio: 'pipe' });
             const plist = path.join(app, 'Contents/Info.plist');
-            fs.writeFileSync(plist, JSON.stringify({ CFBundleExecutable: 'Fixture', CFBundleIdentifier: `dev.agentrtl.quit-test.${process.pid}`,
+            fs.writeFileSync(plist, JSON.stringify({ CFBundleExecutable: 'Fixture', CFBundleIdentifier: `dev.rasta.quit-test.${process.pid}`,
                 CFBundlePackageType: 'APPL', LSUIElement: true }));
             execFileSync('/usr/bin/plutil', ['-convert', 'xml1', plist], { stdio: 'pipe' });
             execFileSync('/usr/bin/codesign', ['--force', '--sign', '-', app], { stdio: 'pipe' });
@@ -80,7 +80,7 @@ int main(void) { @autoreleasepool {
             process.env.ARTL_CODEX_STATE_HOME = stateHome;
             const app = path.join(stateHome, 'Codex.app');
             const executable = path.join(app, 'Contents/MacOS/Codex');
-            const staging = path.join(stateHome, '.agent-rtl-stage-fixture');
+            const staging = path.join(stateHome, '.rasta-stage-fixture');
             fs.mkdirSync(path.dirname(executable), { recursive: true });
             fs.copyFileSync('/bin/sleep', executable);
             fs.mkdirSync(staging);
@@ -229,7 +229,7 @@ int main(void) { @autoreleasepool {
         try {
             process.env.ARTL_CODEX_STATE_HOME = home;
             const app = path.join(home, 'Original Codex.app');
-            const staging = path.join(home, '.agent-rtl-stage-fixture');
+            const staging = path.join(home, '.rasta-stage-fixture');
             fs.mkdirSync(path.join(app, 'Contents'), { recursive: true });
             fs.writeFileSync(path.join(app, 'Contents/sentinel'), 'original app bytes');
             fs.mkdirSync(staging);

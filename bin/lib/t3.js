@@ -24,5 +24,5 @@ export function resolveT3App(app = null) {
     const executable = execFileSync('/usr/bin/plutil', ['-extract', 'CFBundleExecutable', 'raw', '-o', '-', path.join(app, 'Contents/Info.plist')], { encoding: 'utf8' }).trim();
     if (!executable || path.basename(executable) !== executable) throw new Error('Invalid T3 executable.');
     return { app, archive, executable: path.join(app, 'Contents/MacOS', executable), version: pkg.version,
-        target: 't3', htmlPaths: ['apps/server/dist/client/index.html'], scriptSrc: '/agent-rtl-payload.js', allowDisabledIntegrity: true };
+        target: 't3', htmlPaths: ['apps/server/dist/client/index.html'], scriptSrc: '/rasta-payload.js', allowDisabledIntegrity: true };
 }

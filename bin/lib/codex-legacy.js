@@ -6,12 +6,12 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { restoreCodex } from './codex.js';
 
-export const SERVICE_LABEL = 'dev.agentrtl.codex';
-const OWNER_MARKER = '.agent-rtl-launcher';
+export const SERVICE_LABEL = 'dev.rasta.codex';
+const OWNER_MARKER = '.rasta-launcher';
 const backgroundHome = () => process.env.ARTL_CODEX_STATE_HOME || os.homedir();
 
 export function backgroundPaths(home = backgroundHome()) {
-    const support = path.join(home, 'Library/Application Support/Agent RTL');
+    const support = path.join(home, 'Library/Application Support/Rasta');
     return {
         support, runtime: path.join(support, 'runtime'), config: path.join(support, 'codex.json'),
         log: path.join(support, 'codex.log'),

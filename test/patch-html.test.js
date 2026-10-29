@@ -9,8 +9,8 @@ describe('patchHtml', () => {
         const { html, changed, alreadyPatched } = patchHtml(MIN_HTML);
         assert.equal(changed, true);
         assert.equal(alreadyPatched, false);
-        assert.ok(html.includes('<script src="./agent-rtl-payload.js"></script>'));
-        assert.ok(html.indexOf('agent-rtl-payload.js') < html.indexOf('</body>'));
+        assert.ok(html.includes('<script src="./rasta-payload.js"></script>'));
+        assert.ok(html.indexOf('rasta-payload.js') < html.indexOf('</body>'));
     });
 
     it('is idempotent', () => {
@@ -19,7 +19,7 @@ describe('patchHtml', () => {
         assert.equal(twice.alreadyPatched, true);
         assert.equal(twice.changed, false);
         assert.equal(twice.html, once);
-        assert.equal(once.match(/agent-rtl-payload\.js/g).length, 1);
+        assert.equal(once.match(/rasta-payload\.js/g).length, 1);
     });
 
     it('relaxes font-src CSP when present without data:', () => {
@@ -44,6 +44,6 @@ describe('patchHtml', () => {
     it('falls back to </html> when no <body>', () => {
         const { html, changed } = patchHtml('<html><head></head></html>');
         assert.equal(changed, true);
-        assert.ok(html.includes('agent-rtl-payload.js'));
+        assert.ok(html.includes('rasta-payload.js'));
     });
 });

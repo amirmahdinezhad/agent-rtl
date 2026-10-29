@@ -9,13 +9,13 @@ import { edKey, trustedURL } from '../bin/lib/update-feed.js';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const t3 = process.env.ARTL_TARGET === 't3';
 const output = process.env.ARTL_GUI_OUTPUT ? path.resolve(process.env.ARTL_GUI_OUTPUT) : path.join(root, t3 ? 'dist/Rasta T3 Setup.app' : 'dist/Rasta Setup.app');
-const helper = path.join(root, 'bin/assets/agent-rtl-ui');
+const helper = path.join(root, 'bin/assets/rasta-ui');
 const identity = process.env.ARTL_CODESIGN_IDENTITY || '-';
 const architecture = process.arch === 'arm64' ? 'arm64' : 'x86_64';
 const localCandidate = process.env.ARTL_LOCAL_CANDIDATE === '1';
 if (localCandidate && (process.env.ARTL_RELEASE_FEED || process.env.ARTL_RELEASE_PUBLIC_KEY))
     throw new Error('A local candidate cannot also override the release feed.');
-execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${architecture}-apple-macosx13.5`, '-O', path.join(root, 'native/AgentRTLSetup.swift'), '-o', helper], { stdio: 'inherit' });
+execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${architecture}-apple-macosx13.5`, '-O', path.join(root, 'native/RastaSetup.swift'), '-o', helper], { stdio: 'inherit' });
 execFileSync('/usr/bin/codesign', ['--force', '--sign', identity, '--options', 'runtime', helper]);
 fs.rmSync(output, { recursive: true, force: true });
 const runtime = path.join(output, 'Contents/Resources/runtime'); fs.mkdirSync(runtime, { recursive: true });
@@ -44,21 +44,21 @@ const bundled = resolveCodexApp();
 const node = process.env.ARTL_PORTABLE_NODE || (bundled && path.join(bundled.app, 'Contents/Resources/cua_node/bin/node'));
 if (!node || !fs.existsSync(node)) throw new Error('Provide ARTL_PORTABLE_NODE for the distributable macOS Node executable.');
 copyPortableNode(node, runtime);
-fs.copyFileSync(helper, path.join(runtime, 'agent-rtl-ui'));
+fs.copyFileSync(helper, path.join(runtime, 'rasta-ui'));
 const executable = path.join(output, 'Contents/MacOS/Rasta Setup'); fs.mkdirSync(path.dirname(executable), { recursive: true }); fs.copyFileSync(helper, executable);
-const artwork = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-rtl-artwork-'));
+const artwork = fs.mkdtempSync(path.join(os.tmpdir(), 'rasta-artwork-'));
 try {
-    const iconset = path.join(artwork, 'AgentRTL.iconset'); fs.mkdirSync(iconset);
+    const iconset = path.join(artwork, 'Rasta.iconset'); fs.mkdirSync(iconset);
     for (const size of [16, 32, 128, 256, 512]) {
         for (const scale of [1, 2]) execFileSync(helper, ['--write-icon', path.join(iconset, `icon_${size}x${size}${scale === 2 ? '@2x' : ''}.png`), String(size * scale)]);
     }
-    execFileSync('/usr/bin/iconutil', ['-c', 'icns', '-o', path.join(output, 'Contents/Resources/AgentRTL.icns'), iconset]);
+    execFileSync('/usr/bin/iconutil', ['-c', 'icns', '-o', path.join(output, 'Contents/Resources/Rasta.icns'), iconset]);
 } finally { fs.rmSync(artwork, { recursive: true, force: true }); }
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
 const plist = path.join(output, 'Contents/Info.plist');
 fs.writeFileSync(plist, JSON.stringify({ CFBundleName: 'Rasta Setup', CFBundleDisplayName: t3 ? 'Rasta — RTL for T3 Code' : 'Rasta — RTL for Codex', CFBundleExecutable: 'Rasta Setup',
-    CFBundleIdentifier: t3 ? 'dev.agentrtl.t3.setup' : 'dev.agentrtl.setup', CFBundleShortVersionString: pkg.version, CFBundleVersion: pkg.version,
-    CFBundlePackageType: 'APPL', CFBundleIconFile: 'AgentRTL.icns', LSMinimumSystemVersion: '13.5', LSUIElement: true, NSHighResolutionCapable: true }));
+    CFBundleIdentifier: t3 ? 'dev.rasta.t3.setup' : 'dev.rasta.setup', CFBundleShortVersionString: pkg.version, CFBundleVersion: pkg.version,
+    CFBundlePackageType: 'APPL', CFBundleIconFile: 'Rasta.icns', LSMinimumSystemVersion: '13.5', LSUIElement: true, NSHighResolutionCapable: true }));
 execFileSync('/usr/bin/plutil', ['-convert', 'xml1', plist]);
 execFileSync('/usr/bin/codesign', ['--force', '--sign', identity, '--options', 'runtime', output]);
 execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', output]);

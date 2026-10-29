@@ -55,7 +55,7 @@ export async function queueAfterQuit(stage, { timeoutMs = 15 * 60 * 1000, quitAf
         if (installerRunning(previous)) throw new Error('A one-time Codex installation is already pending.');
     }
     fs.mkdirSync(path.dirname(paths.job), { recursive: true });
-    const id = randomUUID(), label = `dev.agentrtl.install-once.${id}`, domain = `gui/${process.getuid()}`;
+    const id = randomUUID(), label = `dev.rasta.install-once.${id}`, domain = `gui/${process.getuid()}`;
     const job = { version: 1, id, stage, deadline: Date.now() + timeoutMs, paths, launch: { label, domain } };
     if (quitAfterMs !== null) job.quitAfterMs = quitAfterMs;
     job.reopen = reopen;

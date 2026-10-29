@@ -11,6 +11,17 @@ For desktop releases, compatibility checks or RTL broken after an update:
 - Finish local diagnosis, fixes, relevant tests and candidate preparation.
   The user performs Launch and manual acceptance; do not close or replace the
   original app yourself. Automated tests do not establish manual acceptance.
+- For every release, provide the user with files and steps to test the update
+  from the previous Rasta version inside the app's panel. If that version cannot
+  install on the current app, prepare a local-only compatibility test package.
+  Keep the previous version installed until the user starts the panel update;
+  Setup must not upgrade it during initial installation.
+- Manual release acceptance must explicitly confirm the update dot on the
+  closed panel button, Refresh offering the intended new version, and the
+  in-panel upgrade completing with the new version shown and the app working.
+  Test unpublished candidates through a separate signed test feed; after
+  publication, have the user repeat the check through the production feed.
+  Record these results separately from general installation acceptance.
 - Publish only with explicit GitHub authorization and manual acceptance for
   app packages. Use `--prerelease --latest=false` for prereleases and verify
   published downloads separately from local candidates.

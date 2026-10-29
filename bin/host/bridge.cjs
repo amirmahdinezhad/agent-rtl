@@ -1,7 +1,7 @@
 'use strict';
 const path = require('node:path');
 const { execFile } = require('node:child_process');
-const CHANNEL = 'agent-rtl:control';
+const CHANNEL = 'rasta:control';
 const ACTIONS = new Set(['status', 'check', 'prepare', 'cancel', 'repair', 'restore', 'open', 'ready', 'fonts', 'font-import', 'font-select', 'appearance']);
 function eligible(url, target = 'codex') {
     try { const value = new URL(url); if (target === 't3') return value.protocol === 't3code:' && value.hostname === 'app' && (['/', '/index.html'].includes(value.pathname) || /^\/[^/.]+\/[^/.]+\/?$/.test(value.pathname)); return value.protocol === 'app:' && value.hostname === '-'
@@ -15,7 +15,7 @@ function install({ app, ipcMain, session }, config) {
     const register = ses => {
         if (seen.has(ses)) return;
         if (typeof ses.registerPreloadScript !== 'function') throw new Error('This Electron version does not support the addon preload.');
-        ses.registerPreloadScript({ type: 'frame', id: 'agent-rtl-controls', filePath: path.join(__dirname, 'preload.cjs') });
+        ses.registerPreloadScript({ type: 'frame', id: 'rasta-controls', filePath: path.join(__dirname, 'preload.cjs') });
         seen.add(ses);
     };
     app.on('session-created', register);

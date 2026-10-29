@@ -21,8 +21,8 @@ it('exposes only fixed operations in the main shell, never raw IPC or a shell ex
     for (const [isMainFrame, pathname, exposed] of [[true, '/', true], [false, '/', false], [true, '/document.html', false]]) {
         let bridge;
         vm.runInNewContext(code, { URLSearchParams, process: { isMainFrame }, location: { protocol: 'app:', hostname: '-', pathname },
-            require: () => ({ contextBridge: { exposeInMainWorld: (name, value) => { assert.equal(name, 'agentRTLNative'); bridge = value; } },
-                ipcRenderer: { invoke: async (channel, action) => { assert.equal(channel, 'agent-rtl:control'); return action; } } }) });
+            require: () => ({ contextBridge: { exposeInMainWorld: (name, value) => { assert.equal(name, 'rastaNative'); bridge = value; } },
+                ipcRenderer: { invoke: async (channel, action) => { assert.equal(channel, 'rasta:control'); return action; } } }) });
         assert.equal(!!bridge, exposed);
         if (bridge) { assert.deepEqual(Object.keys(bridge).sort(), ['cancel', 'check', 'fonts', 'importFont', 'open', 'prepare', 'repair', 'restore', 'selectFont', 'setAppearance', 'status']); assert.equal(await bridge.prepare('ignored-command'), 'prepare'); }
     }
@@ -30,7 +30,7 @@ it('exposes only fixed operations in the main shell, never raw IPC or a shell ex
 it('rejects iframe and unknown IPC actions before spawning a worker', async () => {
     const code = fs.readFileSync(new URL('../bin/host/bridge.cjs', import.meta.url), 'utf8');
     let handler, calls = 0;
-    const sandbox = { URL, WeakSet, Set, console, process: { env: {} }, __dirname: '/archive/agent-rtl', module: { exports: {} },
+    const sandbox = { URL, WeakSet, Set, console, process: { env: {} }, __dirname: '/archive/rasta', module: { exports: {} },
         require: name => name === 'node:path' ? require(name) : { execFile: (_node, _args, _options, done) => { calls++; done(null, '{"ok":true,"value":{"ready":true}}'); } } };
     vm.runInNewContext(code, sandbox);
     sandbox.module.exports.install({ app: { on() {}, whenReady: () => Promise.resolve() },

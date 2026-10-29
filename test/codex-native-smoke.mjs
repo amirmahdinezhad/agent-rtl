@@ -12,7 +12,7 @@ const manifest = process.argv[2];
 if (!manifest || !process.env.ARTL_PLAYWRIGHT_MODULE) throw new Error('Provide a staging manifest and ARTL_PLAYWRIGHT_MODULE.');
 const stage = JSON.parse(fs.readFileSync(manifest));
 assert.equal(path.dirname(stage.staging), path.dirname(stage.bundle.app));
-assert.ok(path.basename(stage.staging).startsWith('.agent-rtl-stage-'));
+assert.ok(path.basename(stage.staging).startsWith('.rasta-stage-'));
 assert.equal(path.dirname(stage.stagedApp), stage.staging);
 const { chromium } = await import(pathToFileURL(process.env.ARTL_PLAYWRIGHT_MODULE).href);
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-native-profile-'));

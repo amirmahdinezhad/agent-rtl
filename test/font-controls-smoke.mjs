@@ -22,7 +22,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv=
 <script src="/bridge.js"></script><script src="/payload.js"></script></body></html>`;
 const server = http.createServer((request, response) => {
     response.setHeader('Content-Type', request.url.endsWith('.js') ? 'application/javascript' : 'text/html; charset=utf-8');
-    response.end(request.url === '/payload.js' ? payload : request.url === '/bridge.js' ? `if(window.fontRPC)window.agentRTLNative={fonts:()=>window.fontRPC('fonts'),importFont:input=>window.fontRPC('import',input),selectFont:id=>window.fontRPC('select',id),status:async()=>({}),check:async()=>({})};` : html);
+    response.end(request.url === '/payload.js' ? payload : request.url === '/bridge.js' ? `if(window.fontRPC)window.rastaNative={fonts:()=>window.fontRPC('fonts'),importFont:input=>window.fontRPC('import',input),selectFont:id=>window.fontRPC('select',id),status:async()=>({}),check:async()=>({})};` : html);
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}`;
@@ -46,9 +46,9 @@ try {
         const before = await Promise.all(untouched.map(selector => page.locator(selector).evaluate(el => getComputedStyle(el).fontFamily)));
         const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: 'Add font', exact: true }).click()]);
         await chooser.setFiles({ name: 'MyFont.ttf', mimeType: 'font/ttf', buffer: font });
-        await page.waitForFunction(() => !document.getElementById('artl-app-font').disabled && getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('AgentRTLUser_'));
+        await page.waitForFunction(() => !document.getElementById('artl-app-font').disabled && getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('RastaUser_'));
         const customStack = await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily);
-        const selected = mode === 'native' ? fontPreferences(paths).selected : await page.evaluate(() => JSON.parse(localStorage.getItem('agent-rtl-fonts')).selected);
+        const selected = mode === 'native' ? fontPreferences(paths).selected : await page.evaluate(() => JSON.parse(localStorage.getItem('rasta-fonts')).selected);
         const selectedLabel = mode === 'native' ? 'Vazir (custom)' : 'MyFont';
         assert.equal(await picker.innerText(), selectedLabel, 'a successful import becomes the displayed selection immediately');
         assert.equal(await picker.evaluate(el => el === document.activeElement), true, 'focus returns to the selected font after import');
@@ -57,7 +57,7 @@ try {
         assert.equal(await importedOption.count(), 1, 'the imported font is present once in the catalog');
         assert.equal(await importedOption.getAttribute('aria-selected'), 'true', 'the imported font is selected without restarting');
         await page.keyboard.press('Escape');
-        for (const selector of ['#host-button', '#host-input', '#message', '.artl-brand-title']) assert.match(await page.locator(selector).evaluate(el => getComputedStyle(el).fontFamily), /AgentRTLUser_/);
+        for (const selector of ['#host-button', '#host-input', '#message', '.artl-brand-title']) assert.match(await page.locator(selector).evaluate(el => getComputedStyle(el).fontFamily), /RastaUser_/);
         assert.deepEqual(await Promise.all(untouched.map(selector => page.locator(selector).evaluate(el => getComputedStyle(el).fontFamily))), before);
         // Verify actual glyphs came from a custom face, beyond a CSS family string.
         const cdp = await context.newCDPSession(page);
@@ -83,7 +83,7 @@ try {
         await page.getByRole('alert').waitFor({ state: 'visible' });
         assert.equal(await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily), 'Arial');
         await picker.click(); await page.keyboard.press('Home'); await page.keyboard.press('Enter');
-        await page.waitForFunction(() => !document.getElementById('artl-app-font').disabled && !getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('AgentRTLUser_'));
+        await page.waitForFunction(() => !document.getElementById('artl-app-font').disabled && !getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('RastaUser_'));
         assert.equal(await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily), 'Arial');
         await page.locator('#artl-toggle-btn').click();
         assert.match(await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily), /Vazir/);
@@ -92,11 +92,11 @@ try {
         await second.locator('.artl-widget-trigger').click();
         await second.waitForFunction(() => !document.getElementById('artl-app-font').disabled);
         await picker.click(); await page.locator(`[role=option][data-value="${selected}"]`).click();
-        await second.waitForFunction(() => getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('AgentRTLUser_'));
+        await second.waitForFunction(() => getComputedStyle(document.getElementById('sidebar')).fontFamily.includes('RastaUser_'));
         if (mode === 'browser') {
             await page.bringToFront();
             if (await page.locator('.artl-widget-panel').getAttribute('aria-hidden') === 'true') await page.locator('.artl-widget-trigger').click();
-            await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key, value) { if (key === 'agent-rtl-fonts') throw new DOMException('Full', 'QuotaExceededError'); return original.call(this, key, value); }; });
+            await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key, value) { if (key === 'rasta-fonts') throw new DOMException('Full', 'QuotaExceededError'); return original.call(this, key, value); }; });
             await picker.click(); await page.keyboard.press('Home'); await page.keyboard.press('Enter');
             await page.getByRole('alert').waitFor({ state: 'visible' });
             assert.equal(await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily), customStack);
@@ -106,7 +106,7 @@ try {
         if (await page.locator('.artl-widget-panel').getAttribute('aria-hidden') === 'true') await page.locator('.artl-widget-trigger').click();
         await page.screenshot({ path: path.resolve(`dist/design-preview/font-${mode}.png`) });
         assert.deepEqual(errors, []);
-        await page.evaluate(() => window.__agentRTLPro.dispose());
+        await page.evaluate(() => window.__rastaPro.dispose());
         assert.equal(await page.locator('#artl-app-font-style').count(), 0);
         assert.equal(await page.locator('#sidebar').evaluate(el => getComputedStyle(el).fontFamily), 'Arial');
         const video = page.video(); await context.close(); await video.saveAs(path.resolve(`dist/design-preview/font-${mode}-flow.webm`));

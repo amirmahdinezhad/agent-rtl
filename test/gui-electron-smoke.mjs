@@ -9,18 +9,18 @@ import { buildCodexPayload } from '../bin/lib/codex.js';
 const t3 = process.env.ARTL_TEST_TARGET === 't3';
 const require = createRequire(import.meta.url), electron = require('electron');
 const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-own-electron-'));
-const host = path.join(folder, 'agent-rtl'), runtime = path.join(folder, 'runtime');
+const host = path.join(folder, 'rasta'), runtime = path.join(folder, 'runtime');
 fs.mkdirSync(host); fs.mkdirSync(path.join(runtime, 'bin'), { recursive: true });
 const result = path.join(folder, 'result.json'), calls = path.join(folder, 'calls.jsonl');
 const sentinel = path.join(folder, 'original-main.cjs');
 try {
     for (const name of ['main.cjs', 'bridge.cjs', 'preload.cjs']) fs.copyFileSync(new URL(`../bin/host/${name}`, import.meta.url), path.join(host, name));
-    fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'agent-rtl-fixture', version: '1.0.0', main: 'agent-rtl/main.cjs' }));
+    fs.writeFileSync(path.join(folder, 'package.json'), JSON.stringify({ name: 'rasta-fixture', version: '1.0.0', main: 'rasta/main.cjs' }));
     fs.writeFileSync(path.join(host, 'host.json'), JSON.stringify({ app: '/Applications/Rasta Fixture.app', runtime, target: t3 ? 't3' : 'codex', originalMain: 'original-main.cjs' }));
     fs.symlinkSync(process.execPath, path.join(runtime, 'node'));
     fs.writeFileSync(path.join(runtime, 'bin/gui-service.js'), `const fs=require('fs');const action=process.argv[process.argv.indexOf('--rpc')+1];fs.appendFileSync(${JSON.stringify(calls)},JSON.stringify(action)+String.fromCharCode(10));
 const operation=fs.existsSync(${JSON.stringify(calls + '.prepared')})?{phase:'ready-to-install',progress:1}:null;
-const release={available:true,supported:true,phase:'available',releaseConfigured:true,release:{agentVersion:'2.1.0'}};
+const release=fs.existsSync(${JSON.stringify(calls + '.release')})?JSON.parse(fs.readFileSync(${JSON.stringify(calls + '.release')},'utf8')):{available:true,supported:true,phase:'available',releaseConfigured:true,release:{agentVersion:'2.1.0'}};
 if(action==='prepare')fs.writeFileSync(${JSON.stringify(calls + '.prepared')},'yes');
 console.log(JSON.stringify({ok:true,value:action==='status'?{running:!!operation,operation,update:release}:action==='check'?release:action==='fonts'?{selected:'vazir',fonts:[],active:null}:{id:'fixture'}}));`);
     fs.writeFileSync(path.join(folder, 'vendor-preload.cjs'), `require('electron').contextBridge.exposeInMainWorld('vendorPreloadSentinel','unchanged');`);
@@ -38,19 +38,39 @@ const errors=[];win.webContents.on('console-message',(_event,details)=>{if(detai
 await win.loadURL('app://-/index.html');
 for(let n=0;n<100;n++){if(await win.webContents.executeJavaScript("!!document.getElementById('artl-update-install')"))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript('vendorPreloadSentinel'),'unchanged');
-assert.deepEqual(await win.webContents.executeJavaScript('Object.keys(agentRTLNative).sort()'),['cancel','check','fonts','importFont','open','prepare','repair','restore','selectFont','setAppearance','status']);
+assert.deepEqual(await win.webContents.executeJavaScript('Object.keys(rastaNative).sort()'),['cancel','check','fonts','importFont','open','prepare','repair','restore','selectFont','setAppearance','status']);
 for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("document.getElementById('artl-update-install').disabled===false"))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false);
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-panel').getAttribute('aria-hidden')"),'true');
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').getBoundingClientRect().width > 0"),true,'update dot is visible while the panel is closed');
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').getAttribute('aria-label')"),'Rasta settings: Rasta 2.1.0 update available');
+await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false,'opening settings does not acknowledge an uninstalled update');
+await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
+const setRelease=async value=>{
+fs.writeFileSync(${JSON.stringify(calls + '.release')},JSON.stringify(value));
+await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
+for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-update-check').disabled"))return;await pause(100)}
+throw new Error('Update check did not finish');
+};
+await setRelease({available:false,releaseError:'fixture offline'});
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false,'a transient check failure retains the known update');
+await setRelease({available:false,supported:true,release:null});
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),true,'dot clears when no update remains');
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').getAttribute('aria-label')"),'Rasta settings');
+await setRelease({available:true,supported:true,release:{agentVersion:'2.1.0'}});
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false,'new release restores the dot without reopening settings');
 for(let n=0;n<30;n++){if(fs.readFileSync(${JSON.stringify(calls)},'utf8').includes('"ready"'))break;await pause(100)}
 assert.ok(fs.readFileSync(${JSON.stringify(calls)},'utf8').includes('"ready"'),'preload confirms only after the RTL trigger is mounted');
 await win.webContents.executeJavaScript("document.getElementById('artl-update-install').click()");
 for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').disabled"))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript("document.querySelectorAll('#artl-update-cancel').length"),0);
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-notice').hidden"),true);
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),true,'active installation owns update progress');
 const embedded=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true}});await embedded.loadURL('app://-/document.html');
-assert.equal(await embedded.webContents.executeJavaScript('typeof window.agentRTLNative'),'undefined');
+assert.equal(await embedded.webContents.executeJavaScript('typeof window.rastaNative'),'undefined');
 await embedded.loadURL('app://-/index.html?initialRoute=/spotlight');
-assert.equal(await embedded.webContents.executeJavaScript('typeof window.agentRTLNative'),'undefined');
+assert.equal(await embedded.webContents.executeJavaScript('typeof window.rastaNative'),'undefined');
 fs.writeFileSync(${JSON.stringify(result)},JSON.stringify({ok:true,errors}));app.exit(0);
 }).catch(error=>{fs.writeFileSync(${JSON.stringify(result)},JSON.stringify({ok:false,error:error.stack}));app.exit(1)});`;
     if (t3) fixtureCode = fixtureCode.replaceAll("scheme:'app'", "scheme:'t3code'").replaceAll("protocol.handle('app'", "protocol.handle('t3code'").replaceAll('app://-', 't3code://app').replace("win.loadURL('t3code://app/index.html')", "win.loadURL('t3code://app/local/thread-1')").replace("t3code://app/index.html?initialRoute=/spotlight", "t3code://embed/index.html");

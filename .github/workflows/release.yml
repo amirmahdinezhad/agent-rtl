@@ -9,7 +9,7 @@ jobs:
     runs-on: macos-15
     env:
       ARTL_RELEASE_PUBLIC_KEY: ${{ vars.ARTL_RELEASE_PUBLIC_KEY }}
-      ARTL_RELEASE_FEED: https://github.com/${{ github.repository }}/releases/latest/download/agent-rtl-release.json
+      ARTL_RELEASE_FEED: https://github.com/${{ github.repository }}/releases/latest/download/rasta-release.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,7 +60,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v$ARTL_VERSION" "dist/Rasta-$ARTL_VERSION-$ARTL_PLATFORM.zip" dist/agent-rtl-release.json --title "Rasta $ARTL_VERSION" --generate-notes --verify-tag
+          gh release create "v$ARTL_VERSION" "dist/Rasta-$ARTL_VERSION-$ARTL_PLATFORM.zip" dist/rasta-release.json --title "Rasta $ARTL_VERSION" --generate-notes --verify-tag
       - name: Remove temporary credentials
         if: always()
         run: |

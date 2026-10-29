@@ -66,7 +66,7 @@ function makeEl(tag) {
 }
 
 function runPayload({ seed, faList, enList } = {}) {
-    const store = seed ? { 'agent-rtl-config': seed } : {};
+    const store = seed ? { 'rasta-config': seed } : {};
     const head = makeEl('head');
     const body = makeEl('body');
     const faBubble = makeEl('div');
@@ -292,7 +292,7 @@ describe('desktop-payload', () => {
 
     it('disposes the runtime overlay and removes its input, keyboard and outside-click handlers', () => {
         const out = runPayload();
-        out.window.__agentRTLPro.dispose();
+        out.window.__rastaPro.dispose();
         assert.equal(out.codexFa.getAttribute('dir'), null);
         assert.equal(out.codexTyped.style.getPropertyValue('direction'), '');
         assert.equal(out.byId['artl-rtl-style'], undefined);
@@ -300,7 +300,7 @@ describe('desktop-payload', () => {
         assert.equal(out.listeners.input.length, 0);
         assert.equal(out.listeners.keydown.length, 0);
         assert.equal(out.listeners.click.length, 0);
-        assert.equal(out.window.__agentRTLPro.disabled, true);
+        assert.equal(out.window.__rastaPro.disabled, true);
     });
 
     it('preserves app-owned direction and inline styles when RTL is switched off', () => {
@@ -335,7 +335,7 @@ describe('desktop-payload', () => {
         }
     });
 
-    it('uses the agent-rtl namespace (no legacy identifiers)', () => {
+    it('uses the rasta namespace (no legacy identifiers)', () => {
         const code = fs.readFileSync(PAYLOAD, 'utf8');
         for (const legacy of ['smart-rtl', 'smart-ide-rtl', "'rtl-", '"rtl-', '.rtl-']) {
             assert.ok(!code.includes(legacy), `legacy identifier leaked: ${legacy}`);
@@ -498,20 +498,20 @@ describe('desktop-payload', () => {
         for (const [old, current] of [['#c4b5fd','#ad8cf3'],['#b8d4f5','#79adeb'],['#b9dfce','#68c7a4'],['#f3dfa8','#e9bf59']]) {
             const out = runPayload({ seed: JSON.stringify({accent:old}) });
             toggleFor(out, 'artl-at-btn').onclick();
-            assert.equal(JSON.parse(out.store['agent-rtl-config']).accent, current);
+            assert.equal(JSON.parse(out.store['rasta-config']).accent, current);
         }
     });
 
     it('migrates old presets and preserves appearance when changing reading controls', () => {
         const out = runPayload({ seed: '{"theme":"dark","accent":"#2563EB","customAccent":"#E15B97"}' });
         toggleFor(out, 'artl-at-btn').onclick();
-        let saved = JSON.parse(out.store['agent-rtl-config']);
+        let saved = JSON.parse(out.store['rasta-config']);
         assert.equal(saved.theme, 'dark');
         assert.equal(saved.accent, '#79adeb');
         assert.equal('customAccent' in saved, false);
         const lavender = descendants(out.body).find(node => node.getAttribute?.('aria-label') === 'Lavender accent');
         lavender.onclick();
-        saved = JSON.parse(out.store['agent-rtl-config']);
+        saved = JSON.parse(out.store['rasta-config']);
         assert.equal(saved.accent, '#ad8cf3');
         assert.equal('customAccent' in saved, false);
         assert.equal(saved.theme, 'dark');
@@ -522,7 +522,7 @@ describe('desktop-payload', () => {
         for (const accent of ['#ff0000', '#c15c12', '#e15b97', '#abcdef']) {
             const out = runPayload({ seed: JSON.stringify({ accent, customAccent: accent }) });
             toggleFor(out, 'artl-at-btn').onclick();
-            const saved = JSON.parse(out.store['agent-rtl-config']);
+            const saved = JSON.parse(out.store['rasta-config']);
             assert.equal(saved.accent, '#ad8cf3');
             assert.equal('customAccent' in saved, false);
             assert.equal(toggleFor(out, 'artl-accent-custom'), undefined);

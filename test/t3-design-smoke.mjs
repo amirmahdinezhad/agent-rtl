@@ -1,4 +1,4 @@
-// T3 presentation fixture with CSS from the installed T3 bundle; no live
+// T3 presentation fixture with CSS from the selected T3 bundle; no live
 // conversations, servers or account state are opened by this test.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -31,7 +31,33 @@ try {
         const page = await browser.newPage({ viewport: { width: 760, height: 1000 }, reducedMotion: 'reduce' });
         const errors = []; page.on('pageerror', error => errors.push(error.message));
         await page.goto(`http://127.0.0.1:${server.address().port}`);
+        await page.locator('[data-message-id="fixture"]').evaluate(row => {
+            const english = document.createElement('p');
+            english.id = 'english-reply'; english.textContent = 'An English assistant reply.';
+            const code = document.createElement('pre');
+            code.id = 'code-reply'; code.textContent = 'const answer = 42;';
+            row.append(english, code);
+        });
+        await page.waitForFunction(() => document.querySelector('#english-reply').getAttribute('dir') === 'ltr');
+        for (const selector of ['.chat-markdown p', '.ProseMirror p']) {
+            assert.equal(await page.locator(selector).getAttribute('dir'), 'rtl');
+            assert.equal(await page.locator(selector).evaluate(el => getComputedStyle(el).direction), 'rtl');
+        }
+        assert.equal(await page.locator('#code-reply').getAttribute('dir'), null);
+        assert.equal(await page.locator('#host').getAttribute('dir'), null);
         await page.locator('.artl-widget-trigger').click();
+        await page.locator('#artl-force-btn').click();
+        assert.equal(await page.locator('#english-reply').getAttribute('dir'), 'rtl');
+        assert.equal(await page.locator('#code-reply').getAttribute('dir'), null);
+        assert.equal(await page.locator('#host').getAttribute('dir'), null);
+        await page.locator('#artl-force-btn').click();
+        assert.equal(await page.locator('#english-reply').getAttribute('dir'), 'ltr');
+        await page.locator('#artl-toggle-btn').click();
+        for (const selector of ['.chat-markdown p', '.ProseMirror p', '#english-reply']) {
+            assert.equal(await page.locator(selector).getAttribute('dir'), null);
+        }
+        await page.locator('#artl-toggle-btn').click();
+        assert.equal(await page.locator('.ProseMirror p').getAttribute('dir'), 'rtl');
         assert.equal(await page.locator('.artl-version').innerText(), 'v' + pkg.version);
         assert.equal(await page.locator('.artl-accent-value').innerText(), 'Lavender');
         assert.equal(await page.getByRole('button', { name: 'Default accent', exact: true }).count(), 0);
@@ -56,5 +82,5 @@ try {
         await page.locator('.artl-widget-panel').screenshot({ path: path.join(folder, 'panel-' + theme.toLowerCase() + '.png') });
         assert.deepEqual(errors, []); await page.close();
     }
-    console.log('PASS: real T3 CSS, current source payload, version, Lavender default, four presets, white knobs in both states/themes, host isolation and persistence.');
+    console.log('PASS: real T3 CSS, mixed-language replies, RTL composer, code and host isolation, current source payload, version, Lavender default, four presets, white knobs in both states/themes and persistence.');
 } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }

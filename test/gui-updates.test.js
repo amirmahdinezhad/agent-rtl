@@ -16,8 +16,8 @@ it('adds a separate native bridge while preserving every original JavaScript des
         const bundle = await nativeFixture(dir, undefined, false), output = path.join(dir, 'patched.asar');
         const report = createCodexArchive(bundle.archive, output, '// rtl', { host: { app: bundle.app, runtime: '/support/runtime' } });
         assert.equal(report.originalDataHash, report.preservedDataHash);
-        assert.equal(JSON.parse(asar.extractFile(output, 'package.json')).main, 'agent-rtl/main.cjs');
-        assert.equal(JSON.parse(asar.extractFile(output, 'agent-rtl/host.json')).originalMain, '.vite/build/main.js');
+        assert.equal(JSON.parse(asar.extractFile(output, 'package.json')).main, 'rasta/main.cjs');
+        assert.equal(JSON.parse(asar.extractFile(output, 'rasta/host.json')).originalMain, '.vite/build/main.js');
         for (const name of ['.vite/build/main.js', '.vite/build/preload.js', 'webview/assets/original.js']) {
             assert.deepEqual(asar.extractFile(output, name), asar.extractFile(bundle.archive, name));
             const descriptor = header => name.split('/').reduce((node, part) => node.files[part], header);
@@ -93,7 +93,7 @@ it('waits for manual quit, supports cancellation, and does not commit unsupporte
     }
 });
 
-for (const setupName of ['Rasta Setup.app', 'Agent RTL Setup.app']) it(`hands the operation to the authenticated updater from ${setupName}`, { skip: os.platform() !== 'darwin' }, async () => {
+for (const setupName of ['Rasta Setup.app']) it(`hands the operation to the authenticated updater from ${setupName}`, { skip: os.platform() !== 'darwin' }, async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-handoff-')), saved = process.env.ARTL_CODEX_STATE_HOME;
     try {
         process.env.ARTL_CODEX_STATE_HOME = dir;
@@ -158,6 +158,21 @@ it('requires explicit Install approval before requesting quit, and closes the wi
     } finally { if (saved === undefined) delete process.env.ARTL_CODEX_STATE_HOME; else process.env.ARTL_CODEX_STATE_HOME = saved; fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
+
+it('requires the supported T3 version before installing a local candidate', () => {
+    const config = { agentVersion: '1.0.2', flow: 'download-launch' };
+    const catalog = { target: 't3', supportedAppVersions: ['0.1.4'] };
+    const old = updatePlan(config, '0.1.3', null, null, catalog);
+    assert.equal(old.requiresAppUpdate, true);
+    assert.equal(old.targetVersion, '0.1.4');
+    assert.equal(old.supported, false);
+    const current = updatePlan(config, '0.1.4', null, null, catalog);
+    assert.equal(current.requiresAppUpdate, false);
+    assert.equal(current.supported, true);
+    const newer = updatePlan(config, '0.1.5', null, null, catalog);
+    assert.equal(newer.requiresAppUpdate, false, 'a newer app needs a newer Rasta release, never a downgrade');
+    assert.equal(newer.supported, false);
+});
 
 it('offers an RTL update dot only for an RTL release and rejects older Codex versions', () => {
     const config = { agentVersion: '2.2.1', flow: 'download-install' };

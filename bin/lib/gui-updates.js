@@ -53,7 +53,7 @@ export async function checkGUIUpdates(config, { fetcher, osVersion = execFileSyn
             if ((release.target || 'codex') !== targetId()) throw new Error('The Rasta release belongs to another application.');
         } catch (error) { release = null; releaseError = error.message; }
     }
-    let patchMissing = false; try { asar.extractFile(bundle.archive, 'agent-rtl/host.json'); } catch { patchMissing = true; }
+    let patchMissing = false; try { asar.extractFile(bundle.archive, 'rasta/host.json'); } catch { patchMissing = true; }
     const plan = updatePlan({ ...config, patchMissing }, bundle.version, appUpdate, release, releaseConfig);
     const result = { checkedAt: new Date().toISOString(), appVersion: bundle.version, agentVersion: config.agentVersion || agentVersion,
         appUpdate, ...plan, releaseConfigured: !!releaseConfig?.feedUrl, releaseError };
@@ -68,8 +68,10 @@ export function updatePlan(config, appVersion, appUpdate, release, releaseConfig
     const versions = available?.supportedAppVersions || releaseConfig?.supportedAppVersions || [];
     const latestSupported = [...versions].sort(compareVersions).at(-1);
     const interactive = ['download-install', 'download-launch'].includes(config.flow);
-    const requiresAppUpdate = interactive && Boolean(appUpdate);
-    const targetVersion = appUpdate?.version || appVersion;
+    // A local candidate already knows its required app version, even when
+    // the app has no vendor feed integration (T3) or its feed is unavailable.
+    const requiresAppUpdate = interactive && Boolean(appUpdate || (latestSupported && compareVersions(appVersion, latestSupported) < 0));
+    const targetVersion = appUpdate?.version || (requiresAppUpdate ? latestSupported : appVersion);
     const supported = interactive ? !requiresAppUpdate && appVersion === latestSupported : versions.includes(targetVersion);
     const hasUpdate = interactive ? Boolean(available) : Boolean(appUpdate || available);
     return { release: available, available: hasUpdate, supported, targetVersion, requiresAppUpdate,
@@ -81,13 +83,12 @@ function extractZip(file, destination) {
     execFileSync('/usr/bin/ditto', ['-x', '-k', file, destination], { stdio: 'pipe' });
 }
 function findApp(folder, expectedName = null) {
-    // Signed releases published before the rename retain their original bundle names.
-    const apps = fs.readdirSync(folder, { withFileTypes: true }).filter(e => e.isDirectory() && e.name.endsWith('.app') && (!expectedName || [expectedName, expectedName.replace('Rasta', 'Agent RTL')].includes(e.name)));
+    const apps = fs.readdirSync(folder, { withFileTypes: true }).filter(e => e.isDirectory() && e.name.endsWith('.app') && (!expectedName || e.name === expectedName));
     if (apps.length !== 1) throw new Error('The signed update contains an unexpected application layout.');
     return path.join(folder, apps[0].name);
 }
 function verifyVendorArchive(file, item, runtime) {
-    const helper = path.join(runtime, 'agent-rtl-ui');
+    const helper = path.join(runtime, 'rasta-ui');
     // CryptoKit maps the large ZIP, avoiding a second ~700 MB JS heap copy.
     execFileSync(helper, ['--verify', file, VENDOR_KEY, item.signature], { stdio: 'pipe' });
 }
@@ -122,7 +123,7 @@ export async function runGUIJob(job, overrides = {}) {
         fs.rmSync(path.join(job.folder, 'once.plist'), { force: true });
         publish({ phase: 'checking', progress: 0 });
         if (config.showWindow && !(action === 'restore' && config.silentRestore) && !overrides.noUI) {
-            ui = spawn(path.join(config.runtime, 'agent-rtl-ui'), ['--watch', paths.status, paths.cancel, config.app, job.id], { stdio: 'ignore', detached: true });
+            ui = spawn(path.join(config.runtime, 'rasta-ui'), ['--watch', paths.status, paths.cancel, config.app, job.id], { stdio: 'ignore', detached: true });
             ui.on('error', () => controller.abort(new Error('The graphical installer could not open.')));
             ui.on('exit', () => { if (!committed) controller.abort(); });
             ui.unref(); // The completed worker must exit while the result window is still visible.

@@ -4,7 +4,7 @@ codex-preview/
 *.pem
 *.p12
 .DS_Store
-bin/assets/agent-rtl-ui
+bin/assets/rasta-ui
 .env*
 *.tgz
 npm-debug.log*

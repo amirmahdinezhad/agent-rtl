@@ -14,7 +14,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-gui-job-'));
 const setup = path.resolve(process.env.ARTL_GUI_OUTPUT || 'dist/Rasta Setup.app');
 const sourceRuntime = path.join(setup, 'Contents/Resources/runtime');
 const runtime = path.join(dir, 'runtime'); fs.mkdirSync(runtime);
-for (const name of ['bin', 'node', 'agent-rtl-ui', 'node-LICENSE', 'package.json']) fs.cpSync(path.join(sourceRuntime, name), path.join(runtime, name), { recursive: true });
+for (const name of ['bin', 'node', 'rasta-ui', 'node-LICENSE', 'package.json']) fs.cpSync(path.join(sourceRuntime, name), path.join(runtime, name), { recursive: true });
 fs.symlinkSync(path.join(sourceRuntime, 'node_modules'), path.join(runtime, 'node_modules'));
 // Only the official-feed response is mocked in this owned runtime. Signing,
 // staging, launchd, Install approval and the native window execute real code.
@@ -54,7 +54,7 @@ try {
     const file = path.join(dir, 'signed.zip'); fs.writeFileSync(file, 'fixture for mapped CryptoKit verifier');
     const raw = publicKey.export({ type: 'spki', format: 'der' }).subarray(-32).toString('base64');
     const signature = sign(null, fs.readFileSync(file), privateKey).toString('base64');
-    const helper = path.join(runtime, 'agent-rtl-ui');
+    const helper = path.join(runtime, 'rasta-ui');
     execFileSync(helper, ['--verify', file, raw, signature]);
     fs.appendFileSync(file, 'tampered');
     assert.notEqual(spawnSync(helper, ['--verify', file, raw, signature]).status, 0);

@@ -1,4 +1,4 @@
-/* AGENT RTL PRO PATCH - SMART RTL PAYLOAD */
+/* RASTA PRO PATCH - SMART RTL PAYLOAD */
 /* Ported from antigravity-pro-rtl's ide-payload.js for Codex and T3 Code.
  * Engine unchanged: MutationObserver + requestAnimationFrame, zero-delay.
  * Namespaced with the `artl-` prefix so it never collides with other
@@ -6,8 +6,8 @@
  * (Codex webviews and T3 ChatMarkdown/ChatView).
  */
 (function() {
-    if (window.__agentRTLPro && !window.__agentRTLPro.disabled) return;
-    const STORAGE_KEY = 'agent-rtl-config';
+    if (window.__rastaPro && !window.__rastaPro.disabled) return;
+    const STORAGE_KEY = 'rasta-config';
     const AGENT_VERSION = /* __ARTL_VERSION__ */ '';
     const HOST_NAME = window.location?.protocol === 't3code:' ? 'T3 Code' : 'Codex';
     // Fixed presets for size / line-height (dropdowns, not free inputs).
@@ -368,7 +368,7 @@
         const toggleBtn = createToggle('artl-toggle-btn', isRTL), forceBtn = createToggle('artl-force-btn', forceRTL), atBtn = createToggle('artl-at-btn', fixAtSign);
         updateDynamicCSS(rtlConfig.faFont, rtlConfig.enFont, rtlConfig.codeFont, rtlConfig.lh, rtlConfig.fs);
         let renderUpdates = () => {};
-        if (window.agentRTLNative) renderUpdates = createUpdateControls(panel, toolbar, trigger, window.agentRTLNative, t, bind, content);
+        if (window.rastaNative) renderUpdates = createUpdateControls(panel, toolbar, trigger, window.rastaNative, t, bind, content);
         else if (AGENT_VERSION) {
             const version = document.createElement('span'); version.className = 'artl-version'; version.textContent = 'v' + AGENT_VERSION; version.title = 'Rasta ' + AGENT_VERSION; content.appendChild(version);
         }
@@ -421,9 +421,9 @@
         let savedAppearance = '';
         function shareAppearance() {
             const value = JSON.stringify({ theme: rtlConfig.theme, accent: rtlConfig.accent });
-            if (value === savedAppearance || typeof window.agentRTLNative?.setAppearance !== 'function') return;
+            if (value === savedAppearance || typeof window.rastaNative?.setAppearance !== 'function') return;
             savedAppearance = value;
-            window.agentRTLNative.setAppearance(JSON.parse(value)).catch(() => { savedAppearance = ''; });
+            window.rastaNative.setAppearance(JSON.parse(value)).catch(() => { savedAppearance = ''; });
         }
         renderUI(); container.appendChild(panel); container.appendChild(trigger); document.body.appendChild(container);
         function syncPalette() {
@@ -451,7 +451,7 @@
                 }
             }
             // Direction actions live outside the popover and copy its palette.
-            window.dispatchEvent?.(new Event('agent-rtl-appearance-change'));
+            window.dispatchEvent?.(new Event('rasta-appearance-change'));
         }
         syncPalette();
         if (document.documentElement && window.getComputedStyle && window.CSS?.supports) {
@@ -465,8 +465,8 @@
     // Native Codex shares its private catalog with AppKit. Other targets keep
     // their catalog in this browser profile; bytes never leave the device.
     function createFontControls(parent, createSelect, createRow, apply) {
-        const key = 'agent-rtl-fonts', signal = 'agent-rtl-font-change';
-        const native = window.agentRTLNative;
+        const key = 'rasta-fonts', signal = 'rasta-font-change';
+        const native = window.rastaNative;
         const shared = native && ['fonts', 'importFont', 'selectFont'].every(method => typeof native[method] === 'function');
         const defaults = [{ label: 'Vazir', value: 'vazir' }];
         const select = createSelect('artl-app-font', 'vazir', defaults);
@@ -492,7 +492,7 @@
         function localState(saved) { return { selected: saved.selected, fonts: saved.fonts, active: saved.fonts.find(font => font.id === saved.selected) || null }; }
         async function loadFace(id, data) {
             if (!validID(id) || typeof data !== 'string' || data.length > 2796204 || !/^[A-Za-z0-9+/]+=*$/.test(data)) throw new Error('The font file is invalid.');
-            const family = 'AgentRTLUser_' + id;
+            const family = 'RastaUser_' + id;
             if (!loaded.has(id)) {
                 const face = new window.FontFace(family, `url("data:font/ttf;base64,${data}")`);
                 await face.load();
@@ -601,6 +601,7 @@
         };
         panel._artlDismissToast = () => dismissToast();
         const badge = document.createElement('span'); badge.className = 'artl-update-badge'; badge.hidden = true; badge.title = t('available'); trigger.appendChild(badge);
+        badge.setAttribute('aria-hidden', 'true');
         let running = false, checking = false, latest = null;
         const tell = (message, kind = 'success') => {
             if (updatesDisposed || panel.getAttribute('aria-hidden') === 'true') return;
@@ -636,6 +637,8 @@
             check.querySelector('path').setAttribute('d', checking ? 'M21 12a9 9 0 1 1-9-9' : refreshGlyph);
             check.title = checking ? 'Checking for updates…' : t('check');
             check.setAttribute('aria-busy', String(checking)); badge.hidden = !available || running; notice.hidden = !available || running;
+            const triggerLabel = badge.hidden ? t('settings') : `${t('settings')}: Rasta ${latest.release.agentVersion} update available`;
+            trigger.setAttribute('aria-label', triggerLabel); trigger.title = triggerLabel;
         }
         async function refresh() {
             if (updatesDisposed) return;
@@ -656,7 +659,7 @@
                     const keys = [];
                     for (let i = 0; i < localStorage.length; i++) {
                         const key = localStorage.key(i);
-                        if (key === STORAGE_KEY || key === 'agent-rtl-fonts' || key === 'agent-rtl-font-change' || key?.startsWith('agent-rtl:message-direction:v1:')) keys.push(key);
+                        if (key === STORAGE_KEY || key === 'rasta-fonts' || key === 'rasta-font-change' || key?.startsWith('rasta:message-direction:v1:')) keys.push(key);
                     }
                     for (const key of keys) localStorage.removeItem(key);
                 }
@@ -940,7 +943,7 @@
     }
     document.addEventListener('keydown', onKeyDown, { capture: true });
 
-    window.__agentRTLPro = {
+    window.__rastaPro = {
         dispose() {
             updatesDisposed = true;
             messageContext?.dispose(); messageDirections?.dispose();
@@ -963,7 +966,7 @@
             });
             const widget = document.querySelector('.artl-widget-container');
             if (widget) widget.remove();
-            window.__agentRTLPro = { disabled: true };
+            window.__rastaPro = { disabled: true };
         },
     };
     if (document.body) updateDir();

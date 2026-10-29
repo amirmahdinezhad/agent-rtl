@@ -9,7 +9,7 @@ import { createCodexMessageDirections } from '../payloads/codex-message-directio
 import { createT3MessageContext } from '../payloads/t3-message-context.js';
 
 export const CODEX_PORT = 9223;
-export const CODEX_WORLD = 'agent-rtl-pro';
+export const CODEX_WORLD = 'rasta-pro';
 const FORMATS = { '.woff2': 'woff2', '.woff': 'woff', '.ttf': 'truetype', '.otf': 'opentype' };
 
 // Read the bundle identity; ChatGPT.app is accepted only when it actually
@@ -145,8 +145,8 @@ export class DebugClient {
     close() { this.socket.close(); }
 }
 
-const STATE = 'window.__agentRTLPro ? (window.__agentRTLPro.disabled ? "disabled" : (window.__agentRTLPro.pending ? "pending" : "active")) : "inactive"';
-const REMOVE = 'window.__agentRTLPro?.dispose(); window.__agentRTLPro = { disabled: true }; "disabled"';
+const STATE = 'window.__rastaPro ? (window.__rastaPro.disabled ? "disabled" : (window.__rastaPro.pending ? "pending" : "active")) : "inactive"';
+const REMOVE = 'window.__rastaPro?.dispose(); window.__rastaPro = { disabled: true }; "disabled"';
 
 export async function restoreCodex(port = CODEX_PORT) {
     let restored = 0;

@@ -68,13 +68,13 @@ describe('verified GUI update feeds', () => {
         try {
             const artifact = path.join(dir, 'Rasta-2.4.2-darwin-arm64.zip'); fs.writeFileSync(artifact, 'beta artifact');
             const { privateKey } = generateKeyPairSync('ed25519');
-            const options = { artifact, repository: 'owner/agent-rtl', platform: 'darwin-arm64', version: '2.4.2',
+            const options = { artifact, repository: 'owner/rasta', platform: 'darwin-arm64', version: '2.4.2',
                 supportedAppVersions: ['26.1021.31345'], privateKey: privateKey.export({ format: 'pem', type: 'pkcs8' }) };
             const release = signedManifest({ ...options, tag: 'v2.4.2-beta.1' });
             const manifest = verifyReleaseEnvelope(release.envelope, release.publicKey, 'darwin-arm64');
             assert.equal(manifest.agentVersion, '2.4.2');
             assert.deepEqual(manifest.releaseNotes, []);
-            assert.equal(manifest.artifact.url, 'https://github.com/owner/agent-rtl/releases/download/v2.4.2-beta.1/Rasta-2.4.2-darwin-arm64.zip');
+            assert.equal(manifest.artifact.url, 'https://github.com/owner/rasta/releases/download/v2.4.2-beta.1/Rasta-2.4.2-darwin-arm64.zip');
             for (const tag of ['v2.4.3-beta.1', 'v2.4.2/../../other', 'v2.4.2-beta.1?redirect=elsewhere'])
                 assert.throws(() => signedManifest({ ...options, tag }), /Invalid release tag/);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
@@ -85,7 +85,7 @@ describe('verified GUI update feeds', () => {
         try {
             const artifact = path.join(dir, 'Rasta-2.1.0-darwin-arm64.zip'); fs.writeFileSync(artifact, 'fixture archive');
             const { privateKey } = generateKeyPairSync('ed25519');
-            const release = signedManifest({ artifact, repository: 'owner/agent-rtl', platform: 'darwin-arm64', version: '2.1.0',
+            const release = signedManifest({ artifact, repository: 'owner/rasta', platform: 'darwin-arm64', version: '2.1.0',
                 releaseNotes: ['Show the installed version.', 'Preview changes before downloading.'],
                 supportedAppVersions: ['26.1013.40934'], privateKey: privateKey.export({ format: 'pem', type: 'pkcs8' }) });
             const manifest = verifyReleaseEnvelope(release.envelope, release.publicKey, 'darwin-arm64');

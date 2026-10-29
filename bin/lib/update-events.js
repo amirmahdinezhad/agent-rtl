@@ -9,7 +9,7 @@ import { guiPaths, readJSON, saveJSON, activeWorker } from './gui-runtime.js';
 
 export function updateEventPaths(app) {
     const home = process.env.ARTL_CODEX_STATE_HOME || os.homedir();
-    const label = 'dev.agentrtl.update.' + createHash('sha256').update(app).digest('hex').slice(0, 12);
+    const label = 'dev.rasta.update.' + createHash('sha256').update(app).digest('hex').slice(0, 12);
     return { label, domain: `gui/${process.getuid()}`, plist: path.join(home, 'Library/LaunchAgents', label + '.plist'), state: path.join(guiPaths().support, 'update-event.json') };
 }
 export function updateEventPlist(config) {
@@ -46,7 +46,7 @@ export function wizardRunning(config, pid) {
     if (!Number.isSafeInteger(pid) || pid <= 0) return false;
     try {
         const command = execFileSync('/bin/ps', ['-p', String(pid), '-o', 'command='], { encoding: 'utf8' }).trim();
-        return command === `${path.join(config.runtime, 'agent-rtl-ui')} --wizard ${config.runtime} ${config.app}`;
+        return command === `${path.join(config.runtime, 'rasta-ui')} --wizard ${config.runtime} ${config.app}`;
     } catch { return false; }
 }
 export async function promptAfterAppChange(config, { resolve, healthy, fingerprint = appFingerprint, pause = delay, busy = activeWorker, launch = launchWizard,
@@ -85,7 +85,7 @@ export async function promptAfterAppChange(config, { resolve, healthy, fingerpri
 }
 export function launchWizard(config) {
     return new Promise((resolve, reject) => {
-        const child = spawn(path.join(config.runtime, 'agent-rtl-ui'), ['--wizard', config.runtime, config.app], {
+        const child = spawn(path.join(config.runtime, 'rasta-ui'), ['--wizard', config.runtime, config.app], {
             detached: true, stdio: 'ignore', env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('CODEX_') && key !== 'ELECTRON_RUN_AS_NODE')),
         });
         child.once('error', reject); child.once('spawn', () => { child.unref(); resolve(child.pid); });

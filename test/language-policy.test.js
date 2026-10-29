@@ -38,7 +38,7 @@ test('language guard rejects new copy even in a file containing approved samples
     const nonEnglish = String.fromCodePoint(0x633, 0x644, 0x627, 0x645);
     assert.equal(violations('docs/example.md', nonEnglish).length, 1);
     assert.equal(violations('test/payload.test.js', `// ${nonEnglish}`).length, 1);
-    assert.equal(violations('native/AgentRTLSetup.swift', `let title = "${nonEnglish}"`).length, 1);
+    assert.equal(violations('native/RastaSetup.swift', `let title = "${nonEnglish}"`).length, 1);
     assert.equal(violations('README.md', `${nonEnglish}\n<a id="persian-documentation"></a>\n<div dir="rtl" lang="fa">${nonEnglish}</div>\n${nonEnglish}`).length, 2);
     assert.deepEqual(violations('README.md', `<a id="persian-documentation"></a>\n<div dir="rtl" lang="fa">${nonEnglish}</div>`), []);
 });

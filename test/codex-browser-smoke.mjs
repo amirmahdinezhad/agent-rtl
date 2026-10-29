@@ -17,7 +17,7 @@ const fixture = `<!doctype html><html><head><meta charset="utf-8"><meta http-equ
 <script type="module" src="./original.js"></script></body></html>`;
 const payload = buildCodexPayload();
 const server = http.createServer((request, response) => {
-    if (request.url === '/agent-rtl-payload.js') {
+    if (request.url === '/rasta-payload.js') {
         response.setHeader('Content-Type', 'application/javascript'); response.end(payload);
     } else if (request.url === '/original.js') {
         response.setHeader('Content-Type', 'application/javascript'); response.end('window.originalAppLogic = "unchanged";');
