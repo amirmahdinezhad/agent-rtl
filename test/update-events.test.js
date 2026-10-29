@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { saveJSON, readJSON } from '../bin/lib/gui-runtime.js';
+import { guiPaths, saveJSON, readJSON } from '../bin/lib/gui-runtime.js';
 import { updateEventPaths, updateEventPlist, promptAfterAppChange } from '../bin/lib/update-events.js';
 
 test('app-change prompt waits for stable files, deduplicates, and skips healthy or busy apps', async () => {
@@ -60,4 +60,28 @@ test('an exited wizard does not permanently suppress recovery for an unpatched b
         await assert.rejects(promptAfterAppChange(config, { ...options, launch: async () => { throw new Error('UI unavailable'); } }), /UI unavailable/);
         assert.equal(readJSON(paths.state).promptPid, 123, 'failed spawn must not acknowledge a new prompt');
     } finally { if (previousHome === undefined) delete process.env.ARTL_CODEX_STATE_HOME; else process.env.ARTL_CODEX_STATE_HOME = previousHome; fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+
+test('retains only the update registration owned by the same app and support directory', () => {
+    const home = fs.mkdtempSync(path.join(os.tmpdir(), 'rasta-event-owner-'));
+    const previous = process.env.ARTL_CODEX_STATE_HOME;
+    process.env.ARTL_CODEX_STATE_HOME = home;
+    try {
+        const app = path.join(home, 'Codex.app'), support = guiPaths().support;
+        const runtime = path.join(support, 'ui-runtimes', 'previous');
+        const agents = path.join(home, 'Library/LaunchAgents');
+        const entry = (label, runtime, watchedApp) => saveJSON(path.join(agents, label + '.plist'), {
+            Label: label, ProgramArguments: [path.join(runtime, 'node'), path.join(runtime, 'bin/gui-update-event.js')], WatchPaths: [watchedApp],
+        });
+        entry('dev.previous.other', path.join(home, 'other/ui-runtimes/old'), app);
+        entry('dev.previous.foreign', runtime, path.join(home, 'T3.app'));
+        assert.match(updateEventPaths(app).label, /^dev\.rasta\.update\./);
+        entry('dev.previous.owned', runtime, app);
+        assert.equal(updateEventPaths(app).label, 'dev.previous.owned');
+        assert.equal(updateEventPlist({ app, runtime }).Label, 'dev.previous.owned');
+    } finally {
+        if (previous === undefined) delete process.env.ARTL_CODEX_STATE_HOME; else process.env.ARTL_CODEX_STATE_HOME = previous;
+        fs.rmSync(home, { recursive: true, force: true });
+    }
 });

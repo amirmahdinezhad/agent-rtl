@@ -16,6 +16,7 @@ import * as asar from '@electron/asar';
 
 const args = process.argv.slice(2), value = key => args[args.indexOf(key) + 1];
 async function main() {
+    if (args.includes('--support-path')) return guiPaths().support;
     if (args.includes('--worker')) {
         const file = value('--worker'), paths = guiPaths();
         if (path.dirname(path.dirname(file)) !== paths.jobs || path.basename(file) !== 'job.json') throw new Error('Invalid UI job path.');

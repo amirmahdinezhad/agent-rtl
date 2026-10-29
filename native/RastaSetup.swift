@@ -161,7 +161,25 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let configData = try? Data(contentsOf: URL(fileURLWithPath: runtimePath + "/bin/release-config.json"))
         let config = configData.flatMap { (try? JSONSerialization.jsonObject(with: $0)) as? [String: Any] } ?? [:]
         hostName = config["target"] as? String == "t3" ? "T3 Code" : "Codex"
-        let support = home + "/Library/Application Support/" + (hostName == "T3 Code" ? "Rasta T3" : "Rasta")
+        var support = home + "/Library/Application Support/" + (hostName == "T3 Code" ? "Rasta T3" : "Rasta")
+        // Resolve the same per-installation state as the authenticated updater.
+        let probe = Process(), output = Pipe()
+        probe.executableURL = URL(fileURLWithPath: runtimePath + "/node")
+        probe.arguments = [runtimePath + "/bin/gui-service.js", "--support-path"]
+        if watching { probe.arguments! += ["--app", args[4]] }
+        else if wizard { probe.arguments! += ["--app", args[3]] }
+        probe.standardOutput = output
+        probe.standardError = FileHandle.nullDevice
+        if (try? probe.run()) != nil {
+            let data = output.fileHandleForReading.readDataToEndOfFile()
+            probe.waitUntilExit()
+            if probe.terminationStatus == 0,
+               let response = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+               let resolved = response["value"] as? String,
+               URL(fileURLWithPath: resolved).deletingLastPathComponent().path == home + "/Library/Application Support" {
+                support = resolved
+            }
+        }
         supportDirectory = support
         statusPath = watching ? args[2] : support + "/gui-status.json"; cancelPath = watching ? args[3] : support + "/gui-cancel"
         appPath = watching ? args[4] : wizard ? args[3] : nil

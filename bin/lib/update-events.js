@@ -9,7 +9,22 @@ import { guiPaths, readJSON, saveJSON, activeWorker } from './gui-runtime.js';
 
 export function updateEventPaths(app) {
     const home = process.env.ARTL_CODEX_STATE_HOME || os.homedir();
-    const label = 'dev.rasta.update.' + createHash('sha256').update(app).digest('hex').slice(0, 12);
+    let label = 'dev.rasta.update.' + createHash('sha256').update(app).digest('hex').slice(0, 12);
+    // Retain an existing per-app registration when an installation's branding changes.
+    const agents = path.join(home, 'Library/LaunchAgents'), support = guiPaths().support;
+    if (!fs.existsSync(path.join(agents, label + '.plist')) && fs.existsSync(agents)) {
+        for (const name of fs.readdirSync(agents).filter(name => name.endsWith('.plist')).sort()) {
+            try {
+                const plist = JSON.parse(execFileSync('/usr/bin/plutil', ['-convert', 'json', '-o', '-', path.join(agents, name)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
+                const args = plist.ProgramArguments;
+                if (typeof plist.Label !== 'string' || plist.Label + '.plist' !== name || !Array.isArray(args)
+                    || path.basename(args[1] || '') !== 'gui-update-event.js' || !plist.WatchPaths?.includes(app)) continue;
+                const runtime = path.dirname(args[0] || '');
+                if (path.dirname(runtime) !== path.join(support, 'ui-runtimes') || args[1] !== path.join(runtime, 'bin/gui-update-event.js')) continue;
+                label = plist.Label; break;
+            } catch { /* Unrelated launch agents do not belong to this installation. */ }
+        }
+    }
     return { label, domain: `gui/${process.getuid()}`, plist: path.join(home, 'Library/LaunchAgents', label + '.plist'), state: path.join(guiPaths().support, 'update-event.json') };
 }
 export function updateEventPlist(config) {
