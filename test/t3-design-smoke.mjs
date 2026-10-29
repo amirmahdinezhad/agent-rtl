@@ -58,7 +58,7 @@ try {
         }
         await page.locator('#artl-toggle-btn').click();
         assert.equal(await page.locator('.ProseMirror p').getAttribute('dir'), 'rtl');
-        assert.equal(await page.locator('.artl-version').innerText(), 'v' + pkg.version);
+        assert.equal(await page.locator('.artl-panel-header .artl-version').innerText(), 'v' + pkg.version);
         assert.equal(await page.locator('.artl-accent-value').innerText(), 'Lavender');
         assert.equal(await page.getByRole('button', { name: 'Default accent', exact: true }).count(), 0);
         assert.equal(await page.locator('.artl-accent-swatch').count(), 4);
@@ -79,6 +79,10 @@ try {
         assert.equal(await page.locator('.artl-accent-value').innerText(), 'Yellow');
         assert.equal(await page.getByRole('combobox', { name: 'Theme', exact: true }).innerText(), theme);
         await page.setViewportSize({ width: 360, height: 900 });
+        const swatches = await page.locator('.artl-accent-swatch').evaluateAll(elements => elements.map(element => {
+            const box = element.getBoundingClientRect(); return { width: box.width, height: box.height };
+        }));
+        for (const box of swatches) assert.deepEqual(box, { width: 44, height: 44 }, 'T3 accent boxes stay square');
         await page.locator('.artl-widget-panel').screenshot({ path: path.join(folder, 'panel-' + theme.toLowerCase() + '.png') });
         assert.deepEqual(errors, []); await page.close();
     }

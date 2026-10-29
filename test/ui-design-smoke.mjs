@@ -5,12 +5,13 @@ import path from 'node:path';
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import * as asar from '@electron/asar';
+import { codexStylesheets } from './helpers/codex-stylesheets.js';
 import { buildCodexPayload, resolveCodexApp } from '../bin/lib/codex.js';
 if (!process.env.ARTL_PLAYWRIGHT_MODULE) throw new Error('Provide ARTL_PLAYWRIGHT_MODULE.');
 const { chromium } = await import(pathToFileURL(process.env.ARTL_PLAYWRIGHT_MODULE).href);
 const output = path.resolve('dist/design-preview'); fs.mkdirSync(output, { recursive: true });
 const bundle = process.env.ARTL_USE_CODEX_CSS === '1' ? resolveCodexApp() : null;
-const cssFiles = bundle ? asar.listPackage(bundle.archive).filter(name => /^\/webview\/assets\/app-(initial|primary|shared)-[^/]+\.css$/.test(name)) : [];
+const cssFiles = bundle ? codexStylesheets(bundle.archive) : [];
 if (process.env.ARTL_USE_CODEX_CSS === '1') assert.ok(cssFiles.length);
 const mock = `window.previewCalls=[];window.previewRunning=false;window.previewRelease={available:false,supported:true,phase:'up-to-date'};
 window.rastaNative={

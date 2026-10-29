@@ -126,10 +126,26 @@ try {
     try { process.kill(-child.pid, 'SIGTERM'); } catch {}
     await delay(1500);
     try { process.kill(-child.pid, 'SIGKILL'); } catch {}
-    const commands = execFileSync('/bin/ps', ['-axo', 'pid=,command='], { encoding: 'utf8' });
-    for (const row of commands.split('\n')) {
-        const match = row.trim().match(/^(\d+) (.+)$/);
-        if (match && match[2].startsWith(`${stage.stagedApp}/Contents/`)) try { process.kill(Number(match[1]), 'SIGTERM'); } catch {}
-    }
-    fs.rmSync(profile, { recursive: true, force: true });
+    // Reparented vendor helpers can still flush files after the main process exits.
+    // Limit cleanup to this staged copy and wait before removing its profile.
+    const stopStagedHelpers = signal => {
+        const commands = execFileSync('/bin/ps', ['-axo', 'pid=,command='], { encoding: 'utf8' });
+        for (const row of commands.split('\n')) {
+            const match = row.trim().match(/^(\d+) (.+)$/);
+            if (match && match[2].startsWith(`${stage.stagedApp}/Contents/`)) try { process.kill(Number(match[1]), signal); } catch {}
+        }
+    };
+    stopStagedHelpers('SIGTERM');
+    await delay(1000);
+    stopStagedHelpers('SIGKILL');
+    // Newer Codex builds create read-only artifact runtime directories.
+    // Change only directories inside this disposable profile; never follow links.
+    const unlockProfileDirectories = directory => {
+        fs.chmodSync(directory, 0o700);
+        for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+            if (entry.isDirectory()) unlockProfileDirectories(path.join(directory, entry.name));
+        }
+    };
+    unlockProfileDirectories(profile);
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 }

@@ -3,13 +3,14 @@ import fs from 'node:fs';
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import * as asar from '@electron/asar';
+import { codexStylesheets } from './helpers/codex-stylesheets.js';
 import { buildCodexPayload, resolveCodexApp } from '../bin/lib/codex.js';
 import { patchHtml } from '../bin/lib/html.js';
 
 const { chromium } = await import(pathToFileURL(process.env.ARTL_PLAYWRIGHT_MODULE).href);
 const content = fs.readFileSync(new URL('./fixtures/codex-content.html', import.meta.url), 'utf8');
 const bundle = process.env.ARTL_USE_CODEX_CSS === '1' ? resolveCodexApp() : null;
-const cssFiles = bundle ? asar.listPackage(bundle.archive).filter(name => /^\/webview\/assets\/app-(initial|primary|shared)-[^/]+\.css$/.test(name)) : [];
+const cssFiles = bundle ? codexStylesheets(bundle.archive) : [];
 if (process.env.ARTL_USE_CODEX_CSS === '1') assert.ok(cssFiles.length, 'installed Codex styles must be available');
 const html = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:">
 ${cssFiles.map(name => `<link rel="stylesheet" href="${name.slice('/webview'.length)}">`).join('\n')}

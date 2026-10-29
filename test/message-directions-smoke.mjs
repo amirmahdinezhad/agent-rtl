@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import * as asar from '@electron/asar';
+import { codexStylesheets } from './helpers/codex-stylesheets.js';
 import { buildCodexPayload, resolveCodexApp } from '../bin/lib/codex.js';
 import { patchHtml } from '../bin/lib/html.js';
 
@@ -12,7 +13,7 @@ if (!process.env.ARTL_PLAYWRIGHT_MODULE) throw new Error('Provide ARTL_PLAYWRIGH
 const { chromium } = await import(pathToFileURL(process.env.ARTL_PLAYWRIGHT_MODULE).href);
 const content = fs.readFileSync(new URL('./fixtures/codex-message-directions.html', import.meta.url), 'utf8');
 const bundle = process.env.ARTL_USE_CODEX_CSS === '1' ? resolveCodexApp() : null;
-const cssFiles = bundle ? asar.listPackage(bundle.archive).filter(name => /^\/webview\/assets\/app-(initial|primary|shared)-[^/]+\.css$/.test(name)) : [];
+const cssFiles = bundle ? codexStylesheets(bundle.archive) : [];
 if (process.env.ARTL_USE_CODEX_CSS === '1') assert.ok(cssFiles.length, 'host CSS is available');
 const bootstrap = `window.emitRoute = (conversationId = 'thread-a', hostId = 'local') => window.dispatchEvent(new CustomEvent('codex-message-from-view', { detail: { type: 'app-shell-shortcut-state-changed', quickChatAppshotThreadTarget: conversationId === null ? null : { conversationId, hostId } } })); window.emitRoute();`;
 const css = `body{margin:24px;font:16px system-ui;background:#fafafa;color:#27252d}main{max-width:760px;margin:auto}.thread-scroll-container{min-height:240px}#response-a,#response-b{display:flex;flex-direction:column;padding:16px;border-bottom:1px solid #ddd}p{margin:8px 0}pre{padding:12px;background:#eee}textarea{width:100%;min-height:50px}:root[data-theme=dark] body{background:#212026;color:#f4f3f7}:root[data-theme=dark] pre{background:#303035}:root[data-theme=dark] #response-a,:root[data-theme=dark] #response-b{border-color:#44394f}`;
