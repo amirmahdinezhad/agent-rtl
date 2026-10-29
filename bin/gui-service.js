@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { updateChannelStatus, setUpdateChannel } from './lib/update-channels.js';
 import { saveAppearance } from './lib/appearance.js';
 import fs from 'node:fs';
 import { targetId } from './lib/app-target.js';
@@ -28,6 +29,13 @@ async function main() {
         saveJSON(`${file}.result`, prepareGUIStage(readJSON(file))); return;
     }
     const action = value('--rpc'), paths = guiPaths();
+    if (action === 'update-channel') return await updateChannelStatus();
+    if (action === 'set-update-channel') {
+        if (activeWorker()) throw new Error('Wait for the current update to finish.');
+        let input = '';
+        for await (const chunk of process.stdin) { input += chunk; if (input.length > 256) throw new Error('Invalid update channel.'); }
+        return await setUpdateChannel(JSON.parse(input).channel);
+    }
     if (['fonts', 'font-import', 'font-select', 'appearance'].includes(action)) {
         if (action === 'fonts') return fontPreferences();
         const chunks = []; let length = 0;

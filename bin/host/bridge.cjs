@@ -2,7 +2,7 @@
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const CHANNEL = 'rasta:control';
-const ACTIONS = new Set(['status', 'check', 'prepare', 'cancel', 'repair', 'restore', 'open', 'ready', 'fonts', 'font-import', 'font-select', 'appearance']);
+const ACTIONS = new Set(['status', 'check', 'prepare', 'cancel', 'repair', 'restore', 'open', 'ready', 'fonts', 'font-import', 'font-select', 'appearance', 'update-channel', 'set-update-channel']);
 function eligible(url, target = 'codex') {
     try { const value = new URL(url); if (target === 't3') return value.protocol === 't3code:' && value.hostname === 'app' && (['/', '/index.html'].includes(value.pathname) || /^\/[^/.]+\/[^/.]+\/?$/.test(value.pathname)); return value.protocol === 'app:' && value.hostname === '-'
         && ['/', '/index.html', '/detached-window.html', '/detached-window'].includes(value.pathname)
@@ -25,24 +25,25 @@ function install({ app, ipcMain, session }, config) {
         const frame = event.senderFrame;
         if (!frame || frame !== event.sender.mainFrame || !eligible(frame.url, config.target) || !ACTIONS.has(action)) throw new Error('Untrusted Rasta request.');
         if (action === 'appearance' && (!['auto', 'light', 'dark'].includes(input?.theme) || !['auto', '#ad8cf3', '#79adeb', '#68c7a4', '#e9bf59'].includes(input?.accent))) throw new Error('Invalid Rasta appearance.');
+        if (action === 'set-update-channel' && !['stable', 'beta'].includes(input?.channel)) throw new Error('Invalid update channel.');
         if (action === 'font-select' && (typeof input?.id !== 'string' || !/^(vazir|[a-f0-9]{32})$/.test(input.id))) throw new Error('Invalid font selection.');
         if (action === 'font-import' && (typeof input?.name !== 'string' || input.name.length > 255 || !/\.(ttf|otf)$/i.test(input.name)
             || typeof input.data !== 'string' || input.data.length > 2796204)) throw new Error('Choose a TTF or OTF font up to 2 MB.');
-        if (busy && !['status', 'cancel', 'check', 'ready', 'fonts'].includes(action)) throw new Error('Another Rasta action is running.');
-        const mutating = !['status', 'cancel', 'check', 'ready', 'fonts'].includes(action);
+        if (busy && !['status', 'cancel', 'check', 'ready', 'fonts', 'update-channel'].includes(action)) throw new Error('Another Rasta action is running.');
+        const mutating = !['status', 'cancel', 'check', 'ready', 'fonts', 'update-channel'].includes(action);
         if (mutating) busy = true;
         try {
             return await new Promise((resolve, reject) => {
                 const environment = { ...process.env, ARTL_TARGET: config.target || 'codex' };
                 for (const key of Object.keys(environment)) if (key.startsWith('CODEX_') || key === 'ELECTRON_RUN_AS_NODE') delete environment[key];
                 const child = execFile(path.join(config.runtime, 'node'), [path.join(config.runtime, 'bin/gui-service.js'), '--rpc', action, '--app', config.app],
-                    { env: environment, timeout: action === 'check' ? 45000 : 15000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout) => {
+                    { env: environment, timeout: ['check', 'update-channel', 'set-update-channel'].includes(action) ? 45000 : 15000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout) => {
                         try { const response = JSON.parse(stdout); if (!response.ok) reject(new Error(response.error)); else resolve(response.value); }
                         catch (parseError) { reject(error || parseError); }
                     });
-                if (action === 'appearance' || action === 'font-import' || action === 'font-select') {
+                if (action === 'set-update-channel' || action === 'appearance' || action === 'font-import' || action === 'font-select') {
                     child.stdin.on('error', () => {});
-                    child.stdin.end(JSON.stringify(action === 'appearance' ? { theme: input.theme, accent: input.accent } : action === 'font-import' ? { name: input.name, data: input.data } : { id: input.id }));
+                    child.stdin.end(JSON.stringify(action === 'set-update-channel' ? { channel: input.channel } : action === 'appearance' ? { theme: input.theme, accent: input.accent } : action === 'font-import' ? { name: input.name, data: input.data } : { id: input.id }));
                 }
             });
         } finally { if (mutating) busy = false; }

@@ -24,7 +24,7 @@ it('exposes only fixed operations in the main shell, never raw IPC or a shell ex
             require: () => ({ contextBridge: { exposeInMainWorld: (name, value) => { assert.equal(name, 'rastaNative'); bridge = value; } },
                 ipcRenderer: { invoke: async (channel, action) => { assert.equal(channel, 'rasta:control'); return action; } } }) });
         assert.equal(!!bridge, exposed);
-        if (bridge) { assert.deepEqual(Object.keys(bridge).sort(), ['cancel', 'check', 'fonts', 'importFont', 'open', 'prepare', 'repair', 'restore', 'selectFont', 'setAppearance', 'status']); assert.equal(await bridge.prepare('ignored-command'), 'prepare'); }
+        if (bridge) { assert.deepEqual(Object.keys(bridge).sort(), ['cancel', 'check', 'fonts', 'importFont', 'open', 'prepare', 'repair', 'restore', 'selectFont', 'setAppearance', 'setUpdateChannel', 'status', 'updateChannel']); assert.equal(await bridge.prepare('ignored-command'), 'prepare'); }
     }
 });
 it('rejects iframe and unknown IPC actions before spawning a worker', async () => {
@@ -43,6 +43,7 @@ it('rejects iframe and unknown IPC actions before spawning a worker', async () =
     await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'font-select', { id: '../bad' }), /Invalid font/);
     await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'font-import', { name: 'bad.txt', data: 'abc' }), /TTF or OTF/);
     await assert.rejects(handler({ sender, senderFrame: { url: mainFrame.url } }, 'font-import', { name: 'font.ttf', data: 'abc' }), /Untrusted/);
+    await assert.rejects(handler({ sender, senderFrame: mainFrame }, 'set-update-channel', { channel: '../beta' }), /Invalid update channel/);
     assert.equal(calls, 0);
     assert.equal((await handler({ sender, senderFrame: mainFrame }, 'status')).ready, true);
     assert.equal(calls, 1);

@@ -22,7 +22,12 @@ try {
 const operation=fs.existsSync(${JSON.stringify(calls + '.prepared')})?{phase:'ready-to-install',progress:1}:null;
 const release=fs.existsSync(${JSON.stringify(calls + '.release')})?JSON.parse(fs.readFileSync(${JSON.stringify(calls + '.release')},'utf8')):{available:true,supported:true,phase:'available',releaseConfigured:true,release:{agentVersion:'2.1.0'}};
 if(action==='prepare')fs.writeFileSync(${JSON.stringify(calls + '.prepared')},'yes');
-console.log(JSON.stringify({ok:true,value:action==='status'?{running:!!operation,operation,update:release}:action==='check'?release:action==='fonts'?{selected:'vazir',fonts:[],active:null}:{id:'fixture'}}));`);
+if(action==='set-update-channel'){
+ if(!fs.existsSync(${JSON.stringify(calls + '.owner')})){console.log(JSON.stringify({ok:false,error:'Beta access denied'}));process.exit(1);}
+ const input=JSON.parse(fs.readFileSync(0,'utf8'));fs.writeFileSync(${JSON.stringify(calls + '.channel')},input.channel);
+}
+const channel={betaAvailable:fs.existsSync(${JSON.stringify(calls + '.owner')}),channel:fs.existsSync(${JSON.stringify(calls + '.channel')})?fs.readFileSync(${JSON.stringify(calls + '.channel')},'utf8'):'stable'};
+console.log(JSON.stringify({ok:true,value:action==='update-channel'||action==='set-update-channel'?channel:action==='status'?{running:!!operation,operation,update:release}:action==='check'?release:action==='fonts'?{selected:'vazir',fonts:[],active:null}:{id:'fixture'}}));`);
     fs.writeFileSync(path.join(folder, 'vendor-preload.cjs'), `require('electron').contextBridge.exposeInMainWorld('vendorPreloadSentinel','unchanged');`);
     fs.writeFileSync(path.join(folder, 'payload.js'), buildCodexPayload({ all: [], fa: [], en: [] }));
     let html = '<!doctype html><html><head><meta charset="utf-8"></head><body><div data-markdown-text-style="assistant-message"><p>متن آزمایشی فارسی</p></div><script src="app://-/payload.js"></script></body></html>';
@@ -38,13 +43,27 @@ const errors=[];win.webContents.on('console-message',(_event,details)=>{if(detai
 await win.loadURL('app://-/index.html');
 for(let n=0;n<100;n++){if(await win.webContents.executeJavaScript("!!document.getElementById('artl-update-install')"))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript('vendorPreloadSentinel'),'unchanged');
-assert.deepEqual(await win.webContents.executeJavaScript('Object.keys(rastaNative).sort()'),['cancel','check','fonts','importFont','open','prepare','repair','restore','selectFont','setAppearance','status']);
+assert.deepEqual(await win.webContents.executeJavaScript('Object.keys(rastaNative).sort()'),['cancel','check','fonts','importFont','open','prepare','repair','restore','selectFont','setAppearance','setUpdateChannel','status','updateChannel']);
 for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("document.getElementById('artl-update-install').disabled===false"))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false);
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-panel').getAttribute('aria-hidden')"),'true');
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').getBoundingClientRect().width > 0"),true,'update dot is visible while the panel is closed');
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').getAttribute('aria-label')"),'Rasta settings: Rasta 2.1.0 update available');
 await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),true,'Beta controls are hidden without authorized access');
+fs.writeFileSync(${JSON.stringify(calls + '.owner')},'owner');
+await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
+for(let n=0;n<60;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-beta-row').hidden && !document.getElementById('artl-beta-toggle').disabled"))break;await pause(100)}
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),false);
+await win.webContents.executeJavaScript("document.getElementById('artl-beta-toggle').click()");
+for(let n=0;n<60;n++){if(await win.webContents.executeJavaScript("document.getElementById('artl-beta-toggle').getAttribute('aria-checked')==='true' && !document.getElementById('artl-beta-toggle').disabled"))break;await pause(100)}
+assert.equal(fs.readFileSync(${JSON.stringify(calls + '.channel')},'utf8'),'beta','owner can select Beta through real sandboxed IPC');
+fs.rmSync(${JSON.stringify(calls + '.owner')});
+await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
+for(let n=0;n<60;n++){if(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden && !document.getElementById('artl-update-check').disabled"))break;await pause(100)}
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),true,'signing out hides Beta controls');
+assert.equal(await win.webContents.executeJavaScript("rastaNative.setUpdateChannel('beta').then(()=>false,()=>true)"),true,'backend denies a forged Beta selection after logout');
+
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false,'opening settings does not acknowledge an uninstalled update');
 await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
 const setRelease=async value=>{

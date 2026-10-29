@@ -1,3 +1,4 @@
+import { resolveReleaseChannel } from './update-channels.js';
 import { removeGUIData, finishGUIUninstall } from './gui-uninstall.js';
 import fs from 'node:fs';
 import { targetId, targetName } from './app-target.js';
@@ -30,7 +31,7 @@ export function releaseConfiguration() {
 }
 export async function checkGUIUpdates(config, { fetcher, osVersion = execFileSync('/usr/bin/sw_vers', ['-productVersion'], { encoding: 'utf8' }).trim(), arch = process.arch } = {}) {
     const bundle = resolveGUIApp(config.app), pkg = JSON.parse(asar.extractFile(bundle.archive, 'package.json'));
-    const releaseConfig = releaseConfiguration(), signal = AbortSignal.timeout(30000);
+    const releaseConfig = await resolveReleaseChannel(releaseConfiguration()), signal = AbortSignal.timeout(30000);
     const url = new URL('https://updates.oaistatic.com/codex/app/appcast');
     const paths = guiPaths();
     const installation = readJSON(path.join(paths.support, 'update-client.json'), { id: randomUUID() });
@@ -47,7 +48,7 @@ export async function checkGUIUpdates(config, { fetcher, osVersion = execFileSyn
     if (releaseConfig?.feedUrl && releaseConfig.publicKey) {
         try {
             const body = releaseConfig.privateRepository
-                ? (await privateAsset(releaseConfig.feedUrl, releaseConfig.privateRepository, { signal, maximum: 128 * 1024 })).toString()
+                ? (await privateAsset(releaseConfig.feedUrl, releaseConfig.privateRepository, { signal, maximum: 128 * 1024, ownerId: releaseConfig.betaOwnerId })).toString()
                 : await boundedText(await fetchTrusted(releaseConfig.feedUrl, { kind: 'release', signal, fetcher }), 128 * 1024);
             release = verifyReleaseEnvelope(JSON.parse(body), releaseConfig.publicKey, `darwin-${arch}`, targetId());
             if ((release.target || 'codex') !== targetId()) throw new Error('The Rasta release belongs to another application.');
@@ -56,7 +57,7 @@ export async function checkGUIUpdates(config, { fetcher, osVersion = execFileSyn
     let patchMissing = false; try { asar.extractFile(bundle.archive, 'rasta/host.json'); } catch { patchMissing = true; }
     const plan = updatePlan({ ...config, patchMissing }, bundle.version, appUpdate, release, releaseConfig);
     const result = { checkedAt: new Date().toISOString(), appVersion: bundle.version, agentVersion: config.agentVersion || agentVersion,
-        appUpdate, ...plan, releaseConfigured: !!releaseConfig?.feedUrl, releaseError };
+        appUpdate, ...plan, channel: releaseConfig.channel, releaseConfigured: !!releaseConfig?.feedUrl, releaseError };
     saveJSON(paths.cache, result); return result;
 }
 
@@ -138,7 +139,10 @@ export async function runGUIJob(job, overrides = {}) {
             if (update.release) {
                 publish({ phase: 'downloading-agent', progress: 0 });
                 const archive = path.join(job.folder, 'agent.zip');
-                const releaseDownload = releaseConfiguration().privateRepository ? (artifact, file, options) => downloadPrivateArtifact(artifact, file, releaseConfiguration().privateRepository, options) : downloadArtifact;
+                const source = await resolveReleaseChannel(releaseConfiguration());
+                if (update.channel === 'beta' && source.channel !== 'beta') throw new Error('Beta access changed. Refresh updates and try again.');
+                const releaseDownload = source.privateRepository
+                    ? (artifact, file, options) => downloadPrivateArtifact(artifact, file, source.privateRepository, { ...options, ownerId: source.betaOwnerId }) : downloadArtifact;
                 await (overrides.download || releaseDownload)(update.release.artifact, archive, { kind: 'release', signal: controller.signal,
                     progress: progressFor('downloading-agent') });
                 const extracted = path.join(job.folder, 'agent'); extractZip(archive, extracted);

@@ -15,6 +15,7 @@ if (process.isMainFrame && ((location.protocol === 't3code:' && location.hostnam
     contextBridge.exposeInMainWorld('rastaNative', Object.freeze({
         status: () => request('status'), check: () => request('check'), prepare: () => request('prepare'),
         open: () => request('open'), cancel: () => request('cancel'), repair: () => request('repair'), restore: () => request('restore'),
+        updateChannel: () => request('update-channel'), setUpdateChannel: channel => request('set-update-channel', { channel }),
         setAppearance: input => request('appearance', input),
         fonts: () => request('fonts'), importFont: input => request('font-import', input), selectFont: id => request('font-select', { id }),
     }));

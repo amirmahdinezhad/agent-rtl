@@ -587,6 +587,29 @@
 
     function createUpdateControls(panel, toolbar, trigger, native, t, bind, content) {
         const actions = document.createElement('div'); actions.className = 'artl-update-actions'; toolbar.appendChild(actions);
+        const betaRow = document.createElement('div'); betaRow.id = 'artl-beta-row'; betaRow.className = 'artl-row'; betaRow.hidden = true;
+        const betaLabel = document.createElement('label'); betaLabel.className = 'artl-label'; betaLabel.textContent = 'Beta updates'; betaLabel.setAttribute('for', 'artl-beta-toggle');
+        const betaToggle = document.createElement('button'); betaToggle.type = 'button'; betaToggle.id = 'artl-beta-toggle'; betaToggle.setAttribute('role', 'switch'); betaToggle.setAttribute('aria-label', 'Beta updates');
+        const betaKnob = document.createElement('span'); betaKnob.className = 'artl-toggle-knob'; betaToggle.appendChild(betaKnob);
+        betaRow.append(betaLabel, betaToggle); content.appendChild(betaRow);
+        let channelState = { channel: 'stable', betaAvailable: false }, channelBusy = false, channelCheckedAt = 0;
+        async function refreshChannel(force = false) {
+            if (typeof native.updateChannel !== 'function' || channelBusy || (!force && Date.now() - channelCheckedAt < 30000)) return;
+            channelBusy = true;
+            try { channelState = await native.updateChannel(); }
+            catch { channelState = { channel: 'stable', betaAvailable: false }; }
+            finally { channelBusy = false; channelCheckedAt = Date.now(); if (!updatesDisposed) render(); }
+        }
+        betaToggle.onclick = async () => {
+            if (channelBusy || running || checking) return;
+            channelBusy = true; render();
+            try {
+                channelState = { ...channelState, ...await native.setUpdateChannel(channelState.channel === 'beta' ? 'stable' : 'beta') };
+                latest = null;
+            } catch { tell('Couldn’t change the update channel. Check your GitHub sign-in.', 'error'); }
+            finally { channelBusy = false; render(); }
+            await refreshChannel(true); await checkNow(true);
+        };
         const version = document.createElement('span'); version.className = 'artl-version'; version.hidden = true; content.appendChild(version);
         const notice = document.createElement('div'); notice.className = 'artl-update-notice'; notice.hidden = true; content.appendChild(notice);
         const status = document.createElement('div'); status.id = 'artl-update-status'; status.textContent = t('available'); notice.appendChild(status);
@@ -624,7 +647,11 @@
         const update = makeButton(notice, 'artl-update-install', 'install', () => openUpdate(latest)); update.className = 'artl-update-install';
         const active = new Set(['starting', 'checking', 'downloading-agent', 'downloading-app', 'verifying', 'preparing', 'ready-to-install', 'quitting', 'waiting-for-quit', 'installing']);
         function render() {
-            const available = Boolean(latest?.available && latest.release);
+            betaRow.hidden = !channelState.betaAvailable;
+            betaToggle.disabled = running || checking || channelBusy;
+            betaToggle.className = 'artl-toggle-btn-reset ' + (channelState.channel === 'beta' ? 'active' : '');
+            betaToggle.setAttribute('aria-checked', String(channelState.channel === 'beta'));
+            const available = Boolean(latest?.available && latest.release && (latest.channel !== 'beta' || channelState.betaAvailable));
             status.textContent = available ? `Rasta ${latest.release.agentVersion} is ready` : t('available');
             notes.replaceChildren();
             for (const text of (Array.isArray(latest?.release?.releaseNotes) ? latest.release.releaseNotes : []).slice(0, 3)) {
@@ -675,6 +702,7 @@
             if (checking || running || updatesDisposed) return;
             checking = true; render();
             try {
+                if (explicit) await refreshChannel(true);
                 const release = await native.check(); if (updatesDisposed) return;
                 if (release.releaseError) { if (explicit) tell(t('checkFailed'), 'error'); return; }
                 latest = release; render();
@@ -703,9 +731,10 @@
             dialog.addEventListener('keydown', event => { if (event.key === 'Tab') { event.preventDefault(); (document.activeElement === keep ? remove : keep).focus(); } });
             keep.focus?.({ preventScroll: true });
         }
+        refreshChannel();
         refresh().then(() => { if (!updatesDisposed && !running) checkNow(); });
         updateCheck = setInterval(() => checkNow(), 4 * 3600000);
-        return render;
+        return () => { render(); refreshChannel(); };
     }
 
     let onOutsideClick;
