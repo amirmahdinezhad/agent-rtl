@@ -257,3 +257,18 @@ it('removes silently from the panel without waiting for a window acknowledgement
         fs.rmSync(dir,{recursive:true,force:true});
     }
 });
+
+it('requires the supported T3 version before installing a local candidate', () => {
+    const config = { agentVersion: '1.0.2', flow: 'download-launch' };
+    const catalog = { target: 't3', supportedAppVersions: ['0.1.4'] };
+    const old = updatePlan(config, '0.1.3', null, null, catalog);
+    assert.equal(old.requiresAppUpdate, true);
+    assert.equal(old.targetVersion, '0.1.4');
+    assert.equal(old.supported, false);
+    const current = updatePlan(config, '0.1.4', null, null, catalog);
+    assert.equal(current.requiresAppUpdate, false);
+    assert.equal(current.supported, true);
+    const newer = updatePlan(config, '0.1.5', null, null, catalog);
+    assert.equal(newer.requiresAppUpdate, false, 'a newer app needs a newer Rasta release, never a downgrade');
+    assert.equal(newer.supported, false);
+});

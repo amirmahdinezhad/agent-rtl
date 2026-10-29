@@ -9,3 +9,5 @@ bin/assets/rasta-ui
 *.tgz
 npm-debug.log*
 coverage/
+
+bin/assets/rasta-ui
