@@ -1,6 +1,11 @@
+# Rasta 1.0.5 — Unreleased
+
+- Install through the graphical Setup apps; manage updates and removal through the in-app panel.
+- Remove the standalone install command and its package registration.
+
 # Rasta 1.0.4
 
-- Use Rasta consistently across CLI commands, Setup, app settings, helper names, internal identifiers and signed feed filenames.
+- Use Rasta consistently across Setup, app settings, helper names, internal identifiers and signed feed filenames.
 - Keep Codex and T3 settings, backups, jobs and update feeds separate.
 - Preserve verified downloads, original app logic, native integrity settings, signing and rollback.
 - Make the README Download link scroll to the installers in the same page.

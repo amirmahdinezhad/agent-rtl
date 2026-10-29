@@ -13,8 +13,9 @@ npm run test:gui
 - Edit the shared payload in `bin/payloads/desktop-payload.js`. Check both Codex and T3 tests.
 - Keep app copy, comments, release notes and documentation in English. The root README's Persian guide is the only translated guide. RTL fixtures and reading samples may contain Persian/Arabic content; their instructions stay English. Follow [the language policy](AGENTS.md#language-policy).
 - Bug reports should include app name/version/build, Rasta version, macOS/architecture, reproduction steps and expected/actual results. Remove chat content and account information.
+- Keep installation in the graphical Setup apps and updates/removal in the in-app panel. Runtime helpers are internal to these graphical flows.
 - Fixture tests do not replace real-app acceptance. The user performs Launch; publishing requires explicit authorization.
 
-Structure: `bin/` contains CLI/runtime code, `native/` the AppKit UI, `tools/` build/release tools, `test/` tests and `docs/` guides. Build output is in `dist/`.
+Structure: `bin/` contains the internal Setup service and app runtime, `native/` the AppKit UI, `tools/` build/release tools, `test/` tests and `docs/` guides. Build output is in `dist/`.
 
 [Project instructions](AGENTS.md) · [Security reports](SECURITY.md)

@@ -407,7 +407,7 @@ export function commitManagedNative(stage, { verifySource = verifyOfficialBundle
 }
 
 export function stageNative(bundle, { allowLocalSigning = false, payload, host } = {}) {
-    if (!allowLocalSigning) throw new Error('In-app Rasta requires local re-signing of Codex. Review --prepare first; --allow-local-signing explicitly accepts replacing the OpenAI signature and possible login/Keychain/permission effects.');
+    if (!allowLocalSigning) throw new Error('In-app Rasta requires local re-signing of Codex. Use Rasta Setup.app to review and accept replacing the OpenAI signature and possible login/Keychain/permission effects.');
     const paths = nativePaths();
     const previous = readNativeState(bundle, paths);
     asar.uncache(bundle.archive);

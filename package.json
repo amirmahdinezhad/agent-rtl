@@ -3,9 +3,6 @@
   "version": "1.0.5",
   "description": "Rasta adds right-to-left (RTL) text, Persian and Arabic reading controls, fonts and themes to Codex and T3 Code on macOS.",
   "type": "module",
-  "bin": {
-    "rasta": "./bin/index.js"
-  },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "test:language": "node --test test/language-policy.test.js",
@@ -52,8 +49,7 @@
   ],
   "dependencies": {
     "@electron/asar": "^4.2.0",
-    "fast-xml-parser": "^5.11.2",
-    "picocolors": "^1.1.1"
+    "fast-xml-parser": "^5.11.2"
   },
   "devDependencies": {
     "electron": "42.11.15"

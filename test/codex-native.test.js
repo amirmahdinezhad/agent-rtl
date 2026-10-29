@@ -202,7 +202,7 @@ describe('Codex in-app resources', () => {
             const dictionary = JSON.parse(plutil(['-convert', 'json', '-o', '-', path.join(preview, 'Info.plist')])).ElectronAsarIntegrity;
             assert.deepEqual(patched.subarray(290, 322), dictionaryDigest(dictionary));
             assert.throws(() => prepareNative(bundle, preview), /already exists/);
-            assert.throws(() => installNative(bundle), /explicitly accepts replacing/);
+            assert.throws(() => installNative(bundle), /requires local re-signing/);
             assert.equal(fs.existsSync(nativePaths(dir).state), false);
         } finally { fs.rmSync(dir, { recursive: true, force: true }); }
     });
@@ -324,15 +324,6 @@ describe('Codex in-app resources', () => {
             assert.deepEqual(fs.readFileSync(bundle.archive), originalArchive);
             assert.deepEqual(fs.readFileSync(bundle.executable), originalExecutable);
             execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', bundle.app], { stdio: 'pipe' });
-            // The manual command must install synchronously from an external
-            // terminal, without depending on this repository being the cwd.
-            const direct = spawnSync(process.execPath, [path.resolve('bin/index.js'), '--target', 'codex', '--allow-local-signing'], {
-                encoding: 'utf8', cwd: os.tmpdir(), env: { ...process.env, ARTL_CODEX_APP: bundle.app, ARTL_CODEX_STATE_HOME: dir } });
-            assert.equal(direct.status, 0, direct.stderr);
-            assert.match(direct.stdout, /installed and verified/);
-            assert.equal(inspectNative(bundle).state, 'patched-in-app');
-            assert.equal(restoreNative(bundle), true);
-            assert.deepEqual(fs.readFileSync(bundle.archive), originalArchive);
         } finally {
             if (stage) discardNativeStage(stage);
             if (saved === undefined) delete process.env.ARTL_CODEX_STATE_HOME; else process.env.ARTL_CODEX_STATE_HOME = saved;
@@ -340,25 +331,4 @@ describe('Codex in-app resources', () => {
         }
     });
 
-    it('runs CLI preview/status/restore read-only and rejects implicit signature replacement', { skip: os.platform() !== 'darwin' }, async () => {
-        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-native-cli-'));
-        try {
-            const bundle = await fixture(dir), before = fs.readFileSync(bundle.archive);
-            const env = { ...process.env, ARTL_CODEX_APP: bundle.app, ARTL_CODEX_STATE_HOME: dir };
-            const statusFile = path.join(nativePaths(dir).support, 'codex-install-status.json');
-            fs.mkdirSync(path.dirname(statusFile), { recursive: true });
-            fs.writeFileSync(statusFile, JSON.stringify({ app: bundle.app, phase: 'timed-out', error: 'Codex was not closed before the deadline.' }));
-            for (const option of ['--status', '--dry-run', '--restore']) {
-                const result = spawnSync(process.execPath, ['bin/index.js', '--target', 'codex', option], { encoding: 'utf8', env });
-                assert.equal(result.status, 0, result.stderr);
-                assert.match(result.stdout, /Codex/);
-                if (option === '--status') assert.match(result.stdout, /timed-out/);
-            }
-            const blocked = spawnSync(process.execPath, ['bin/index.js', '--target', 'codex'], { encoding: 'utf8', env });
-            assert.equal(blocked.status, 1); assert.match(blocked.stderr, /requires local re-signing/);
-            assert.deepEqual(fs.readFileSync(bundle.archive), before);
-            assert.equal(fs.existsSync(path.join(dir, 'Applications')), false);
-            assert.equal(fs.existsSync(path.join(dir, 'Library/LaunchAgents')), false);
-        } finally { fs.rmSync(dir, { recursive: true, force: true }); }
-    });
 });

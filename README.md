@@ -26,7 +26,7 @@
 
 Rasta adds right-to-left (RTL) support for Persian, Arabic and mixed-language conversations in Codex and T3 Code on macOS, with a floating settings panel inside your coding app. Adjust Persian and English text direction, fonts and appearance while keeping each app’s settings and backups separate.
 
-The project folder is `Rasta` and the CLI command is `rasta`.
+Install Rasta through the graphical Setup app for your target app. Manage updates and removal through the in-app Rasta panel.
 
 ### Features
 

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import * as asar from '@electron/asar';
 import { buildCodexPayload, isCodexPage, codexPages, DebugClient, resolveCodexApp, CODEX_WORLD } from '../bin/lib/codex.js';
 
@@ -93,7 +93,7 @@ describe('Codex detection and legacy overlay cleanup', () => {
         client.close();
     });
 
-    it('detects the renamed Codex bundle and keeps preview/status/restore entirely read-only', { skip: os.platform() !== 'darwin' }, async () => {
+    it('detects the renamed Codex bundle without modifying it', { skip: os.platform() !== 'darwin' }, async () => {
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'artl-codex-bundle-'));
         const saved = process.env.ARTL_CODEX_APP;
         try {
@@ -114,15 +114,8 @@ describe('Codex detection and legacy overlay cleanup', () => {
             const archive = path.join(contents, 'Resources/app.asar');
             await asar.createPackage(source, archive);
             process.env.ARTL_CODEX_APP = app;
-            assert.equal(resolveCodexApp().app, app);
             const before = [archive, plist, path.join(contents, 'MacOS/ChatGPT')].map(file => fs.readFileSync(file));
-            for (const option of ['--status', '--dry-run', '--restore']) {
-                const result = spawnSync(process.execPath, ['bin/index.js', '--target', 'codex', option], {
-                    encoding: 'utf8', env: { ...process.env, ARTL_CODEX_STATE_HOME: dir },
-                });
-                assert.equal(result.status, 0, result.stderr);
-                assert.match(result.stdout, /Codex/);
-            }
+            assert.equal(resolveCodexApp().app, app);
             [archive, plist, path.join(contents, 'MacOS/ChatGPT')].forEach((file, i) => assert.deepEqual(fs.readFileSync(file), before[i]));
             assert.deepEqual(fs.readdirSync(path.join(contents, 'Resources')), ['app.asar']);
             process.env.ARTL_CODEX_APP = path.join(dir, 'nonexistent.app');
@@ -140,9 +133,4 @@ describe('Codex detection and legacy overlay cleanup', () => {
         }
     });
 
-    it('rejects removed debug-port flags before any app launch', () => {
-        const result = spawnSync(process.execPath, ['bin/index.js', '--target', 'codex', '--codex-port', '0'], { encoding: 'utf8' });
-        assert.equal(result.status, 1);
-        assert.match(result.stderr, /have been removed/);
-    });
 });
