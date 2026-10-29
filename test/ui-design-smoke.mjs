@@ -51,7 +51,7 @@ try {
   await trigger.focus(); await page.keyboard.press('Enter');
   const toggle=page.getByRole('switch',{name:'Enable RTL',exact:true});
   assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
-  assert.deepEqual(await panel.locator('.artl-label').allTextContents(),['Enable RTL','Force RTL','Type @ with Shift+2','Text size','Line height','Font','Theme']);
+  assert.deepEqual(await panel.locator('.artl-label:visible').allTextContents(),['Enable RTL','Force RTL','Type @ with Shift+2','Text size','Line height','Font','Theme']);
   const toggleRows=await panel.locator('.artl-settings-group:not(.artl-type-group):not(.artl-appearance-group) .artl-row').evaluateAll(rows=>rows.map(row=>{
    const label=getComputedStyle(row.querySelector('.artl-label')), style=getComputedStyle(row);
    return {size:label.fontSize,weight:label.fontWeight,border:style.borderBottomWidth,height:row.getBoundingClientRect().height};
@@ -61,8 +61,8 @@ try {
   assert.equal(await trigger.locator('svg').count(),1);
   assert.equal((await trigger.boundingBox()).width,44,'the floating trigger is icon-only');
   for(const value of await panel.locator('.artl-select-trigger').evaluateAll(elements=>elements.map(el=>({size:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight})))) assert.deepEqual(value,{size:'14px',weight:'400'});
-  const refresh=panel.locator('#artl-update-check svg');
-  assert.deepEqual(await refresh.evaluate(el=>({width:getComputedStyle(el).width,height:getComputedStyle(el).height,stroke:getComputedStyle(el).strokeWidth})),{width:'18px',height:'18px',stroke:'2px'});
+  const updateIcon=panel.locator('#artl-update-check svg');
+  assert.deepEqual(await updateIcon.evaluate(el=>({width:getComputedStyle(el).width,height:getComputedStyle(el).height,stroke:getComputedStyle(el).strokeWidth})),{width:'18px',height:'18px',stroke:'2px'});
   const typography = await panel.locator('#artl-size, #artl-spacing').evaluateAll(elements=>elements.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top}}));
   assert.ok(Math.abs(typography[0].top-typography[1].top)<1 && typography[0].right<typography[1].left,'paired typography controls align without overlapping');
   const fontControls = await panel.locator('#artl-app-font, #artl-font-add').evaluateAll(elements=>elements.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,height:r.height}}));
@@ -122,24 +122,37 @@ try {
    const button=page.getByRole('button',{name,exact:true}); assert.equal(await button.locator('svg').count(),1); assert.equal(await button.getAttribute('title'),name);
    assert.ok((await button.boundingBox()).y < (await toggle.boundingBox()).y,'maintenance above controls');
   }
-  const check=page.getByRole('button',{name:'Check for updates',exact:true});
+  const check=page.locator('#artl-update-check');
+  const feedback=page.locator('#artl-update-check-status'), toast=page.locator('.artl-toast');
+  const idleGlyph=await check.locator('path').getAttribute('d');
+  assert.equal(await feedback.textContent(),'','background checks stay quiet');
+  assert.equal(await check.getAttribute('aria-describedby'),'artl-update-check-status');
   await check.scrollIntoViewIfNeeded();
   const beforeToast=await panel.boundingBox(), beforeControls=await size.boundingBox();
   await page.evaluate(()=>{window.previewCheck=new Promise(resolve=>window.resolvePreviewCheck=resolve)});
   await check.click();
   assert.equal(await check.getAttribute('aria-busy'),'true');
   assert.equal(await check.getAttribute('title'),'Checking for updates…');
+  assert.equal(await check.getAttribute('aria-label'),'Checking for updates…');
+  assert.equal(await feedback.textContent(),'Checking for updates…');
+  assert.equal(await feedback.isVisible(),true,'checking has visible text, including with reduced motion');
+  assert.equal(await feedback.getAttribute('role'),'status');
+  assert.notEqual(await check.locator('path').getAttribute('d'),idleGlyph);
   assert.ok((await check.getAttribute('class')).includes('is-loading'));
   assert.equal(await check.evaluate(el=>getComputedStyle(el).opacity),'1','loading remains visible instead of dimming');
   assert.equal(await check.locator('svg').evaluate(el=>getComputedStyle(el).animationName),'none','reduced motion uses a static loading glyph');
   assert.deepEqual(await panel.boundingBox(),beforeToast,'loading does not move the panel');
+  await panel.screenshot({path:path.join(output,`${file}-checking.png`)});
   await page.evaluate(()=>{window.resolvePreviewCheck({supported:true,available:false});window.previewCheck=null});
   await page.waitForFunction(()=>!document.querySelector('.artl-toast').hidden);
   assert.equal(await check.getAttribute('aria-busy'),'false');
   assert.ok(!(await check.getAttribute('class')).includes('is-loading'));
-  assert.equal(await page.getByRole('status').textContent(),'No updates available.');
+  assert.equal(await feedback.textContent(),'');
+  assert.equal(await check.getAttribute('aria-label'),'Check for updates');
+  assert.equal(await check.locator('path').getAttribute('d'),idleGlyph);
+  assert.equal(await toast.textContent(),'No updates available.');
   await page.screenshot({path:path.join(output,`${file}-toast.png`)});
-  const toastBox=await page.getByRole('status').boundingBox(), panelBox=await panel.boundingBox();
+  const toastBox=await toast.boundingBox(), panelBox=await panel.boundingBox();
   assert.deepEqual(panelBox,beforeToast,'toast visibility does not change the panel layout');
   assert.deepEqual(await size.boundingBox(),beforeControls,'toast visibility does not shift controls');
   const shape=await toggle.evaluate(el=>{const s=getComputedStyle(el),rail=getComputedStyle(el,'::before');return {clip:s.backgroundClip,railWidth:parseFloat(rail.width),railHeight:parseFloat(rail.height),radius:parseFloat(rail.borderTopLeftRadius)}});
@@ -147,7 +160,7 @@ try {
   if(shape.clip==='content-box'||shape.railWidth!==44||shape.railHeight!==24||shape.radius<12) regressions.push('switch rail must be a true 44×24 capsule, independent of the 44px hit target');
   if(!(toastBox.x>=0&&toastBox.x+toastBox.width<=width&&toastBox.y>=0&&toastBox.y+toastBox.height<=height)) regressions.push('floating toast must stay within the viewport');
   assert.deepEqual(regressions,[]);
-  const toastStyle=await page.getByRole('status').evaluate(el=>{const s=getComputedStyle(el);return {text:s.color,base:s.backgroundColor,duration:s.transitionDuration,position:s.position}});
+  const toastStyle=await toast.evaluate(el=>{const s=getComputedStyle(el);return {text:s.color,base:s.backgroundColor,duration:s.transitionDuration,position:s.position}});
   assert.equal(toastStyle.position,'absolute');
   assert.ok(contrast(toastStyle.text,toastStyle.base)>=4.5,'toast text matches the theme with readable contrast');
   assert.notEqual(toastStyle.base,text,'toast uses a themed surface instead of inverted panel text');
@@ -156,7 +169,7 @@ try {
   assert.ok(toastBox.x>=panelBox.x+12 && toastBox.x+toastBox.width<=panelBox.x+panelBox.width-12 && toastBox.y>=panelBox.y && toastBox.y+toastBox.height<=panelBox.y+panelBox.height-12,'feedback stays inset inside the panel');
   const scroll=panel.locator('.artl-panel-content');
   await scroll.evaluate(el=>{el.scrollTop=el.scrollHeight});
-  assert.deepEqual(await page.getByRole('status').boundingBox(),toastBox,'scrolling settings does not move the toast outside the panel');
+  assert.deepEqual(await toast.boundingBox(),toastBox,'scrolling settings does not move the toast outside the panel');
   await scroll.evaluate(el=>{el.scrollTop=0});
   assert.equal(await panel.locator('.artl-update-notice').isHidden(),true);
   await page.waitForFunction(()=>document.querySelector('.artl-toast').hidden);
@@ -313,12 +326,12 @@ try {
  await page.goto(`http://127.0.0.1:${server.address().port}`);
  const trigger=page.locator('.artl-widget-trigger');
  await trigger.click(); await page.waitForTimeout(250);
- const check=page.getByRole('button',{name:'Check for updates',exact:true}), toast=page.locator('.artl-toast');
+ const check=page.locator('#artl-update-check'), toast=page.locator('.artl-toast');
  await page.evaluate(()=>{window.previewCheck=new Promise(resolve=>window.resolvePreviewCheck=resolve)});
  await check.click();
  const spinner=check.locator('svg');
  await page.waitForFunction(()=>document.querySelector('#artl-update-check svg').getAnimations().some(animation=>animation.playState==='running'));
- assert.ok(await spinner.evaluate(el=>el.getAnimations().some(animation=>animation.effect.getTiming().duration===800&&animation.effect.getTiming().iterations===Infinity)),'refresh spins while the request is pending');
+ assert.ok(await spinner.evaluate(el=>el.getAnimations().some(animation=>animation.effect.getTiming().duration===800&&animation.effect.getTiming().iterations===Infinity)),'the progress glyph spins while the request is pending');
  const motionBounds=await page.locator('.artl-widget-panel').boundingBox();
  await page.waitForTimeout(200);
  await page.locator('.artl-widget-panel').screenshot({path:path.join(output,'dark-check-loading.png')});
@@ -333,6 +346,8 @@ try {
  await page.screenshot({path:path.join(output,'dark-toast-motion.png')});
  await check.click(); // Repeated feedback resets its lifetime without duplicate nodes.
  assert.equal(await page.locator('.artl-toast').count(),1);
+ assert.equal(await toast.evaluate(el=>el.hidden),true,'starting a check clears the previous result');
+ await page.waitForFunction(()=>!document.querySelector('#artl-update-check').disabled && document.querySelector('.artl-toast').classList.contains('visible'));
  await page.waitForFunction(()=>!document.querySelector('.artl-toast').classList.contains('visible'));
  assert.equal(await toast.evaluate(el=>el.hidden),false,'exit animates before removing the toast');
  const exit=await toast.evaluate(el=>el.getAnimations().map(a=>a.transitionProperty));

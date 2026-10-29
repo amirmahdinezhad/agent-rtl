@@ -91,11 +91,15 @@
         .artl-widget-container #artl-update-check.is-loading { color: var(--artl-ink); opacity: 1; cursor: progress; }
         #artl-update-check.is-loading svg { animation: artl-refresh-spin .8s linear infinite; transform-origin: center; }
         @keyframes artl-refresh-spin { to { transform: rotate(360deg); } }
+        .artl-widget-container #artl-update-check.has-update { color: var(--artl-ink); }
         .artl-widget-container .artl-icon-button:hover { color: var(--artl-ink); background: var(--artl-soft); }
         .artl-widget-container #artl-update-restore:hover { color: var(--color-text-danger, #bd3456); }
         .artl-widget-container .artl-icon-button:active { background: var(--artl-line); }
         .artl-update-actions { display: flex; align-items: center; gap: 0; }
         .artl-version { display: block; font-size: 11px; color: var(--artl-muted); margin-bottom: 8px; }
+        .artl-update-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 22px; margin-bottom: 8px; }
+        .artl-update-meta .artl-version { margin: 0; flex: none; }
+        #artl-update-check-status { color: var(--artl-ink); font-size: 12px; line-height: 1.6; }
         .artl-release-notes { margin: 8px 0; padding-inline-start: 18px; font-size: 12px; line-height: 1.6; }
         .artl-update-notice { margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--artl-soft); border: 1px solid var(--artl-line); }
         #artl-update-status { color: var(--artl-muted); font-size: 12px; line-height: 1.8; }
@@ -610,7 +614,9 @@
             finally { channelBusy = false; render(); }
             await refreshChannel(true); await checkNow(true);
         };
-        const version = document.createElement('span'); version.className = 'artl-version'; version.hidden = true; content.appendChild(version);
+        const meta = document.createElement('div'); meta.className = 'artl-update-meta'; content.appendChild(meta);
+        const version = document.createElement('span'); version.className = 'artl-version'; version.hidden = true; meta.appendChild(version);
+        const checkStatus = document.createElement('span'); checkStatus.id = 'artl-update-check-status'; checkStatus.setAttribute('role', 'status'); checkStatus.setAttribute('aria-live', 'polite'); checkStatus.setAttribute('aria-atomic', 'true'); meta.appendChild(checkStatus);
         const notice = document.createElement('div'); notice.className = 'artl-update-notice'; notice.hidden = true; content.appendChild(notice);
         const status = document.createElement('div'); status.id = 'artl-update-status'; status.textContent = t('available'); notice.appendChild(status);
         const notes = document.createElement('ul'); notes.className = 'artl-release-notes'; notes.hidden = true; notice.appendChild(notes);
@@ -625,7 +631,7 @@
         panel._artlDismissToast = () => dismissToast();
         const badge = document.createElement('span'); badge.className = 'artl-update-badge'; badge.hidden = true; badge.title = t('available'); trigger.appendChild(badge);
         badge.setAttribute('aria-hidden', 'true');
-        let running = false, checking = false, latest = null;
+        let running = false, checking = false, explicitCheck = false, latest = null;
         const tell = (message, kind = 'success') => {
             if (updatesDisposed || panel.getAttribute('aria-hidden') === 'true') return;
             clearTimeout(toastTimer); clearTimeout(toastExitTimer);
@@ -641,8 +647,9 @@
             if (glyph) { button.className = 'artl-icon-button'; button.appendChild(icon(glyph)); } else bind(button, key);
             button.addEventListener('click', fn); parent.appendChild(button); return button;
         };
-        const refreshGlyph = 'M3 12a9 9 0 0 1 9-9c2.5 0 4.9 1 6.7 2.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9c-2.5 0-4.9-1-6.7-2.7L3 16M8 16H3v5';
-        const check = makeButton(actions, 'artl-update-check', 'check', () => checkNow(true), refreshGlyph);
+        const updateGlyph = 'M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4';
+        const check = makeButton(actions, 'artl-update-check', 'check', () => checkNow(true), updateGlyph);
+        check.setAttribute('aria-describedby', checkStatus.id);
         const restore = makeButton(actions, 'artl-update-restore', 'restore', confirmRemoval, 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7');
         const update = makeButton(notice, 'artl-update-install', 'install', () => openUpdate(latest)); update.className = 'artl-update-install';
         const active = new Set(['starting', 'checking', 'downloading-agent', 'downloading-app', 'verifying', 'preparing', 'ready-to-install', 'quitting', 'waiting-for-quit', 'installing']);
@@ -659,10 +666,13 @@
                 const item = document.createElement('li'); item.textContent = text.slice(0, 120); notes.appendChild(item);
             }
             notes.hidden = !notes.children.length;
-            check.disabled = checking || running; restore.disabled = running || checking; update.disabled = running || !available;
+            check.disabled = checking || running; restore.disabled = running || checking; update.disabled = running || checking || !available;
             check.classList.toggle('is-loading', checking);
-            check.querySelector('path').setAttribute('d', checking ? 'M21 12a9 9 0 1 1-9-9' : refreshGlyph);
+            check.classList.toggle('has-update', available);
+            check.querySelector('path').setAttribute('d', checking ? 'M21 12a9 9 0 1 1-9-9' : updateGlyph);
             check.title = checking ? 'Checking for updates…' : t('check');
+            check.setAttribute('aria-label', check.title);
+            checkStatus.textContent = checking && explicitCheck ? 'Checking for updates…' : '';
             check.setAttribute('aria-busy', String(checking)); badge.hidden = !available || running; notice.hidden = !available || running;
             const triggerLabel = badge.hidden ? t('settings') : `${t('settings')}: Rasta ${latest.release.agentVersion} update available`;
             trigger.setAttribute('aria-label', triggerLabel); trigger.title = triggerLabel;
@@ -700,10 +710,15 @@
         }
         async function checkNow(explicit = false) {
             if (checking || running || updatesDisposed) return;
-            checking = true; render();
+            checking = true; explicitCheck = explicit;
+            if (explicit) dismissToast(true);
+            render();
+            const started = Date.now();
+            // Keep feedback readable even when the signed feed responds immediately.
+            const holdFeedback = () => explicit ? new Promise(resolve => setTimeout(resolve, Math.max(0, 650 - (Date.now() - started)))) : Promise.resolve();
             try {
                 if (explicit) await refreshChannel(true);
-                const release = await native.check(); if (updatesDisposed) return;
+                const release = await native.check(); await holdFeedback(); if (updatesDisposed) return;
                 if (release.releaseError) { if (explicit) tell(t('checkFailed'), 'error'); return; }
                 latest = release; render();
                 if (explicit) {
@@ -711,8 +726,8 @@
                     else if (release.requiresAppUpdate || !release.supported) { try { await native.open(); } catch { tell(t('openFailed'), 'error'); } }
                     else tell(t('noUpdates'));
                 }
-            } catch { if (explicit && !updatesDisposed) tell(t('checkFailed'), 'error'); }
-            finally { checking = false; if (!updatesDisposed) render(); }
+            } catch { await holdFeedback(); if (explicit && !updatesDisposed) tell(t('checkFailed'), 'error'); }
+            finally { checking = false; explicitCheck = false; if (!updatesDisposed) render(); }
         }
         function confirmRemoval() {
             if (closeConfirmation || running) return;

@@ -1,5 +1,5 @@
 [
-  "Use Rasta consistently for app settings, helper names and internal identifiers.",
-  "Keep each app\u2019s settings, backups and update feed separate.",
+  "Find updates with the tray-and-arrow button labeled Check for updates.",
+  "See Checking for updates… while a check is in progress.",
   "Support T3 Code 0.1.4 with verified downloads, signing and rollback."
 ]

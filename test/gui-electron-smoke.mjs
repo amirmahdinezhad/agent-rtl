@@ -21,6 +21,8 @@ try {
     fs.writeFileSync(path.join(runtime, 'bin/gui-service.js'), `const fs=require('fs');const action=process.argv[process.argv.indexOf('--rpc')+1];fs.appendFileSync(${JSON.stringify(calls)},JSON.stringify(action)+String.fromCharCode(10));
 const operation=fs.existsSync(${JSON.stringify(calls + '.prepared')})?{phase:'ready-to-install',progress:1}:null;
 const release=fs.existsSync(${JSON.stringify(calls + '.release')})?JSON.parse(fs.readFileSync(${JSON.stringify(calls + '.release')},'utf8')):{available:true,supported:true,phase:'available',releaseConfigured:true,release:{agentVersion:'2.1.0'}};
+if(action==='check'&&fs.existsSync(${JSON.stringify(calls + '.delay')}))Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,1000);
+if(action==='check'&&fs.existsSync(${JSON.stringify(calls + '.reject')})){console.error('Fixture network error');process.exit(1);}
 if(action==='prepare')fs.writeFileSync(${JSON.stringify(calls + '.prepared')},'yes');
 if(action==='set-update-channel'){
  if(!fs.existsSync(${JSON.stringify(calls + '.owner')})){console.log(JSON.stringify({ok:false,error:'Beta access denied'}));process.exit(1);}
@@ -53,6 +55,29 @@ await win.webContents.executeJavaScript("document.querySelector('.artl-widget-tr
 assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),true,'Beta controls are hidden without authorized access');
 for(let n=0;n<100;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-update-check').disabled && !document.getElementById('artl-beta-toggle').disabled") && fs.readFileSync(${JSON.stringify(calls)},'utf8').includes('"check"'))break;await pause(100)}
 assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').disabled"),false,'initial background check finished');
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'','background checks have no checking announcement');
+const idleGlyph=await win.webContents.executeJavaScript("document.querySelector('#artl-update-check path').getAttribute('d')");
+fs.writeFileSync(${JSON.stringify(calls + '.delay')},'delay');
+await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'Checking for updates…');
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').getAttribute('aria-label')"),'Checking for updates…');
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').getAttribute('aria-busy')"),'true');
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-install').disabled"),true,'installation waits until the check finishes');
+assert.notEqual(await win.webContents.executeJavaScript("document.querySelector('#artl-update-check path').getAttribute('d')"),idleGlyph);
+await pause(700);
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'Checking for updates…','feedback remains throughout a slow request');
+for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-update-check').disabled"))break;await pause(100)}
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'');
+fs.rmSync(${JSON.stringify(calls + '.delay')});
+fs.writeFileSync(${JSON.stringify(calls + '.reject')},'reject');
+await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
+await pause(250);
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'Checking for updates…','fast failures leave time to read the action');
+for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-update-check').disabled"))break;await pause(100)}
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check-status').textContent"),'');
+assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-toast').textContent"),'Couldn’t check for updates. Try again.');
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').getAttribute('aria-label')"),'Check for updates');
+fs.rmSync(${JSON.stringify(calls + '.reject')});
 fs.writeFileSync(${JSON.stringify(calls + '.owner')},'owner');
 await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
 for(let n=0;n<60;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-beta-row').hidden && !document.getElementById('artl-beta-toggle').disabled"))break;await pause(100)}
