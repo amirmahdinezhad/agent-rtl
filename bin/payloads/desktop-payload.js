@@ -164,7 +164,7 @@
         .artl-widget-container .artl-widget-trigger.active { color: var(--artl-on-accent); background: var(--artl-accent); border-color: var(--artl-accent); }
         .artl-widget-container[data-artl-selected-accent="true"] :is(.artl-widget-trigger.active, .artl-update-install) { border-color: var(--artl-ink); }
         .artl-widget-container :is(.artl-widget-trigger, .artl-update-install, .artl-confirm-actions button):active { transform: scale(.98); }
-        .artl-update-badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border: 2px solid var(--artl-base); border-radius: 50%; background: #efae43; }
+        .artl-update-badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border: 2px solid var(--artl-base); border-radius: 50%; background: #22c55e; }
         @media (max-width: 400px) { .artl-widget-container { bottom: 16px; right: 16px; } .artl-panel-header { gap: 4px; } .artl-brand-mark { width: 20px; height: 20px; } .artl-brand-title { font-size: 16px; } }
         @media (prefers-reduced-motion: reduce) { .artl-widget-container *, .artl-widget-container *::before, .artl-widget-container *::after { transition: none !important; animation: none !important; } .artl-widget-panel, .artl-widget-container :is(.artl-widget-trigger, .artl-update-install, .artl-confirm-actions button):active { transform: none; } }
     `;

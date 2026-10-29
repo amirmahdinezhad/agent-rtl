@@ -193,6 +193,8 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         refreshAppearance()
         NSApp.setActivationPolicy(.accessory)
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 276), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
+        // Detached update windows must remain visible above the host and other apps.
+        window.level = .floating
         window.contentView = CanvasView(frame: NSRect(x: 0, y: 0, width: 400, height: 276))
         window.title = "Rasta — " + hostName; window.titlebarAppearsTransparent = true; window.titleVisibility = .visible; window.backgroundColor = Palette.canvas; window.delegate = self; window.isReleasedWhenClosed = false
         let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .centerX; stack.spacing = 16; stack.detachesHiddenViews = true; stack.translatesAutoresizingMaskIntoConstraints = false; window.contentView!.addSubview(stack)
@@ -214,11 +216,15 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let footer = NSStackView(views: [activity, progress, install]); footer.orientation = .vertical; footer.alignment = .centerX; footer.spacing = 16; footer.detachesHiddenViews = true; stack.addArrangedSubview(footer)
         for view in [progress, install] { view.widthAnchor.constraint(equalToConstant: 224).isActive = true }
         for field in [title, message] { field.baseWritingDirection = .leftToRight; field.setContentCompressionResistancePriority(.required, for: .vertical) }
-        window.center(); window.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true)
+        window.center(); bringWindowToFront()
         if CommandLine.arguments.contains("--self-test") {
             let args = CommandLine.arguments
             let expected = args.firstIndex(of: "--expected-font").flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil } ?? "Vazir-Regular"
             window.contentView!.layoutSubtreeIfNeeded(); precondition(window.isVisible && appFont(13).fontName == expected)
+            precondition(window.level == .floating && window.level.rawValue > NSWindow.Level.normal.rawValue)
+            window.orderOut(nil)
+            _ = applicationShouldHandleReopen(NSApp, hasVisibleWindows: false)
+            precondition(window.isVisible, "Reopening Setup must bring its window back to the front")
             if let index = args.firstIndex(of: "--expected-theme"), args.count > index + 1 {
                 precondition(NSApp.appearance?.name == (args[index + 1] == "dark" ? .darkAqua : .aqua))
                 precondition(Palette.selectedAccent != nil && Palette.onAccent == NSColor.black)
@@ -236,6 +242,16 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
         if watching { busy = true; requestedJob = true; setButton("Cancel", action: .retry, primary: false) } else { loadPlan() }
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in self.refreshFont(); self.refreshAppearance(); self.refresh() }
+    }
+    func bringWindowToFront() {
+        if window.isMiniaturized { window.deminiaturize(nil) }
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+    }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        bringWindowToFront()
+        return false
     }
     var appearanceData: Data?
     func refreshAppearance() {

@@ -50,6 +50,7 @@ for(let n=0;n<50;n++){if(await win.webContents.executeJavaScript("document.getEl
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').hidden"),false);
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-panel').getAttribute('aria-hidden')"),'true');
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-update-badge').getBoundingClientRect().width > 0"),true,'update dot is visible while the panel is closed');
+assert.equal(await win.webContents.executeJavaScript("getComputedStyle(document.querySelector('.artl-update-badge')).backgroundColor"),'rgb(34, 197, 94)','update dot is green');
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').getAttribute('aria-label')"),'Rasta settings: Rasta 2.1.0 update available');
 await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
 assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),true,'Beta controls are hidden without authorized access');
