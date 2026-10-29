@@ -51,6 +51,8 @@ assert.equal(await win.webContents.executeJavaScript("document.querySelector('.a
 assert.equal(await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').getAttribute('aria-label')"),'Rasta settings: Rasta 2.1.0 update available');
 await win.webContents.executeJavaScript("document.querySelector('.artl-widget-trigger').click()");
 assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-beta-row').hidden"),true,'Beta controls are hidden without authorized access');
+for(let n=0;n<100;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-update-check').disabled && !document.getElementById('artl-beta-toggle').disabled") && fs.readFileSync(${JSON.stringify(calls)},'utf8').includes('"check"'))break;await pause(100)}
+assert.equal(await win.webContents.executeJavaScript("document.getElementById('artl-update-check').disabled"),false,'initial background check finished');
 fs.writeFileSync(${JSON.stringify(calls + '.owner')},'owner');
 await win.webContents.executeJavaScript("document.getElementById('artl-update-check').click()");
 for(let n=0;n<60;n++){if(await win.webContents.executeJavaScript("!document.getElementById('artl-beta-row').hidden && !document.getElementById('artl-beta-toggle').disabled"))break;await pause(100)}
