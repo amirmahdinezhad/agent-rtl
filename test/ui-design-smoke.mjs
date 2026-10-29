@@ -125,6 +125,13 @@ try {
   const check=page.locator('#artl-update-check');
   const feedback=page.locator('#artl-update-check-status'), toast=page.locator('.artl-toast');
   const idleGlyph=await check.locator('path').getAttribute('d');
+  assert.match(idleGlyph,/M3 12a9 9/,'restore the circular-arrow check icon');
+  const version=panel.locator('.artl-panel-header .artl-brand-copy .artl-version');
+  assert.equal(await version.textContent(),'v2.4.8');
+  const versionBox=await version.boundingBox(), titleBox=await panel.locator('.artl-brand-title').boundingBox();
+  assert.ok(versionBox.y>=titleBox.y+titleBox.height-1,'version sits below the Rasta name');
+  assert.ok(versionBox.y+versionBox.height<(await toggle.boundingBox()).y,'version stays outside the switches');
+  const idleCursor=await check.evaluate(el=>getComputedStyle(el).cursor);
   assert.equal(await feedback.textContent(),'','background checks stay quiet');
   assert.equal(await check.getAttribute('aria-describedby'),'artl-update-check-status');
   await check.scrollIntoViewIfNeeded();
@@ -132,6 +139,7 @@ try {
   await page.evaluate(()=>{window.previewCheck=new Promise(resolve=>window.resolvePreviewCheck=resolve)});
   await check.click();
   assert.equal(await check.getAttribute('aria-busy'),'true');
+  assert.equal(await check.evaluate(el=>getComputedStyle(el).cursor),idleCursor,'loading preserves the pointer');
   assert.equal(await check.getAttribute('title'),'Checking for updates…');
   assert.equal(await check.getAttribute('aria-label'),'Checking for updates…');
   assert.equal(await feedback.textContent(),'Checking for updates…');

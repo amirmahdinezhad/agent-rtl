@@ -8,7 +8,7 @@ The private `beta` release holds separate signed Codex and T3 feeds. Those feeds
 
 Existing installations can receive the first channel-enabled package through a temporary private feed configured only on the test Mac. Preserve the old runtime and app until the user starts the panel update and selects Launch. Save original feed configurations for rollback. Do not copy credentials into this bootstrap configuration.
 
-Use the tray-and-arrow button, labeled Check for updates, to check the selected channel. An explicit check displays Checking for updates… beside the installed version until the request finishes. Background checks stay quiet. An available update highlights the icon and shows a separate Download update action; checking alone never starts a download.
+Use the circular-arrow button, labeled Check for updates, to check the selected channel. An explicit check displays Checking for updates… below the header until the request finishes. The installed version appears below the Rasta name in the header, separate from the settings switches. Background checks stay quiet. An available update highlights the icon and shows a separate Download update action; checking alone never starts a download.
 
 For each app, test: hidden Beta controls for an unauthorized account; an authenticated owner can select Beta; the closed panel shows an update dot; Check for updates offers the intended version; and the panel upgrade completes with the new version shown and normal app behavior. Test Stable separately after public promotion.
 

@@ -12,7 +12,7 @@ The private workflow builds and tests both apps, publishes them with `--prerelea
 
 The private repository's `ARTL_RELEASE_PRIVATE_KEY_BASE64` Actions secret contains the existing feed signing key. Never place the key or GitHub credentials in source, public workflows, release metadata or installers. The existing GitHub owner authentication gates private feed and artifact access. Stable updates remain available without GitHub authentication.
 
-The user starts the panel update. The tray-and-arrow button is labeled Check for updates (previously Refresh); it displays Checking for updates… beside the installed version during an explicit check. Record these observations for Codex and T3 separately: closed-panel update dot, Check for updates offering the candidate, upgrade completing from the panel, the candidate version displayed and normal app behavior. Waiting for Launch is preparation, not completed installation. Existing settings and backups stay in their per-app directories.
+The user starts the panel update. The circular-arrow button is labeled Check for updates (previously Refresh); it displays Checking for updates… below the header during an explicit check. Record these observations for Codex and T3 separately: closed-panel update dot, Check for updates offering the candidate, upgrade completing from the panel, the candidate version displayed and normal app behavior. Waiting for Launch is preparation, not completed installation. Existing settings and backups stay in their per-app directories.
 
 ## Promotion after explicit acceptance
 

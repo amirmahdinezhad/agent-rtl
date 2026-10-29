@@ -1,5 +1,5 @@
 [
-  "Available updates now show a green dot on the closed Rasta panel button.",
-  "Keep the external Setup and update window above other desktop apps, including when reopened.",
+  "Show the installed Rasta version below the app name in the panel header, separate from the settings switches.",
+  "Restore the circular-arrow update icon and keep the pointer unchanged while checking for updates.",
   "Support Codex 26.1023.51421 with verified downloads, signing and rollback."
 ]
