@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "feedUrl": "https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.2/rasta-release.json",
+  "feedUrl": "https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/rasta-release.json",
   "publicKey": "ctNmSUXlU8fVM+DeuQK/UDCdSwlPcIDYG7Gn0JLSE98=",
   "supportedAppVersions": [
     "26.1023.51421"
@@ -8,5 +8,5 @@
   "supportedT3Versions": [
     "0.1.4"
   ],
-  "t3FeedUrl": "https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.3/rasta-t3-release.json"
+  "t3FeedUrl": "https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/rasta-t3-release.json"
 }

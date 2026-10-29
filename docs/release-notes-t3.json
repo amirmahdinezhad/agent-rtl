@@ -1,5 +1,5 @@
 [
-  "Support T3 Code 0.1.4 with original app logic and rollback preserved.",
-  "Show installed and required T3 versions before installation.",
-  "Keep an update dot on the Rasta button when a newer Rasta release is available."
+  "Use Rasta consistently for app settings, helper names and internal identifiers.",
+  "Keep each app\u2019s settings, backups and update feed separate.",
+  "Support T3 Code 0.1.4 with verified downloads, signing and rollback."
 ]

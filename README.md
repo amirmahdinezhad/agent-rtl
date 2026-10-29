@@ -7,7 +7,7 @@
 <p align="center">Read Persian, Arabic and mixed right-to-left (RTL) text in Codex and T3 Code on macOS.</p>
 
 <p align="center">
-  <a href="https://github.com/amirmahdinezhad/rasta/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-ad8cf3" alt="Rasta 1.0.2 stable release"></a>
+  <a href="https://github.com/amirmahdinezhad/rasta/releases/tag/v1.0.4"><img src="https://img.shields.io/badge/release-v1.0.4-ad8cf3" alt="Rasta 1.0.4 stable release"></a>
   <a href="https://github.com/amirmahdinezhad/rasta/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/amirmahdinezhad/rasta/ci.yml?branch=main&amp;label=tests" alt="Installer tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/amirmahdinezhad/rasta?color=79adeb" alt="MIT license"></a>
 </p>
@@ -44,14 +44,14 @@ The project folder is `Rasta` and the CLI command is `rasta`.
 
 | App | Tested app version | Installer |
 | :--- | :---: | :--- |
-| Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip) |
-| T3 Code (Beta) | `0.1.4` | [Download T3 Setup](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.3/Rasta-T3-1.0.3-darwin-arm64.zip) |
+| Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/Rasta-1.0.4-darwin-arm64.zip) |
+| T3 Code (Beta) | `0.1.4` | [Download T3 Setup](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/Rasta-T3-1.0.4-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
 2. Open the Setup app for Codex or T3 Code, and choose **Install / Update Rasta**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
-Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. The Codex installer is Rasta 1.0.2; the T3 installer is Rasta 1.0.3 for T3 Code 0.1.4.
+Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. Both installers are Rasta 1.0.4. The Codex installer supports Codex 26.1023.51421; the T3 installer supports T3 Code 0.1.4.
 
 ### Update or remove
 
@@ -81,8 +81,8 @@ An amber dot on the Rasta panel button indicates an available Rasta release, eve
 
 **پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
 
-- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip)
-- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.3/Rasta-T3-1.0.3-darwin-arm64.zip)
+- **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/Rasta-1.0.4-darwin-arm64.zip)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/rasta/releases/download/v1.0.4/Rasta-T3-1.0.4-darwin-arm64.zip)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update Rasta** را انتخاب کنید.
