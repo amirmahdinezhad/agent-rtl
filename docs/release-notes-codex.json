@@ -1,6 +1,5 @@
 [
   "Keep Accent color option boxes square in both regular and narrow panels.",
-  "Show the installed Rasta version below the app name in the panel header, separate from the settings switches.",
-  "Restore the circular-arrow update icon and keep the pointer unchanged while checking for updates.",
+  "Show the version below Rasta in the header; restore the refresh icon and keep the pointer unchanged while checking.",
   "Support Codex 26.1023.51421 with verified downloads, signing and rollback."
 ]
