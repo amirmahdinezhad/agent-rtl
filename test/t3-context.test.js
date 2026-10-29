@@ -34,7 +34,7 @@ it('isolates T3 settings, fonts, jobs and backups from Codex', () => {
         assert.notEqual(t3.support, codex.support);
         assert.notEqual(t3.jobs, codex.jobs);
         assert.notEqual(t3Fonts.preferences, codexFonts.preferences);
-        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.3']);
+        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.4']);
         assert.match(releaseConfiguration().feedUrl, /\/agent-rtl-t3-release\.json$/);
         process.env.ARTL_TARGET = 'codex';
         assert.match(releaseConfiguration().feedUrl, /\/agent-rtl-release\.json$/);

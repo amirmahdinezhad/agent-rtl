@@ -601,6 +601,7 @@
         };
         panel._artlDismissToast = () => dismissToast();
         const badge = document.createElement('span'); badge.className = 'artl-update-badge'; badge.hidden = true; badge.title = t('available'); trigger.appendChild(badge);
+        badge.setAttribute('aria-hidden', 'true');
         let running = false, checking = false, latest = null;
         const tell = (message, kind = 'success') => {
             if (updatesDisposed || panel.getAttribute('aria-hidden') === 'true') return;
@@ -636,6 +637,8 @@
             check.querySelector('path').setAttribute('d', checking ? 'M21 12a9 9 0 1 1-9-9' : refreshGlyph);
             check.title = checking ? 'Checking for updates…' : t('check');
             check.setAttribute('aria-busy', String(checking)); badge.hidden = !available || running; notice.hidden = !available || running;
+            const triggerLabel = badge.hidden ? t('settings') : `${t('settings')}: Rasta ${latest.release.agentVersion} update available`;
+            trigger.setAttribute('aria-label', triggerLabel); trigger.title = triggerLabel;
         }
         async function refresh() {
             if (updatesDisposed) return;

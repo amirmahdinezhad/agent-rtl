@@ -1,13 +1,13 @@
-# Rasta 1.0.2
+# Rasta 1.0.3 for T3 Code
 
-- Introduce the Rasta name and logo throughout both macOS installers and the settings panel.
-- Use consistent Rasta text for preparation, installation, updates and removal. The panel title is now simply Rasta, with a larger launcher icon.
-- Simplify the desktop codebase by removing OpenCode, the generic ASAR patcher, the web userscript and unused font-scanning code.
-- Provide separate installers for Codex `26.1023.51421` (build `22530`) and T3 Code (Beta) `0.1.3`, preserving independent settings, backups and signed update manifests.
-- Preserve original app logic, signing checks and rollback; Codex integrity remains active and T3 retains its vendor integrity setting.
+- Support T3 Code 0.1.4 with original app logic and rollback preserved.
+- Show installed and required T3 versions before installation.
+- Keep an update dot on the Rasta button when a newer Rasta release is available.
 
-Requires macOS 13.5+ on Apple Silicon. Packages are ad hoc signed and are not notarized by Apple. Rasta 1.0.2 is the latest stable release.
+Requires T3 Code 0.1.4, macOS 13.5+ and Apple Silicon. Update T3 through its own updater first, then run Rasta T3 Setup and choose Launch. The Setup version is 1.0.3; the T3 version is 0.1.4.
 
-On 2026-10-29, the user confirmed that both apps work with the local candidates built from `51a2746c2d2e8464ceb49600c2ec5e3eee36e980`. The 1.0.2 packages retain that behavioral code; version metadata, update feeds, release notes and download links are updated. Detailed sign-in/passkey and detached-window checks were not reported separately. The user subsequently tested the published 1.0.2 release, reported that it works, and explicitly approved promotion to stable on 2026-10-29. This records general acceptance; no additional checklist details were supplied.
+On 2026-10-29 the user confirmed that the corrected Setup message appeared, updated T3 and reported that everything worked. The user then explicitly authorized publication. This records general manual acceptance, without claiming additional individual checks.
 
-Release provenance includes the exact source commit, automated checks, package hashes and runtime verification. Both downloads and their Ed25519 manifests are verified again after publication.
+This release packages the accepted candidate code; release version, signed feed configuration and release documentation change for publication. The local candidate ZIP had been removed, so the package is reconstructed from the retained earlier candidate with the tested compatibility fix and corrected Setup source, retaining the original per-app support directories. Setup is rebuilt from that source. Codex packages and its signed manifest remain unchanged.
+
+Packages are ad hoc signed and are not Apple notarized.

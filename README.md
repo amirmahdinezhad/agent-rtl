@@ -26,7 +26,7 @@
 
 Rasta adds right-to-left (RTL) support for Persian, Arabic and mixed-language conversations in Codex and T3 Code on macOS, with a floating settings panel inside your coding app. Adjust Persian and English text direction, fonts and appearance while keeping each app’s settings and backups separate.
 
-The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. Existing settings, backups and signed update feeds retain their original internal identifiers for compatibility.
+The project folder is `Rasta` and the CLI command is `rasta`; `agent-rtl` remains available for existing scripts. Existing settings, backups and signed update feeds retain their original internal identifiers for compatibility.
 
 ### Features
 
@@ -43,17 +43,19 @@ The CLI command is `rasta`; `agent-rtl` remains available for existing scripts. 
 | App | Tested app version | Installer |
 | :--- | :---: | :--- |
 | Codex | `26.1023.51421` | [Download Codex Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip) |
-| T3 Code (Beta) | `0.1.3` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-T3-1.0.2-darwin-arm64.zip) |
+| T3 Code (Beta) | `0.1.4` | [Download T3 Setup](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.3/Rasta-T3-1.0.3-darwin-arm64.zip) |
 
 1. Download and extract the ZIP for your app.
 2. Open the Setup app for Codex or T3 Code, and choose **Install / Update Rasta**.
 3. When preparation finishes, click **Launch**. Your app restarts with the RTL panel.
 
-Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. Both downloads are Rasta 1.0.2 stable release packages.
+Open **Rasta Setup.app** for Codex or **Rasta T3 Setup.app** for T3 Code. The Codex installer is Rasta 1.0.2; the T3 installer is Rasta 1.0.3 for T3 Code 0.1.4.
 
 ### Update or remove
 
 Use **Check for updates** in the panel to review an available release, then choose **Download update**. To uninstall, choose **Remove Rasta** and confirm; the original same-version app is restored and reopened.
+
+An amber dot on the Rasta panel button indicates an available Rasta release, even while the panel is closed. Updates are checked at startup and every four hours. Opening the panel keeps the dot visible until installation begins or a successful check confirms that no update remains.
 
 ---
 
@@ -78,7 +80,7 @@ Use **Check for updates** in the panel to review an available release, then choo
 **پیش‌نیاز:** مک Apple Silicon با macOS 13.5 یا جدیدتر. برای نصب بستهٔ آماده به Node.js یا حساب GitHub نیاز ندارید.
 
 - **نسخهٔ Codex:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-1.0.2-darwin-arm64.zip)
-- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.2/Rasta-T3-1.0.2-darwin-arm64.zip)
+- **نسخهٔ T3 Code:** [دانلود نصب‌کننده](https://github.com/amirmahdinezhad/agent-rtl/releases/download/v1.0.3/Rasta-T3-1.0.3-darwin-arm64.zip)
 
 1. فایل ZIP مخصوص برنامهٔ خود را دانلود و باز کنید.
 2. نصب‌کنندهٔ همان برنامه را اجرا و **Install / Update Rasta** را انتخاب کنید.

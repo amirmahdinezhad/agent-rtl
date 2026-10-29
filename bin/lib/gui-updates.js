@@ -68,8 +68,9 @@ export function updatePlan(config, appVersion, appUpdate, release, releaseConfig
     const versions = available?.supportedAppVersions || releaseConfig?.supportedAppVersions || [];
     const latestSupported = [...versions].sort(compareVersions).at(-1);
     const interactive = ['download-install', 'download-launch'].includes(config.flow);
-    const requiresAppUpdate = interactive && Boolean(appUpdate);
-    const targetVersion = appUpdate?.version || appVersion;
+    // A local candidate knows its required app version without a vendor feed response.
+    const requiresAppUpdate = interactive && Boolean(appUpdate || (latestSupported && compareVersions(appVersion, latestSupported) < 0));
+    const targetVersion = appUpdate?.version || (requiresAppUpdate ? latestSupported : appVersion);
     const supported = interactive ? !requiresAppUpdate && appVersion === latestSupported : versions.includes(targetVersion);
     const hasUpdate = interactive ? Boolean(available) : Boolean(appUpdate || available);
     return { release: available, available: hasUpdate, supported, targetVersion, requiresAppUpdate,

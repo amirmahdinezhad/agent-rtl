@@ -43,7 +43,7 @@ export function copyPortableNode(source, destination, license = process.env.ARTL
     fs.copyFileSync(source, path.join(destination, 'node')); fs.chmodSync(path.join(destination, 'node'), 0o755);
     fs.copyFileSync(licenseFile, path.join(destination, 'node-LICENSE'));
 }
-export function snapshotRuntime(bundle, { nativeUI = path.join(packageRoot, 'bin/assets/agent-rtl-ui') } = {}) {
+export function snapshotRuntime(bundle, { nativeUI = path.join(packageRoot, 'bin/assets/rasta-ui') } = {}) {
     const paths = guiPaths(), runtime = path.join(paths.runtimes, `${agentVersion}-${randomUUID()}`);
     fs.mkdirSync(runtime, { recursive: true });
     try {

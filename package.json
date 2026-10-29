@@ -1,6 +1,6 @@
 {
   "name": "rasta",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Rasta adds right-to-left (RTL) text, Persian and Arabic reading controls, fonts and themes to Codex and T3 Code on macOS.",
   "type": "module",
   "bin": {

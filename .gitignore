@@ -9,3 +9,5 @@ bin/assets/agent-rtl-ui
 *.tgz
 npm-debug.log*
 coverage/
+
+bin/assets/rasta-ui

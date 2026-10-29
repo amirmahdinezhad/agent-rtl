@@ -9,13 +9,13 @@ import { edKey, trustedURL } from '../bin/lib/update-feed.js';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const t3 = process.env.ARTL_TARGET === 't3';
 const output = process.env.ARTL_GUI_OUTPUT ? path.resolve(process.env.ARTL_GUI_OUTPUT) : path.join(root, t3 ? 'dist/Rasta T3 Setup.app' : 'dist/Rasta Setup.app');
-const helper = path.join(root, 'bin/assets/agent-rtl-ui');
+const helper = path.join(root, 'bin/assets/rasta-ui');
 const identity = process.env.ARTL_CODESIGN_IDENTITY || '-';
 const architecture = process.arch === 'arm64' ? 'arm64' : 'x86_64';
 const localCandidate = process.env.ARTL_LOCAL_CANDIDATE === '1';
 if (localCandidate && (process.env.ARTL_RELEASE_FEED || process.env.ARTL_RELEASE_PUBLIC_KEY))
     throw new Error('A local candidate cannot also override the release feed.');
-execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${architecture}-apple-macosx13.5`, '-O', path.join(root, 'native/AgentRTLSetup.swift'), '-o', helper], { stdio: 'inherit' });
+execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${architecture}-apple-macosx13.5`, '-O', path.join(root, 'native/RastaSetup.swift'), '-o', helper], { stdio: 'inherit' });
 execFileSync('/usr/bin/codesign', ['--force', '--sign', identity, '--options', 'runtime', helper]);
 fs.rmSync(output, { recursive: true, force: true });
 const runtime = path.join(output, 'Contents/Resources/runtime'); fs.mkdirSync(runtime, { recursive: true });

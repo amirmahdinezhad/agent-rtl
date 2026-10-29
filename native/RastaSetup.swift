@@ -180,7 +180,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .centerX; stack.spacing = 16; stack.detachesHiddenViews = true; stack.translatesAutoresizingMaskIntoConstraints = false; window.contentView!.addSubview(stack)
         NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: window.contentView!.leadingAnchor, constant: 24), stack.trailingAnchor.constraint(equalTo: window.contentView!.trailingAnchor, constant: -24), stack.topAnchor.constraint(equalTo: window.contentView!.topAnchor, constant: 24), stack.bottomAnchor.constraint(equalTo: window.contentView!.bottomAnchor, constant: -24)])
         mark.widthAnchor.constraint(equalToConstant: 56).isActive = true; mark.heightAnchor.constraint(equalToConstant: 56).isActive = true; stack.addArrangedSubview(mark)
-        if let data = try? Data(contentsOf: URL(fileURLWithPath: runtime + "/package.json")), let pkg = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let current = pkg["version"] as? String { version.stringValue = "Rasta " + current }
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: runtime + "/package.json")), let pkg = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let current = pkg["version"] as? String { version.stringValue = "Rasta Setup " + current }
         version.font = appFont(11); version.textColor = Palette.muted; version.alignment = .center
         version.setContentCompressionResistancePriority(.required, for: .vertical); stack.addArrangedSubview(version)
         title.font = appFont(22, bold: true); title.textColor = Palette.text; title.alignment = .center; title.maximumNumberOfLines = 0
@@ -287,6 +287,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
             ("ready", phaseTitles["ready-to-install"]!, phaseDetails["ready-to-install"]!, "Launch", nil),
             ("waiting", phaseTitles["waiting-for-quit"]!, phaseDetails["waiting-for-quit"]!, "Installing…", nil),
             ("complete", "Rasta is ready", "Your reading controls are ready to use.", "Open Codex", nil),
+            ("app-update", "", "", "Check again", nil),
             ("unsupported", "A compatible update is needed", "No compatible release is available yet.", "Check again", nil),
             ("error", "Could not finish", "The download was interrupted. Check your connection, then try again.", "Try again", nil),
             ("long-error", "Could not finish", "Codex opened, but the new Rasta panel did not confirm startup. Close and reopen Codex, then try again. If this continues, check that you are opening the same Codex installation that you selected in Rasta Setup.", "Try again", nil)
@@ -298,7 +299,13 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 window.backgroundColor = Palette.canvas
                 for (key, heading, detail, button, value) in states {
                     progress.isHidden = value == nil; progress.doubleValue = value ?? 0
-                    if key == "available" { showUpdate(["release": ["agentVersion": "2.5.0", "releaseNotes": ["See your installed version in Settings.", "Read a short summary before downloading.", "Improved update feedback."]]]) } else { show(heading, detail) }; setButton(button, action: .done, primary: button != "Cancel")
+                    if key == "app-update" {
+                        showAppUpdateRequired(["appVersion": "0.1.3", "targetVersion": "0.1.4"])
+                        precondition(title.stringValue == "Update " + hostName + " first")
+                        precondition(message.stringValue.contains("Installed: " + hostName + " 0.1.3."))
+                        precondition(message.stringValue.contains("requires " + hostName + " 0.1.4."))
+                        precondition(version.stringValue.hasPrefix("Rasta Setup "))
+                    } else if key == "available" { showUpdate(["release": ["agentVersion": "2.5.0", "releaseNotes": ["See your installed version in Settings.", "Read a short summary before downloading.", "Improved update feedback."]]]) } else { show(heading, detail) }; setButton(button, action: .done, primary: button != "Cancel")
                     install.isEnabled = key != "checking" && key != "waiting"
                     window.contentView!.layoutSubtreeIfNeeded(); window.displayIfNeeded()
                     let content = window.contentView!
@@ -318,13 +325,12 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
                     try png.write(to: URL(fileURLWithPath: folder).appendingPathComponent("\(theme)-\(key).png"))
                 }
             }
-            print("PASS: native light/dark previews, 9 states, wrapped errors, 44pt action and layout bounds; no installer jobs started.")
+            print("PASS: native light/dark previews, 10 states, required app update with both versions, wrapped errors, 44pt action and layout bounds; no installer jobs started.")
         } catch { fputs("Native UI preview failed. Error: \((error as NSError).domain) (\((error as NSError).code)).\n", stderr); exit(1) }
     }
     func loadPlan() {
         show("Checking Rasta…"); install.isEnabled = false; progress.isHidden = true
         rpc("status", setup: !watching) { value in
-            if let current = value["installedAgentVersion"] as? String ?? value["agentVersion"] as? String { self.version.stringValue = "Rasta " + current }
             self.appPath = value["app"] as? String ?? self.appPath
             if value["running"] as? Bool == true, let operation = value["operation"] as? [String: Any], let id = operation["id"] as? String {
                 self.busy = true; self.requestedJob = true; self.expectedJobID = id; self.refresh(); return
@@ -358,7 +364,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         show(phaseTitles["checking"]!, phaseDetails["checking"]!); install.isEnabled = false
         rpc("check", setup: !watching) { value in
             if value["requiresAppUpdate"] as? Bool == true {
-                self.show("Update Codex first", "Install Codex " + (value["targetVersion"] as? String ?? "") + ", then check again."); self.setButton("Check again", action: .check)
+                self.showAppUpdateRequired(value)
             } else if value["supported"] as? Bool != true {
                 self.show("A compatible update is needed", value["releaseError"] as? String ?? "No compatible release is available yet."); self.setButton("Check again", action: .check)
             } else if value["available"] as? Bool == true {
@@ -370,6 +376,12 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
             }
 
         }
+    }
+    func showAppUpdateRequired(_ value: [String: Any]) {
+        let installed = value["appVersion"] as? String ?? "unknown"
+        let required = value["targetVersion"] as? String ?? "the required version"
+        show("Update " + hostName + " first", "Installed: " + hostName + " " + installed + ".\nThis Rasta Setup requires " + hostName + " " + required + ".\nUpdate " + hostName + " using its own updater, then return here and click Check again.")
+        setButton("Check again", action: .check)
     }
     @objc func performAction() {
         if busy {
@@ -411,7 +423,7 @@ final class Setup: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
         progress.doubleValue = (state["progress"] as? Double ?? 0) * 100; progress.isHidden = !activity.isHidden || ["complete", "failed", "cancelled", "ready-to-install"].contains(phase)
         if phase == "complete" {
-            if let current = state["agentVersion"] as? String { version.stringValue = "Rasta " + current }
+            if let current = state["agentVersion"] as? String { version.stringValue = "Rasta Setup " + current }
             busy = false
             if state["autoClose"] as? Bool == true {
                 if state["uninstall"] as? Bool == true {

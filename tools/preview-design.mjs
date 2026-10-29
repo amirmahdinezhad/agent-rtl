@@ -13,7 +13,7 @@ const executable = path.join(output, 'agent-rtl-ui-preview');
 fs.mkdirSync(output, { recursive: true });
 const architecture = process.arch === 'arm64' ? 'arm64' : 'x86_64';
 execFileSync('/usr/bin/xcrun', ['swiftc', '-swift-version', '5', '-target', `${architecture}-apple-macosx13.5`, '-O',
-    path.join(root, 'native/AgentRTLSetup.swift'), '-o', executable], { cwd: root, stdio: 'inherit' });
+    path.join(root, 'native/RastaSetup.swift'), '-o', executable], { cwd: root, stdio: 'inherit' });
 // --wizard supplies the source directory for the bundled fonts. --preview-ui exits
 // before loadPlan, timers and RPC; its app-path placeholder is never used.
 execFileSync(executable, ['--wizard', root, 'design-preview-only', '--preview-ui', native], { cwd: root, stdio: 'inherit' });
