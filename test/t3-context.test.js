@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { removeGUIData, finishGUIUninstall } from '../bin/lib/gui-uninstall.js';
-import { releaseConfiguration } from '../bin/lib/gui-updates.js';
+import { releaseConfiguration, updatePlan } from '../bin/lib/gui-updates.js';
 
 it('keys T3 directions by environment, thread and stable assistant ID', () => {
     const root = { getClientRects: () => [1], contains: () => true };
@@ -34,11 +34,30 @@ it('isolates T3 settings, fonts, jobs and backups from Codex', () => {
         assert.notEqual(t3.support, codex.support);
         assert.notEqual(t3.jobs, codex.jobs);
         assert.notEqual(t3Fonts.preferences, codexFonts.preferences);
-        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.4']);
+        assert.deepEqual(releaseConfiguration().supportedAppVersions, ['0.1.5']);
         assert.match(releaseConfiguration().feedUrl, /\/rasta-t3-release\.json$/);
         process.env.ARTL_TARGET = 'codex';
         assert.match(releaseConfiguration().feedUrl, /\/rasta-release\.json$/);
         assert.notEqual(releaseConfiguration().feedUrl, releaseConfiguration().t3FeedUrl);
+    } finally { if (old === undefined) delete process.env.ARTL_TARGET; else process.env.ARTL_TARGET = old; }
+});
+
+it('offers the T3 0.1.5 panel upgrade and requires the vendor update first on 0.1.4', () => {
+    const old = process.env.ARTL_TARGET;
+    try {
+        process.env.ARTL_TARGET = 't3';
+        const catalog = releaseConfiguration();
+        const config = { agentVersion: '1.1.5', flow: 'download-launch' };
+        const release = { agentVersion: '1.1.6', supportedAppVersions: catalog.supportedAppVersions };
+        const previous = updatePlan(config, '0.1.4', null, release, catalog);
+        assert.equal(previous.requiresAppUpdate, true);
+        assert.equal(previous.targetVersion, '0.1.5');
+        assert.equal(previous.supported, false);
+        const current = updatePlan(config, '0.1.5', null, release, catalog);
+        assert.equal(current.supported, true);
+        assert.equal(current.available, true);
+        assert.equal(current.requiresAppUpdate, false);
+        assert.equal(updatePlan(config, '0.1.6', null, release, catalog).supported, false);
     } finally { if (old === undefined) delete process.env.ARTL_TARGET; else process.env.ARTL_TARGET = old; }
 });
 

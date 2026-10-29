@@ -6,7 +6,7 @@
     "26.1023.51421"
   ],
   "supportedT3Versions": [
-    "0.1.4"
+    "0.1.5"
   ],
   "t3FeedUrl": "https://github.com/amirmahdinezhad/rasta/releases/latest/download/rasta-t3-release.json"
 }
